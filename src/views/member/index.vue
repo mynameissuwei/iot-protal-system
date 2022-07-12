@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="member-container">
     <el-row class="handle-box" :gutter="20" align="middle">
       <el-col :span="7">
         <div>
           <div class="title">账号名</div>
           <el-input
             v-model="listQuery.ruleName"
-            placeholder="自定义规则名称"
+            placeholder="请输入"
             clearable
             class="handle-input mr10"
           ></el-input>
@@ -16,7 +16,7 @@
         <div class="title">昵称</div>
         <el-input
           v-model="listQuery.updatedByName"
-          placeholder="最后修改人"
+          placeholder="请输入"
           clearable
           class="handle-input mr10"
         ></el-input>
@@ -26,7 +26,7 @@
         <el-select
           v-model="listQuery.releaseStatus"
           clearable
-          placeholder="状态"
+          placeholder="请输入"
         >
           <el-option
             v-for="item in [
@@ -56,7 +56,6 @@
       </div>
       <el-table
         :header-cell-style="{ background: '#F6F7FB' }"
-        max-height="450"
         :data="tableData"
         highlight-current-row
         ref="multipleTable"
@@ -89,7 +88,7 @@
 
 <script setup>
 import { ref, reactive } from "vue";
-import { fetchData } from "../api/member";
+import { fetchData } from "@/api/member";
 
 const listQuery = reactive({
   ruleName: "",
@@ -105,17 +104,17 @@ const tableData = ref([
     address: "No. 189, Grove St, Los Angeles",
   },
   {
-    date: "2016-05-02",
+    date: "2016-05-03",
     name: "Tom",
     address: "No. 189, Grove St, Los Angeles",
   },
   {
-    date: "2016-05-04",
+    date: "2016-05-03",
     name: "Tom",
     address: "No. 189, Grove St, Los Angeles",
   },
   {
-    date: "2016-05-01",
+    date: "2016-05-03",
     name: "Tom",
     address: "No. 189, Grove St, Los Angeles",
   },
@@ -150,7 +149,12 @@ const handlePageChange = (val) => {
 .title {
   font-size: 6px;
   color: #646566;
-  margin-bottom: 5px;
+  margin-bottom: 7px;
+}
+.pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: right;
 }
 .handle-box {
   height: 100px;

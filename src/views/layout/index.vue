@@ -11,9 +11,9 @@
         <!-- 面包屑 -->
         <Breadcrumb />
         <div class="container">
-          <el-container>
-            <router-view></router-view>
-          </el-container>
+          <!-- <el-container> -->
+          <router-view></router-view>
+          <!-- </el-container> -->
         </div>
       </el-main>
     </el-container>
