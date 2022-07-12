@@ -4,10 +4,10 @@ import { ElMsgToast } from "@enn/ency-design";
 const baseURL = window._env_.baseURL;
 const instance = axios.create({
   baseURL,
-  timeout: 5000,
+  timeout: 5 * 1000,
   headers: {
     "Content-Type": "application/json",
-    "X-GW-AccessKey": window._env_.accessKey,
+    // "X-GW-AccessKey": window._env_.accessKey,
   },
 });
 
@@ -24,7 +24,13 @@ instance.interceptors.request.use(
 // http response 拦截器
 instance.interceptors.response.use(
   (response) => {
-    return response.data;
+    const { code, data, msg } = response.data || {};
+    if (+code === 200) {
+      return data;
+    } else {
+      ElMsgToast.error(msg);
+    }
+    return Promise.reject(response.data); //需要在接口的catch里抓这个data
   },
   (error) => {
     const { message, status } = error.toJSON();
