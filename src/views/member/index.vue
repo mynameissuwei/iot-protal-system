@@ -123,14 +123,12 @@ const handleDelete = () => {
   }).then(async () => {
     const result = multipleSelection.value.map((item) => item.id);
     const ids = result.join(",");
-    const { success, message } = await deleteList({ ids });
-    if (success) {
-      await getData();
-      ElMsgToast({
-        type: "success",
-        message: message,
-      });
-    }
+    await deleteList({ ids });
+    await getData();
+    ElMsgToast({
+      type: "success",
+      message: "删除成功",
+    });
   });
 };
 // 查询操作

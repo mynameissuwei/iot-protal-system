@@ -9,10 +9,10 @@ export function fetchData(params: any): Promise<any> {
   });
 }
 
-export const deleteList = (data: any): any => {
+export const deleteList = (params: any): any => {
   return Service({
     url: `${API_ENN_USER}/user/remove`,
     method: "post",
-    data,
+    params,
   });
 };
