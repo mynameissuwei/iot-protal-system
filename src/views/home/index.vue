@@ -3,12 +3,17 @@
   <!-- <el-button @click="importUser" type="primary">导入用户</el-button> -->
   <el-button @click="exportTemplateCSV" type="primary">导入模板 下载</el-button>
   <el-button @click="exportErrorCSV" type="primary">导出错误数据</el-button>
+  <el-link :headers="a" href="/api/enn-user/user/export-template" type="info"
+    >导出错误数据</el-link
+  >
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { ElButton } from "@enn/ency-design";
 import { importUser, exportTemplate, exportError } from "@/api";
+
+const a = { testset: 232323 };
 
 onMounted(() => {
   console.log(111);
