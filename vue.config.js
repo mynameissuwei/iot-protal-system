@@ -62,4 +62,19 @@ module.exports = {
       );
     }
   },
+
+  devServer: {
+    // host: "localhost",
+    // port: 8000, // 端口号
+    https: false, // https:{type:Boolean}
+    open: true, //配置自动启动浏览器
+    hotOnly: true, // 热更新
+    proxy: {
+      "/api": {
+        target: "http://10.39.68.150:8082",
+        changeOrigin: true,
+        // secure: false,
+      },
+    },
+  },
 };

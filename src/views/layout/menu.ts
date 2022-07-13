@@ -6,7 +6,7 @@ const menuList: MenuInfo[] = [
     desc: "首页",
     key: "home",
     url: "/home",
-    icon: ''
+    icon: "",
   },
   {
     name: "组织管理",
@@ -16,4 +16,4 @@ const menuList: MenuInfo[] = [
     icon: ''
   },
 ];
-export default menuList
+export default menuList;
