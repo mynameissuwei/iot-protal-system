@@ -8,5 +8,12 @@ const menuList: MenuInfo[] = [
     url: "/home",
     icon: "",
   },
+  {
+    name: "详情",
+    desc: "详情",
+    key: "detail",
+    url: "/detail",
+    icon: "",
+  },
 ];
 export default menuList;
