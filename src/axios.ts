@@ -1,36 +1,58 @@
 import axios from "axios";
 import { ElMsgToast } from "@enn/ency-design";
+import website from "@/config/website";
+// import { getToken } from "@/utils/auth";
+import { Base64 } from "js-base64";
 
 const baseURL = window._env_.baseURL;
 const instance = axios.create({
   baseURL,
-  timeout: 5000,
+  timeout: 5 * 1000,
   headers: {
     "Content-Type": "application/json",
-    "X-GW-AccessKey": window._env_.accessKey,
+    // "X-GW-AccessKey": window._env_.accessKey,
   },
 });
 
 // http request 拦截器
 instance.interceptors.request.use(
-  (config: any) => {
-    config.headers["blade-auth"] =
-      "bearer " +
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJpc3N1c2VyIiwiYXVkIjoiYXVkaWVuY2UiLCJ0ZW5hbnRfaWQiOiIwMDAwMDAiLCJyb2xlX25hbWUiOiJhZG1pbmlzdHJhdG9yLGFkbWluIiwidXNlcl9pZCI6IjExMjM1OTg4MjE3Mzg2NzUyMDEiLCJyb2xlX2lkIjoiMTEyMzU5ODgxNjczODY3NTIwMSwxNDY4ODA5NjYxNDg1NjkwODgyIiwidXNlcl9uYW1lIjoicm9vdCIsIm9hdXRoX2lkIjoiIiwidG9rZW5fdHlwZSI6ImFjY2Vzc190b2tlbiIsImFjY291bnQiOiJyb290IiwiY2xpZW50X2lkIjoic2FiZXIiLCJleHAiOjE2NTc2OTg5MDcsIm5iZiI6MTY1NzY5MTcwN30.9ekrkiAc-8JFYR4omx1O6KLps7f5ufve4Qbh-s7366UnlawFe7NFw7USQtA-IPZS7Vq_JvGqEe8PAWYt-MHjMA";
+  (config) => {
+    config.headers &&
+      (config.headers["Authorization"] = `Basic ${Base64.encode(
+        `${website?.clientId}:${website?.clientSecret}`
+      )}`);
+    config.headers &&
+      (config.headers["blade-auth"] =
+        "bearer " + localStorage.getItem("blade-auth")); // 让每个请求携带token--['Authorization']为自定义key 请根据实际情况自行修改
     return config;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
-
 // http response 拦截器
 instance.interceptors.response.use(
   (response) => {
-    return response.data.data;
+    const { code, data, msg } = response.data || {};
+    if (+code === 200) {
+      return data;
+    } else {
+      ElMsgToast.error(msg);
+    }
+
+    return Promise.reject(response.data); //需要在接口的catch里抓这个data
   },
   (error) => {
     const { message, status } = error.toJSON();
+    if (status === 401) {
+      ElMsgToast.error(message);
+      window.location.href =
+        "http://10.39.68.150:8082" +
+        "/login?redirect=" +
+        window.location.protocol +
+        "//" +
+        window.location.host;
+    }
     if (status !== 417 && status !== 418) {
       ElMsgToast.error(message);
     }

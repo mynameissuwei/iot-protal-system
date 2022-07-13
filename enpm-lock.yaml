@@ -10,6 +10,7 @@ specifiers:
   '@enncloud/frontend-monitor-sdk': ^0.2.1
   '@formily/core': ^2.1.2
   '@formily/vue': ^2.1.2
+  '@types/js-cookie': ^3.0.2
   '@typescript-eslint/eslint-plugin': ^4.18.0
   '@typescript-eslint/parser': ^4.18.0
   '@vue/cli-plugin-babel': ~4.5.0
@@ -28,6 +29,7 @@ specifiers:
   eslint: ^6.7.2
   eslint-plugin-prettier: ^3.3.1
   eslint-plugin-vue: ^7.0.0
+  js-cookie: ^3.0.1
   less: ^3.0.4
   less-loader: ^5.0.0
   prettier: ^2.2.1
@@ -48,11 +50,13 @@ dependencies:
   '@formily/vue': 2.1.2_typescript@4.1.6+vue@3.2.36
   axios: 0.24.0
   core-js: 3.22.7
+  js-cookie: 3.0.1
   vue: 3.2.36
   vue-router: 4.0.15_vue@3.2.36
   vuex: 4.0.2_vue@3.2.36
 
 devDependencies:
+  '@types/js-cookie': 3.0.2
   '@typescript-eslint/eslint-plugin': 4.33.0_e66a0234d36070dcc49614ed7c477ee7
   '@typescript-eslint/parser': 4.33.0_eslint@6.8.0+typescript@4.1.6
   '@vue/cli-plugin-babel': 4.5.17_f891f4a3561ee985eb492d20ca9ef75f
@@ -1666,6 +1670,10 @@ packages:
     resolution: {integrity: sha512-QsbSjA/fSk7xB+UXlCT3wHBy5ai9wOcNDWwZAtud+jXhwOM3l+EYZh8Lng4+/6n8uar0J7xILzqftJdJ/Wdfkw==}
     dependencies:
       '@types/node': 17.0.35
+    dev: true
+
+  /@types/js-cookie/3.0.2:
+    resolution: {integrity: sha512-6+0ekgfusHftJNYpihfkMu8BWdeHs9EOJuGcSofErjstGPfPGEu9yTu4t460lTzzAMl2cM5zngQJqPMHbbnvYA==}
     dev: true
 
   /@types/json-schema/7.0.11:
@@ -6298,6 +6306,11 @@ packages:
 
   /js-base64/3.7.2:
     resolution: {integrity: sha512-NnRs6dsyqUXejqk/yv2aiXlAvOs56sLkX6nUdeaNezI5LFFLlsZjOThmwnrcwh5ZZRwZlCMnVAY3CvhIhoVEKQ==}
+    dev: false
+
+  /js-cookie/3.0.1:
+    resolution: {integrity: sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==}
+    engines: {node: '>=12'}
     dev: false
 
   /js-message/1.0.7:

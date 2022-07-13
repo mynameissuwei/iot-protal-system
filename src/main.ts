@@ -7,7 +7,7 @@ import components from "./components";
 import "@enn/ency-design/dist/index.css";
 import "@/assets/css/main.less";
 import "@/assets/images/svg-icon";
-import EnnAuthSdk from "@enncloud/enn-auth-sdk";
+import { getParam } from "@/utils/auth";
 
 const app = createApp(App);
 // const win = window;
@@ -37,6 +37,11 @@ initVue();
 // 实例化VUE
 function initVue() {
   app.use(store).use(router).use(EncyDesign).use(components).mount("#app");
+  const iotBladeAuth = getParam("bladeAuth") || "";
+  if (iotBladeAuth && window.location.href.indexOf("/blank") === -1) {
+    localStorage.clear();
+    localStorage.setItem("blade-auth", iotBladeAuth);
+  }
 
   // // 添加监控
   // new window.MonitorJS().init({
