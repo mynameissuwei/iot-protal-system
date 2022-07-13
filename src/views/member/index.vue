@@ -56,6 +56,7 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="account" label="账户名" />
         <el-table-column prop="name" label="昵称" />
+        <el-table-column prop="phone" label="手机号" />
         <el-table-column prop="createTime" label="创建时间" />
 
         <el-table-column label="操作" width="180" align="center">
@@ -87,7 +88,7 @@ import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 const listQuery = reactive({
   account: "",
   name: "",
-  phone: null,
+  phone: "",
   current: 1,
   size: 10,
 });
