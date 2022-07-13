@@ -33,7 +33,6 @@ instance.interceptors.request.use(
 // http response 拦截器
 instance.interceptors.response.use(
   (response) => {
-    debugger;
     const { code, data, msg } = response.data || {};
     if (+code === 200) {
       return data;
