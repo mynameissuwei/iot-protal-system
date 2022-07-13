@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@enn/ency-design": "^1.0.10",
+    "@enn/ency-design-icons": "^1.5.0",
     "@enn/formily-ency-design": "^1.0.0-beta.2",
     "@enncloud/enn-auth-sdk": "^0.1.33",
     "@enncloud/frontend-monitor-sdk": "^0.2.1",
@@ -20,6 +21,7 @@
     "@formily/vue": "^2.1.2",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
+    "element-plus": "^2.2.9",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
