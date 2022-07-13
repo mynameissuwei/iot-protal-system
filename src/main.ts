@@ -2,9 +2,9 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import EncyDesign from '@enn/ency-design'
+import EncyDesign from "@enn/ency-design";
 import components from "./components";
-import '@enn/ency-design/dist/index.css'
+import "@enn/ency-design/dist/index.css";
 import "@/assets/css/main.less";
 import "@/assets/images/svg-icon";
 import EnnAuthSdk from "@enncloud/enn-auth-sdk";

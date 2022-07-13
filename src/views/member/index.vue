@@ -1,45 +1,36 @@
 <template>
   <div class="member-container">
     <el-row class="handle-box" :gutter="20" align="middle">
-      <el-col :span="7">
+      <el-col :span="5">
         <div>
           <div class="title">账号名</div>
           <el-input
-            v-model="listQuery.ruleName"
+            v-model="listQuery.account"
             placeholder="请输入"
             clearable
             class="handle-input mr10"
           ></el-input>
         </div>
       </el-col>
-      <el-col :span="7">
+      <el-col :span="5">
         <div class="title">昵称</div>
         <el-input
-          v-model="listQuery.updatedByName"
+          v-model="listQuery.name"
           placeholder="请输入"
           clearable
           class="handle-input mr10"
         ></el-input>
       </el-col>
-      <el-col :span="7">
+      <el-col :span="5">
         <div class="title">手机号</div>
-        <el-select
-          v-model="listQuery.releaseStatus"
-          clearable
+        <el-input
+          v-model="listQuery.phone"
           placeholder="请输入"
-        >
-          <el-option
-            v-for="item in [
-              { value: 0, label: '未发布' },
-              { value: 1, label: '已发布' },
-            ]"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
+          clearable
+          class="handle-input mr10"
+        ></el-input>
       </el-col>
-      <el-col :span="3" style="text-align: right">
+      <el-col :span="9" style="text-align: right; margin-top: 22px">
         <el-button type="primary" size="small" @click="handleSearch"
           >查询</el-button
         >
@@ -50,9 +41,9 @@
     </el-row>
     <div class="view-container">
       <div class="table-box">
-        <el-button type="primary" @click="handleSearch">添加</el-button>
+        <el-button type="primary" @click="handleAdd">添加</el-button>
         <el-button @click="handleSearch">导入</el-button>
-        <el-button @click="handleSearch">删除</el-button>
+        <el-button @click="handleDelete">删除</el-button>
       </div>
       <el-table
         :header-cell-style="{ background: '#F6F7FB' }"
@@ -63,9 +54,10 @@
         v-loading="listLoading"
       >
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="date" label="测试中文Date" width="180" />
-        <el-table-column prop="name" label="Name" width="180" />
-        <el-table-column prop="address" label="Address" />
+        <el-table-column prop="account" label="账户名" />
+        <el-table-column prop="name" label="昵称" />
+        <el-table-column prop="createTime" label="创建时间" />
+
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
             <span @click="handleEdit(scope.row)" class="actionClass">编辑</span>
@@ -75,11 +67,12 @@
       <div class="pagination">
         <el-pagination
           background
-          layout="total, prev, pager, next"
-          :current-page="listQuery.pageIndex"
-          :page-size="listQuery.pageSize"
+          layout="total,sizes, prev, pager, next, jumper"
+          v-model:currentPage="listQuery.current"
+          v-model:page-size="listQuery.size"
           :total="pageTotal"
           @current-change="handlePageChange"
+          @size-change="handleSizeChange"
         ></el-pagination>
       </div>
     </div>
@@ -87,38 +80,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
-import { fetchData } from "@/api/member";
+import { ref, reactive, onMounted } from "vue";
+import { fetchData, deleteList } from "@/api/member";
+import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 
 const listQuery = reactive({
-  ruleName: "",
-  updatedByName: "",
-  releaseStatus: null,
-  pageIndex: 1,
-  pageSize: 10,
+  account: "",
+  name: "",
+  phone: null,
+  current: 1,
+  size: 10,
 });
-const tableData = ref([
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-]);
+const tableData = ref([]);
 const pageTotal = ref(0);
 const listLoading = ref(false);
 const multipleSelection = ref([]);
@@ -128,21 +101,68 @@ const handleSelectionChange = (val) => {
 };
 // 获取表格数据
 const getData = () => {
+  listLoading.value = true;
   fetchData(listQuery).then((res) => {
-    tableData.value = res.list;
-    pageTotal.value = res.pageTotal || 50;
+    tableData.value = res.records;
+    pageTotal.value = res.total || 50;
+    listLoading.value = false;
+  });
+};
+//添加操作
+const handleAdd = () => {
+  console.log(123);
+};
+// 删除操作
+const handleDelete = () => {
+  ElMsgBox.confirm("你确定要删除该用户么?", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    buttonSize: "small",
+  }).then(async () => {
+    const result = multipleSelection.value.map((item) => item.id);
+    const ids = result.join(",");
+    const { success, message } = await deleteList({ ids });
+    if (success) {
+      await getData();
+      ElMsgToast({
+        type: "success",
+        message: message,
+      });
+    }
   });
 };
 // 查询操作
 const handleSearch = () => {
-  listQuery.pageIndex = 1;
+  listQuery.current = 1;
   getData();
 };
 // 分页导航
 const handlePageChange = (val) => {
-  listQuery.pageIndex = val;
+  listQuery.current = val;
   getData();
 };
+const handleSizeChange = (val) => {
+  listQuery.size = val;
+  getData();
+};
+// 重置操作
+const handleReset = () => {
+  const data = {
+    account: "",
+    name: "",
+    phone: null,
+    current: 1,
+    size: 10,
+  };
+  Object.assign(listQuery, data);
+  multipleSelection.value = [];
+  getData();
+};
+
+onMounted(() => {
+  getData();
+});
 </script>
 
 <style scoped lang="less">
