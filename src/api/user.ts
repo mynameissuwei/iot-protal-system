@@ -10,7 +10,7 @@ export function importUser(data: any): Promise<any> {
   });
 }
 
-//导入模板 下载
+//用户模板 下载
 export function exportTemplate(): Promise<any> {
   return Service({
     method: "get",
