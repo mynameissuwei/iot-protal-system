@@ -16,3 +16,11 @@ export const deleteList = (params: any): any => {
     params,
   });
 };
+
+export const createUser = (data: any): any => {
+  return Service({
+    url: `${API_ENN_USER}/user/submit`,
+    method: "post",
+    data,
+  });
+};

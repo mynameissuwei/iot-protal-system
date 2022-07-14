@@ -58,7 +58,6 @@
         <el-table-column prop="name" label="昵称" />
         <el-table-column prop="phone" label="手机号" />
         <el-table-column prop="createTime" label="创建时间" />
-
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
             <span @click="handleEdit(scope.row)" class="actionClass">编辑</span>
@@ -76,13 +75,41 @@
           @size-change="handleSizeChange"
         ></el-pagination>
       </div>
+      <!-- 编辑弹出框 -->
+      <el-dialog title="添加成员" v-model="editVisible" width="30%">
+        <el-form
+          label-width="90px"
+          ref="ruleFormRef"
+          :rules="rules"
+          :model="ruleForm"
+        >
+          <el-form-item label="账号名" prop="account">
+            <el-input v-model="ruleForm.account"></el-input>
+          </el-form-item>
+          <el-form-item label="昵称" prop="name">
+            <el-input v-model="ruleForm.name"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" prop="phone">
+            <el-input v-model="ruleForm.phone"></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="userDiag">注：成员创建成功后，初始密码为账号名</div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button type="primary" @click="saveAdd(ruleFormRef)"
+              >确 定</el-button
+            >
+            <el-button @click="editVisible = false">取 消</el-button>
+          </span>
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { fetchData, deleteList } from "@/api/member";
+import { fetchData, deleteList, createUser } from "@/api/member";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 
 const listQuery = reactive({
@@ -97,6 +124,58 @@ const pageTotal = ref(0);
 const listLoading = ref(false);
 const multipleSelection = ref([]);
 
+// 表格编辑时弹窗和保存
+const ruleFormRef = ref();
+const editVisible = ref(false);
+const buttonLoadingRef = ref(false);
+const rules = reactive({
+  account: [
+    { required: true, message: "请输入账号名", trigger: "blur" },
+    { min: 1, max: 20, message: "请输入1到20位", trigger: "blur" },
+  ],
+  name: [{ min: 0, max: 20, message: "请输入0到20位", trigger: "blur" }],
+  phone: [
+    {
+      pattern:
+        /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
+      message: "手机号格式不对",
+      trigger: "blur",
+    },
+  ],
+});
+let ruleForm = reactive({
+  account: "",
+  name: "",
+  phone: "",
+});
+const handleAdd = () => {
+  const data = {
+    account: "",
+    name: "",
+    phone: "",
+  };
+  Object.assign(ruleForm, data);
+  editVisible.value = true;
+};
+const saveAdd = async (formEl) => {
+  buttonLoadingRef.value = true;
+  if (!formEl) return;
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      await createUser(ruleForm);
+      await getData();
+      buttonLoadingRef.value = false;
+      editVisible.value = false;
+      // ElMsgToast({
+      //   type: "success",
+      //   message: "添加成功",
+      // });
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
+};
+//多选删除
 const handleSelectionChange = (val) => {
   multipleSelection.value = val;
 };
@@ -108,10 +187,6 @@ const getData = () => {
     pageTotal.value = res.total || 50;
     listLoading.value = false;
   });
-};
-//添加操作
-const handleAdd = () => {
-  console.log(123);
 };
 // 删除操作
 const handleDelete = () => {
@@ -185,5 +260,8 @@ onMounted(() => {
 .table-box {
   text-align: right;
   margin-bottom: 20px;
+}
+.userDiag {
+  margin-left: 90px;
 }
 </style>
