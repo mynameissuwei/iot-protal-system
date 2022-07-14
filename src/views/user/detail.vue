@@ -1,15 +1,28 @@
 <template>
   <section class="detail-content">
-    <div class="header">张三</div>
+    <div class="header">
+      <div>张三</div>
+      <el-button type="secondary" @click="editInfo">编辑</el-button>
+    </div>
     <div class="info">
-      <el-descriptions title="基本信息" column="2">
-        <el-descriptions-item label="账户名">liuqq</el-descriptions-item>
-        <el-descriptions-item label="昵称">琼琼</el-descriptions-item>
-        <el-descriptions-item label="手机号">177688888888</el-descriptions-item>
-        <el-descriptions-item label="创建时间"
-          >2010-02-01 18:00:00</el-descriptions-item
-        >
-        <el-descriptions-item label="创建人"> lifei </el-descriptions-item>
+      <el-descriptions title="基本信息" :column="2">
+        <el-descriptions-item label="账户名">{{
+          state.userInfo.account
+        }}</el-descriptions-item>
+        <el-descriptions-item label="昵称">
+          <span v-show="type !== 'edit'">{{ state.userInfo.account }}</span>
+          <el-input class="info-input" v-show="type === 'edit'"></el-input>
+        </el-descriptions-item>
+        <el-descriptions-item label="手机号">
+          <span v-show="type !== 'edit'">{{ state.userInfo.phone }}</span>
+          <el-input class="info-input" v-show="type === 'edit'"></el-input>
+        </el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{
+          state.userInfo.createTime
+        }}</el-descriptions-item>
+        <el-descriptions-item label="创建人">
+          {{ state.userInfo.createUserName }}
+        </el-descriptions-item>
         <el-descriptions-item label="账号状体">正常</el-descriptions-item>
       </el-descriptions>
     </div>
@@ -19,7 +32,7 @@
       <el-tree-select
         v-show="type === 'edit'"
         v-model="valueStrictly"
-        :data="data"
+        :data="treeData"
         multiple
         :render-after-expand="false"
         placeholder="请选择组织"
@@ -30,32 +43,26 @@
         check-on-click-node
       />
       <div v-show="type !== 'edit'">
-        <el-tag>北京组织部</el-tag>
-        <el-tag style="margin-left: 10px"
-          >北京组织部北京组织部北京组织部北京组织部北京组织部</el-tag
-        >
-        <el-tag style="margin-left: 10px">北京组织部</el-tag>
+        <el-tag v-for="(item, index) in tagList" :key="index">{{
+          item
+        }}</el-tag>
       </div>
     </div>
     <div class="limit">
       <h1>权限信息</h1>
       <el-checkbox-group v-model="checked" v-if="type === 'edit'">
-        <el-checkbox :label="3">Option A</el-checkbox>
-        <el-checkbox :label="6">Option B</el-checkbox>
-        <el-checkbox :label="9">Option C</el-checkbox>
-        <el-checkbox :label="3">Option A</el-checkbox>
-        <el-checkbox :label="6">Option B</el-checkbox>
-        <el-checkbox :label="9">Option C</el-checkbox>
-        <el-checkbox :label="3">Option A</el-checkbox>
-        <el-checkbox :label="6">Option B</el-checkbox>
-        <el-checkbox :label="9">Option C</el-checkbox>
-        <el-checkbox :label="3">Option A</el-checkbox>
-        <el-checkbox :label="6">Option B</el-checkbox>
-        <el-checkbox :label="9">Option C</el-checkbox>
+        <el-checkbox v-for="item in options" :label="item" :key="item.id">{{
+          item.roleName
+        }}</el-checkbox>
       </el-checkbox-group>
-      <el-checkbox-group v-model="checked" v-if="type !== 'edit'">
-        <el-checkbox :label="3" checked readonly>Option A</el-checkbox>
-        <el-checkbox :label="6" checked readonly>Option B</el-checkbox>
+      <el-checkbox-group v-if="type !== 'edit'">
+        <el-checkbox
+          v-for="(item, index) in roleList"
+          :key="index"
+          :label="item"
+          checked
+          readonly
+        ></el-checkbox>
       </el-checkbox-group>
     </div>
     <div class="operate" v-if="type === 'edit'">
@@ -66,87 +73,95 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { getUserDetail, getDepartTree, getRoletList } from "@/api";
 import { ElFooterActionBar } from "@enn/ency-design";
 import type { FooterActionButtonGroupItem } from "@enn/ency-design";
 import { ElTreeSelect } from "element-plus";
-// import OrgSelect from "./components/orgSelect";
 
-const type = ref("edit");
+const type = ref("view");
+
+const options = ref([]);
+
+const tagList = ref([]);
+
+const roleList = ref([]);
 
 const valueStrictly = ref();
 
-const data = [
-  {
-    value: "1",
-    label: "Level one 1",
-    children: [
-      {
-        value: "1-1",
-        label: "Level two 1-1",
-        children: [
-          {
-            value: "1-1-1",
-            label: "Level three 1-1-1",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: "2",
-    label: "Level one 2",
-    children: [
-      {
-        value: "2-1",
-        label: "Level two 2-1",
-        children: [
-          {
-            value: "2-1-1",
-            label: "Level three 2-1-1",
-          },
-        ],
-      },
-      {
-        value: "2-2",
-        label: "Level two 2-2",
-        children: [
-          {
-            value: "2-2-1",
-            label: "Level three 2-2-1",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: "3",
-    label: "Level one 3",
-    children: [
-      {
-        value: "3-1",
-        label: "Level two 3-1",
-        children: [
-          {
-            value: "3-1-1",
-            label: "Level three 3-1-1",
-          },
-        ],
-      },
-      {
-        value: "3-2",
-        label: "Level two 3-2",
-        children: [
-          {
-            value: "3-2-1",
-            label: "Level three 3-2-1",
-          },
-        ],
-      },
-    ],
-  },
-];
+// const data = [
+//   {
+//     value: "1",
+//     label: "Level one 1",
+//     children: [
+//       {
+//         value: "1-1",
+//         label: "Level two 1-1",
+//         children: [
+//           {
+//             value: "1-1-1",
+//             label: "Level three 1-1-1",
+//           },
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     value: "2",
+//     label: "Level one 2",
+//     children: [
+//       {
+//         value: "2-1",
+//         label: "Level two 2-1",
+//         children: [
+//           {
+//             value: "2-1-1",
+//             label: "Level three 2-1-1",
+//           },
+//         ],
+//       },
+//       {
+//         value: "2-2",
+//         label: "Level two 2-2",
+//         children: [
+//           {
+//             value: "2-2-1",
+//             label: "Level three 2-2-1",
+//           },
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     value: "3",
+//     label: "Level one 3",
+//     children: [
+//       {
+//         value: "3-1",
+//         label: "Level two 3-1",
+//         children: [
+//           {
+//             value: "3-1-1",
+//             label: "Level three 3-1-1",
+//           },
+//         ],
+//       },
+//       {
+//         value: "3-2",
+//         label: "Level two 3-2",
+//         children: [
+//           {
+//             value: "3-2-1",
+//             label: "Level three 3-2-1",
+//           },
+//         ],
+//       },
+//     ],
+//   },
+// ];
+
+const treeData = ref([]);
 
 const checked = ref([]);
 const state = reactive({
@@ -163,10 +178,55 @@ const state = reactive({
       buttonType: "secondary",
       cb: () => {
         alert("取消");
+        type.value = "view";
       },
     },
   ] as FooterActionButtonGroupItem[],
+  userInfo: {},
 });
+
+onMounted(() => {
+  console.log(111);
+  initData();
+});
+
+// const filterMethod = (value) => {
+//   treeData.value = [...data].filter((item) => item.label.includes(value));
+// };
+
+const editInfo = () => {
+  type.value = "edit";
+  //editData();
+};
+
+const initData = () => {
+  //"1123598821738675201"1471793838262865921
+  getUserDetail({ id: "1123598821738675201" }).then((res) => {
+    console.log(res);
+    state.userInfo = res;
+    console.log(state.userInfo);
+    tagList.value = res.deptName
+      ? res.deptName.indexOf(",") > -1
+        ? res.deptName.split(",")
+        : [res.deptName]
+      : [];
+    roleList.value = res.roleName
+      ? res.roleName.indexOf(",") > -1
+        ? res.roleName.split(",")
+        : [res.roleName]
+      : [];
+  });
+  getRoletList({ current: 1, size: 20 }).then((res) => {
+    console.log(res);
+    options.value = res.records;
+  });
+  getDepartTree({}).then((res) => {
+    console.log(res);
+    treeData.value = res;
+  });
+};
+
+// const editData = () => {};
 </script>
 <style lang="less">
 //只针对于elementplus树选择的样式，无污染;后续ency有树选择组建后，可删除此代码
@@ -193,10 +253,12 @@ const state = reactive({
   // height: calc(100%-40px);
   width: 100%;
   & .header {
+    display: flex;
+    justify-content: space-between;
     width: calc(100% + 40px);
     margin-top: -20px;
     margin-left: -20px;
-    padding-left: 32px;
+    padding: 0 32px;
     height: 44px;
     line-height: 44px;
     font-size: 18px;
@@ -216,6 +278,12 @@ const state = reactive({
   & .limit {
     height: calc(100% - 110px);
   }
+  & .info {
+    & .info-input {
+      width: 230px;
+      display: inline-block;
+    }
+  }
   .org {
     & .title {
       margin-left: 10%;
@@ -233,12 +301,12 @@ const state = reactive({
     :deep(.el-select__tags) {
       top: 2px;
     }
-    :deep(.el-tag.el-tag--info) {
+    :deep(.el-tag) {
       background: #f2f3f5;
       color: #323233;
       margin-right: 4px;
     }
-    :deep(.el-tag.el-tag--info:hover) {
+    :deep(.el-tag:hover) {
       background-color: #dcdfe6;
     }
 
@@ -259,7 +327,8 @@ const state = reactive({
     margin-left: 10%;
   }
   :deep(.el-checkbox) {
-    margin-right: 100px;
+    width: 200px;
+    margin-right: 50px;
   }
 }
 </style>
