@@ -113,6 +113,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { fetchData, deleteList, createUser } from "@/api/member";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import vUpload from "../home";
@@ -128,6 +129,7 @@ const tableData = ref([]);
 const pageTotal = ref(0);
 const listLoading = ref(false);
 const multipleSelection = ref([]);
+const router = useRouter();
 
 // 表格编辑时弹窗和保存
 const ruleFormRef = ref();
@@ -242,6 +244,16 @@ const handleReset = () => {
 // 导入操作
 const handleImport = () => {
   importVisible.value = true;
+};
+// 编辑
+const handleEdit = (data) => {
+  router.push({
+    path: "/detail",
+    query: {
+      userId: data.id,
+      type: "edit",
+    },
+  });
 };
 onMounted(() => {
   getData();

@@ -37,10 +37,19 @@ export function getUserDetail(params: any): Promise<any> {
 }
 
 // 获取组织列表树形
-export function getDepartTree(params: any): Promise<any> {
+export function getOrg(params: any): Promise<any> {
   return Service({
     method: "get",
-    url: `${API_ENN_SYSTEM}/new/dept/tree`,
+    url: `/api/org/top`,
+    params,
+  });
+}
+
+// 动态加载组织树子集
+export function getOrgChildren(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/org/child`,
     params,
   });
 }

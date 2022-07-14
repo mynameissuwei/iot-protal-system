@@ -10,12 +10,20 @@
           state.userInfo.account
         }}</el-descriptions-item>
         <el-descriptions-item label="昵称">
-          <span v-show="type !== 'edit'">{{ state.userInfo.account }}</span>
-          <el-input class="info-input" v-show="type === 'edit'"></el-input>
+          <span v-show="type !== 'edit'">{{ state.userInfo.name }}</span>
+          <el-input
+            class="info-input"
+            v-show="type === 'edit'"
+            v-model="state.userInfo.name"
+          ></el-input>
         </el-descriptions-item>
         <el-descriptions-item label="手机号">
           <span v-show="type !== 'edit'">{{ state.userInfo.phone }}</span>
-          <el-input class="info-input" v-show="type === 'edit'"></el-input>
+          <el-input
+            class="info-input"
+            v-show="type === 'edit'"
+            v-model="state.userInfo.phone"
+          ></el-input>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{
           state.userInfo.createTime
@@ -32,8 +40,10 @@
       <el-tree-select
         v-show="type === 'edit'"
         v-model="valueStrictly"
-        :data="treeData"
+        :props="defaultProps"
         multiple
+        :load="loadNode"
+        lazy
         :render-after-expand="false"
         placeholder="请选择组织"
         show-checkbox
@@ -50,8 +60,8 @@
     </div>
     <div class="limit">
       <h1>权限信息</h1>
-      <el-checkbox-group v-model="checked" v-if="type === 'edit'">
-        <el-checkbox v-for="item in options" :label="item" :key="item.id">{{
+      <el-checkbox-group v-model="checkList" v-if="type === 'edit'">
+        <el-checkbox v-for="item in options" :label="item.id" :key="item.id">{{
           item.roleName
         }}</el-checkbox>
       </el-checkbox-group>
@@ -75,12 +85,18 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { getUserDetail, getDepartTree, getRoletList } from "@/api";
+import { getUserDetail, getOrg, getRoletList, getOrgChildren } from "@/api";
 import { ElFooterActionBar } from "@enn/ency-design";
 import type { FooterActionButtonGroupItem } from "@enn/ency-design";
 import { ElTreeSelect } from "element-plus";
 
-const type = ref("view");
+interface Tree {
+  deptName: string;
+  parentName: string;
+  parentId: number;
+  id: number;
+  hasChildren?: boolean;
+}
 
 const options = ref([]);
 
@@ -88,7 +104,19 @@ const tagList = ref([]);
 
 const roleList = ref([]);
 
+const checkList = ref([]);
+
 const valueStrictly = ref();
+
+const route = useRoute();
+
+const type = ref(route.query.type);
+
+const defaultProps = {
+  // children: "children",
+  label: "deptName",
+  isLeaf: "hasChildren",
+};
 
 // const data = [
 //   {
@@ -186,7 +214,6 @@ const state = reactive({
 });
 
 onMounted(() => {
-  console.log(111);
   initData();
 });
 
@@ -201,7 +228,8 @@ const editInfo = () => {
 
 const initData = () => {
   //"1123598821738675201"1471793838262865921
-  getUserDetail({ id: "1123598821738675201" }).then((res) => {
+  let id = route.query.userId;
+  getUserDetail({ id }).then((res) => {
     console.log(res);
     state.userInfo = res;
     console.log(state.userInfo);
@@ -215,17 +243,64 @@ const initData = () => {
         ? res.roleName.split(",")
         : [res.roleName]
       : [];
+    checkList.value = res.roleId
+      ? res.roleId.indexOf(",") > -1
+        ? res.roleId.split(",")
+        : [res.roleId]
+      : [];
   });
   getRoletList({ current: 1, size: 20 }).then((res) => {
     console.log(res);
     options.value = res.records;
   });
-  getDepartTree({}).then((res) => {
-    console.log(res);
-    treeData.value = res;
-  });
+  //treeData.value =
+  // getOrg({}).then((res) => {
+  //   console.log(res);
+  //   treeData.value = res;
+  // });
 };
 
+const loadNode = (node, resolve: (data: Tree[]) => void) => {
+  console.log("333333", node);
+  if (node.level === 0) {
+    return resolve([
+      {
+        deptName: "2",
+        hasChildren: true,
+        id: 0,
+        parentId: 0,
+        parentName: "",
+      },
+      {
+        deptName: "3",
+        hasChildren: true,
+        id: 0,
+        parentId: 0,
+        parentName: "",
+      },
+    ]);
+  }
+  setTimeout(() => {
+    const data: Tree[] = [
+      {
+        deptName: "21",
+        hasChildren: true,
+        id: 0,
+        parentId: 0,
+        parentName: "",
+      },
+      {
+        deptName: "31",
+        hasChildren: true,
+        id: 0,
+        parentId: 0,
+        parentName: "",
+      },
+    ];
+
+    resolve(data);
+  }, 500);
+};
 // const editData = () => {};
 </script>
 <style lang="less">
