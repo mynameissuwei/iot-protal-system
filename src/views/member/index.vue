@@ -42,7 +42,7 @@
     <div class="view-container">
       <div class="table-box">
         <el-button type="primary" @click="handleAdd">添加</el-button>
-        <el-button @click="handleSearch">导入</el-button>
+        <el-button @click="handleImport">导入</el-button>
         <el-button @click="handleDelete">删除</el-button>
       </div>
       <el-table
@@ -75,6 +75,10 @@
           @size-change="handleSizeChange"
         ></el-pagination>
       </div>
+      <!-- 导入弹出框 -->
+      <el-dialog title="导入" v-model="importVisible" width="30%">
+        <v-upload></v-upload>
+      </el-dialog>
       <!-- 编辑弹出框 -->
       <el-dialog title="添加成员" v-model="editVisible" width="30%">
         <el-form
@@ -111,6 +115,7 @@
 import { ref, reactive, onMounted } from "vue";
 import { fetchData, deleteList, createUser } from "@/api/member";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
+import vUpload from "../home";
 
 const listQuery = reactive({
   account: "",
@@ -127,6 +132,7 @@ const multipleSelection = ref([]);
 // 表格编辑时弹窗和保存
 const ruleFormRef = ref();
 const editVisible = ref(false);
+const importVisible = ref(false);
 const buttonLoadingRef = ref(false);
 const rules = reactive({
   account: [
@@ -233,7 +239,10 @@ const handleReset = () => {
   multipleSelection.value = [];
   getData();
 };
-
+// 导入操作
+const handleImport = () => {
+  importVisible.value = true;
+};
 onMounted(() => {
   getData();
 });
