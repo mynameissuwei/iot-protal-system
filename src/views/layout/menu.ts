@@ -9,12 +9,6 @@ const menuList: MenuInfo[] = [
     icon: "",
   },
   {
-    name: "详情",
-    desc: "详情",
-    key: "detail",
-    url: "/detail",
-  },
-  {
     name: "成员管理",
     desc: "成员管理",
     key: "member",
