@@ -13,6 +13,12 @@ const menuList: MenuInfo[] = [
     desc: "详情",
     key: "detail",
     url: "/detail",
+  },
+  {
+    name: "成员管理",
+    desc: "成员管理",
+    key: "member",
+    url: "/member",
     icon: "",
   },
 ];
