@@ -11,7 +11,8 @@
             v-for="ite in item.subMenu"
             :key="ite.key"
             @click="skipTo(item)"
-          >{{ ite.name }}</el-menu-item>
+            >{{ ite.name }}</el-menu-item
+          >
         </el-sub-menu>
         <el-menu-item :index="item.key" @click="skipTo(item)" v-else>
           <IconSvg :name="item.icon" class="menu-icon" v-if="item.icon" />

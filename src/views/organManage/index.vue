@@ -1,13 +1,19 @@
 <template>
   <!-- <div>组织管理</div> -->
-  <div>
-    <el-input v-model="filterText" placeholder="Filter keyword" />
+  <div class="organ-tree">
+    <el-title class="organ-tit" :level="4">组织管理</el-title>
+    <el-input
+      class="organ-input"
+      v-model="filterText"
+      placeholder="输入组织名称"
+    />
 
     <el-tree
       ref="treeRef"
       class="filter-tree"
       :data="dataSource"
       :props="defaultProps"
+      :expand-on-click-node="false"
       default-expand-all
       :filter-node-method="filterNode"
     >
@@ -16,10 +22,12 @@
           <span>{{ node.label }}</span>
           <span>
             <a @click="append(data)">
-              <el-icon><add-number /></el-icon>
-              添加
+              <!-- <el-button text :icon="Edit"></el-button> -->
+              <el-icon :size="12" class="tit-editBtn"><add-number /></el-icon>
             </a>
-            <a @click="remove(node, data)"> 删除 </a>
+            <a @click="remove(node, data)">
+              <el-icon :size="12" class="tit-editBtn"><delete /></el-icon>
+            </a>
           </span>
         </span>
       </template>
@@ -34,11 +42,7 @@
           <el-input v-model="form.orgName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="上级组织" :label-width="formLabelWidth">
-          <el-input
-            class="parent-name"
-            v-model="form.parentName"
-            autocomplete="off"
-          ></el-input>
+          <span>{{ form.parentName }}</span>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -50,12 +54,33 @@
     </el-dialog>
   </div>
   <div class="table-orgain">
-    <h4>{{ orgainName }}</h4>
+    <h4 class="table-orgain-tit" v-if="updateName">
+      {{ orgainName }}
+      <el-button text :icon="Edit"></el-button>
+    </h4>
+    <h4 class="table-orgain-tit" v-if="!updateName">
+      <el-input
+        v-model="orgainName"
+        placeholder="请输入名称"
+        :suffix-icon="ScanQrCode"
+      />
+      <!-- <el-input></el-input> {{ orgainName }} -->
+      <el-button text :icon="UploadSuccess"></el-button>
+    </h4>
+    <el-descriptions title="" class="table-orgain-des">
+      <el-descriptions-item label="组织ID">徐博韦</el-descriptions-item>
+      <el-descriptions-item label="创建时间">2022-07-01</el-descriptions-item>
+    </el-descriptions>
     <template>
-      <el-descriptions :title="orgainName">
-        <el-descriptions-item label="组织ID">徐博韦</el-descriptions-item>
-        <el-descriptions-item label="创建时间">2022-07-01</el-descriptions-item>
-      </el-descriptions>
+      <div class="header-bg-box">
+        <div class="header-bar-demo">
+          <el-header-action-bar
+            :title="'组织成员'"
+            :button-group="originData.buttonGroup"
+          >
+          </el-header-action-bar>
+        </div>
+      </div>
     </template>
     <el-table
       :data="tableData"
@@ -64,8 +89,8 @@
     >
       <el-table-column prop="date" label="账号名" width="180" />
       <el-table-column prop="name" label="昵称" width="100" />
-      <el-table-column prop="objectStatus" label="所属组织" width="120" />
-      <el-table-column fixed="right" label="操作">
+      <el-table-column prop="objectStatus" label="所属组织" />
+      <el-table-column fixed="right" label="操作" width="120">
         <template #default>
           <el-link class="edit-link" :underline="false" @click="handleEdit"
             >编辑</el-link
@@ -80,14 +105,18 @@
 </template>
 
 <script lang="ts" setup>
-import { watch, ref, reactive } from "vue";
+import { watch, ref, reactive, markRaw } from "vue";
+import { Edit, Delete, AddNumber, UploadSuccess } from "@enn/ency-design-icons";
 import {
   ElTree,
   ElInput,
   ElMsgBox,
   ElMsgToast,
   ElIcon,
+  ElHeaderActionBar,
+  ElSearchField,
 } from "@enn/ency-design";
+import type { HeaderActionButtonGroupItem } from "@enn/ency-design";
 
 interface Tree {
   id: number;
@@ -99,6 +128,7 @@ let id = 1000;
 const filterText = ref("");
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const dialogFormVisible = ref(false);
+const updateName = ref(true);
 const form = reactive({
   orgName: "",
   parentName: "",
@@ -110,6 +140,28 @@ const defaultProps = {
   children: "children",
   label: "label",
 };
+const originData = reactive({
+  buttonGroup: [
+    {
+      label: "关联组织成员",
+      icon: markRaw(Edit),
+      buttonType: "primary",
+      operateType: "business",
+      cb: () => {
+        relevanceMember();
+      },
+    },
+    {
+      label: "删除",
+      icon: markRaw(Delete),
+      buttonType: "secondary",
+      operateType: "business",
+      cb: () => {
+        deleteMember();
+      },
+    },
+  ] as HeaderActionButtonGroupItem[],
+});
 
 watch(filterText, (val) => {
   treeRef.value!.filter(val);
@@ -168,7 +220,14 @@ const remove = (node: Node, data: Tree) => {
     });
   });
 };
-
+//删除成员
+const deleteMember = () => {
+  console.log("删除成员");
+};
+//关联组织成员
+const relevanceMember = () => {
+  console.log("关联成员");
+};
 const dataSource: Tree[] = [
   {
     id: 1,
@@ -232,12 +291,60 @@ const dataSource: Tree[] = [
   justify-content: space-between;
   font-size: 14px;
   padding-right: 8px;
+  a {
+    margin: 0 11px;
+  }
 }
 .table-orgain {
   margin-left: 20px;
   width: 100%;
   height: 100%;
   background: #fff;
-  padding: 10px;
+  padding: 23px 15px 10px 10px;
+  .header-bg-box {
+    height: 200px;
+  }
+  .table-orgain-tit {
+    font-size: 16px;
+    font-weight: 500;
+    color: #343a40;
+    line-height: 16px;
+    .tit-editBtn {
+      margin: 0 13px;
+      color: #4068d4;
+      cursor: pointer;
+    }
+    .tit-editBtn:hover {
+      background: #f2f3f5;
+    }
+    .tit-editBtn:active {
+      background: #ebecf0;
+    }
+  }
+  .table-orgain-des {
+    margin: 19px 0 17px;
+  }
+}
+.organ-tree {
+  padding: 21px 11px 21px 16px;
+  background: #fff;
+  width: 290px;
+  .organ-tit {
+    font-size: 16px;
+    font-weight: 500;
+    color: #343a40;
+    line-height: 22px;
+  }
+  .organ-input {
+    margin: 21px 0;
+  }
+  .el-tree {
+    width: 260px;
+  }
+}
+.tit-editBtn {
+  //   margin: 0 13px;
+  color: #4068d4;
+  cursor: pointer;
 }
 </style>
