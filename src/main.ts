@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
 import EncyDesign from "@enn/ency-design";
 import components from "./components";
 import "@enn/ency-design/dist/index.css";
@@ -41,10 +40,9 @@ initVue();
 // 实例化VUE
 function initVue() {
   app
-    .use(store)
+    .use(pinia.use(piniaPluginPersist))
     .use(router)
     .use(EncyDesign)
-    .use(pinia.use(piniaPluginPersist))
     .use(components)
     .mount("#app");
   const iotBladeAuth = getParam("bladeAuth") || "";
