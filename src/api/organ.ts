@@ -50,3 +50,12 @@ export function organMemberList(): Promise<any> {
     url: `${API_ENN_USER}/org/user/list`,
   });
 }
+
+// 账号名和昵称模糊查询列表
+export function geQueryUserList(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_USER}/enn-user/user/query`,
+    params,
+  });
+}

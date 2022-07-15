@@ -139,13 +139,39 @@
             @current-change="handleCurrentChange"
           />
         </div>
+        <el-dialog v-model="dialogConnectMemberVisible" title="关联组织成员">
+          <el-combo-box
+            v-model="connectValue"
+            multiple
+            remote
+            reserve-keyword
+            placeholder="输入关键字"
+            :remote-method="remoteMethod"
+            :loading="connectLoading"
+          >
+            <el-option
+              v-for="item in connectOptions"
+              :key="item.id"
+              :label="item.account"
+              :value="item.id"
+            />
+          </el-combo-box>
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button type="primary" @click="dialogFormVisible = false">
+                确定
+              </el-button>
+              <el-button @click="dialogFormVisible = false">取消</el-button>
+            </span>
+          </template>
+        </el-dialog>
       </div>
     </template>
   </el-two-column>
 </template>
 
 <script setup lang="ts">
-import { watch, ref, reactive, markRaw } from "vue";
+import { watch, ref, reactive, markRaw, onMounted } from "vue";
 // import { useRouter } from "vue-router";
 // import {
 //   addOrgan,
@@ -154,6 +180,7 @@ import { watch, ref, reactive, markRaw } from "vue";
 //   search,
 //   organTree,
 // } from "@/api/organ";
+import { geQueryUserList } from "@/api/organ";
 import {
   Edit,
   Delete,
@@ -178,6 +205,12 @@ interface Tree {
   label: string;
   children?: Tree[];
 }
+
+interface OptionData {
+  id: string;
+  account: string;
+}
+
 let id = 1000;
 // 分页数据
 const currentPage = ref(5);
@@ -197,6 +230,12 @@ const form = reactive({
 });
 const orgNameVal = ref("");
 const orgainName = ref("北京燃气组织");
+
+// 关联组织成员
+const dialogConnectMemberVisible = ref(false);
+const connectLoading = ref(false);
+const connectValue = ref([]);
+const connectOptions = ref<OptionData[]>([]);
 
 const defaultProps = {
   children: "children",
@@ -349,6 +388,7 @@ const deleteMember = () => {
 //关联组织成员
 const relevanceMember = () => {
   console.log("关联成员");
+  dialogConnectMemberVisible.value = true;
 };
 const dataSource: Tree[] = [
   {
@@ -400,6 +440,23 @@ const dataSource: Tree[] = [
     ],
   },
 ];
+//初始化关联用户列表数据
+const getConnectUserData = (query = "") => {
+  let page = { current: 1, size: 20 };
+  geQueryUserList({ keyword: query, ...page }).then((res) => {
+    connectLoading.value = false;
+    connectOptions.value = res.records;
+  });
+};
+const remoteMethod = (query: string) => {
+  if (query) {
+    connectLoading.value = true;
+    getConnectUserData(query);
+  }
+};
+onMounted(() => {
+  getConnectUserData();
+});
 </script>
 
 <style scoped lang="less">
