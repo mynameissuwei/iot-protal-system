@@ -9,11 +9,19 @@ const menuList: MenuInfo[] = [
     icon: "",
   },
   {
+<<<<<<< HEAD
     name: "成员管理",
     desc: "成员管理",
     key: "member",
     url: "/member",
     icon: "",
+=======
+    name: "组织管理",
+    desc: "组织管理",
+    key: "organManage",
+    url: "/organManage",
+    icon: ''
+>>>>>>> dev-0711-cqp
   },
 ];
 export default menuList;

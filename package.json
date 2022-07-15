@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@enn/ency-design": "^1.0.10",
+    "@enn/ency-design-icons": "^1.5.0",
     "@enn/formily-ency-design": "^1.0.0-beta.2",
     "@enncloud/enn-auth-sdk": "^0.1.33",
     "@enncloud/frontend-monitor-sdk": "^0.2.1",
