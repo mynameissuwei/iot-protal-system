@@ -32,6 +32,8 @@ specifiers:
   js-cookie: ^3.0.1
   less: ^3.0.4
   less-loader: ^5.0.0
+  pinia: ^2.0.16
+  pinia-plugin-persist: ^1.0.0
   prettier: ^2.2.1
   sass: ^1.52.1
   sass-loader: ^13.0.0
@@ -51,6 +53,8 @@ dependencies:
   axios: 0.24.0
   core-js: 3.22.7
   js-cookie: 3.0.1
+  pinia: 2.0.16_typescript@4.1.6+vue@3.2.36
+  pinia-plugin-persist: 1.0.0_pinia@2.0.16+vue@3.2.36
   vue: 3.2.36
   vue-router: 4.0.15_vue@3.2.36
   vuex: 4.0.2_vue@3.2.36
@@ -7610,6 +7614,39 @@ packages:
     resolution: {integrity: sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==}
     engines: {node: '>=6'}
     dev: true
+
+  /pinia-plugin-persist/1.0.0_pinia@2.0.16+vue@3.2.36:
+    resolution: {integrity: sha512-M4hBBd8fz/GgNmUPaaUsC29y1M09lqbXrMAHcusVoU8xlQi1TqgkWnnhvMikZwr7Le/hVyMx8KUcumGGrR6GVw==}
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0
+      pinia: ^2.0.0
+      vue: ^2.0.0 || >=3.0.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      pinia: 2.0.16_typescript@4.1.6+vue@3.2.36
+      vue: 3.2.36
+      vue-demi: 0.12.5_vue@3.2.36
+    dev: false
+
+  /pinia/2.0.16_typescript@4.1.6+vue@3.2.36:
+    resolution: {integrity: sha512-9/LMVO+/epny1NBfC77vnps4g3JRezxhhoF1xLUk8mZkUIxVnwfEAIRiAX8mYBTD/KCwZqnDMqXc8w3eU0FQGg==}
+    peerDependencies:
+      '@vue/composition-api': ^1.4.0
+      typescript: '>=4.4.4'
+      vue: ^2.6.14 || ^3.2.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      '@vue/devtools-api': 6.1.4
+      typescript: 4.1.6
+      vue: 3.2.36
+      vue-demi: 0.12.5_vue@3.2.36
+    dev: false
 
   /pinkie-promise/2.0.1:
     resolution: {integrity: sha512-0Gni6D4UcLTbv9c57DfxDGdr41XfgUjqWZu492f0cIGr16zDU06BWP/RAEvOuo7CQ0CNjHaLlM59YJJFm3NWlw==}

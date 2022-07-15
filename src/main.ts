@@ -1,15 +1,18 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
 import EncyDesign from "@enn/ency-design";
 import components from "./components";
 import "@enn/ency-design/dist/index.css";
 import "@/assets/css/main.less";
 import "@/assets/images/svg-icon";
 import { getParam } from "@/utils/auth";
+import { createPinia } from "pinia";
+import piniaPluginPersist from "pinia-plugin-persist";
 
+const pinia = createPinia();
 const app = createApp(App);
+// app.use(pinia);
 // const win = window;
 // // eslint-disable-next-line no-unexpected-multiline
 // (async function () {
@@ -36,7 +39,12 @@ initVue();
 
 // 实例化VUE
 function initVue() {
-  app.use(store).use(router).use(EncyDesign).use(components).mount("#app");
+  app
+    .use(pinia.use(piniaPluginPersist))
+    .use(router)
+    .use(EncyDesign)
+    .use(components)
+    .mount("#app");
   const iotBladeAuth = getParam("bladeAuth") || "";
   if (iotBladeAuth && window.location.href.indexOf("/blank") === -1) {
     localStorage.clear();
