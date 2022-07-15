@@ -145,7 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, reactive, markRaw } from "vue";
+import { watch, ref, reactive, markRaw, onMounted } from "vue";
 // import { useRouter } from "vue-router";
 // import {
 //   addOrgan,
@@ -202,6 +202,14 @@ const defaultProps = {
   children: "children",
   label: "label",
 };
+onMounted(() => {
+  //   initData();
+});
+// const initData = () => {
+//   organTree().then((res) => {
+//     console.log(res);
+//   });
+// };
 // 组织成员列表
 const tableData = [
   {
