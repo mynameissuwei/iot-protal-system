@@ -18,17 +18,15 @@
             :http-request="httpRequest"
             :auto-upload="false"
             :before-upload="beforeExcelUpload"
+            :on-success="handleUploadSuccess"
             :on-change="handleChange"
             :on-remove="handleRemove"
             :file-list="fileList"
           >
             <el-button :icon="Export">选择文件</el-button>
-            <el-link
-              :href="exportTemplateURL"
-              type="info"
-              style="margin-left: 20px"
-              >下载模板</el-link
-            >
+            <div class="actionClass downloadClass" @click="downloadUrl">
+              下载模板
+            </div>
           </el-upload>
         </el-col>
       </el-row>
@@ -53,49 +51,24 @@
       </div>
     </div>
   </el-dialog>
-
-  <el-dialog
-    :title="isSuccess ? '导入成功' : '导入失败'"
-    v-model="resultVisible"
-    width="40%"
-  >
-    <div>{{ msg }}</div>
-    <div style="text-align: right">
-      <el-button v-if="isSuccess" type="primary" @click="resultVisible = false"
-        >关闭</el-button
-      >
-      <el-button v-if="!isSuccess" @click="resultVisible = false">
-        <el-link :href="exportErrorCSVURL" type="info" style="margin-left: 20px"
-          >关闭并下载错误文件</el-link
-        ></el-button
-      >
-    </div>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, computed, unref } from "vue";
-import { ElButton, ElMsgBox, ElMsgToast, ElBusyState } from "@enn/ency-design";
+import { ref, defineProps, onMounted } from "vue";
+import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import { importUser } from "@/api";
 import { API_ENN_USER } from "@/const";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const exportTemplateURL = `${API_ENN_USER}/user/export-template?blade-auth=${localStorage.getItem(
   "blade-auth"
 )}`;
-
-const id = ref("");
-const exportErrorCSVURL = computed(() => {
-  return `${API_ENN_USER}/user/export-error/${unref(
-    id
-  )}?blade-auth=${localStorage.getItem("blade-auth")}`;
-});
 
 const upload = ref();
 const fileList = ref([]);
 const upLoading = ref(false);
 const msg = ref("");
-const resultVisible = ref(false);
-const isSuccess = ref(false);
 
 const props = defineProps(["importVisible", "handleHidden"]);
 
@@ -111,21 +84,42 @@ const httpRequest = (params: any) => {
     .then((data) => {
       const { errorId, errorCount, totalCount } = data;
       if (errorCount != 0) {
-        resultVisible.value = true;
-        isSuccess.value = false;
         props.handleHidden();
         msg.value = `本次共解析${totalCount}条数据，其中${errorCount}条解析失败，导入${
           totalCount - errorCount
         }条。`;
+
+        ElMsgBox.show(msg.value, "导入失败", {
+          confirmButtonText: "关闭并下载错误文件",
+          type: "error",
+        }).then(() => {
+          const exportErrorCSVURL: any = `${API_ENN_USER}/user/export-error/${errorId}?blade-auth=${localStorage.getItem(
+            "blade-auth"
+          )}`;
+          window.location.href = exportErrorCSVURL;
+        });
       } else {
-        resultVisible.value = true;
-        isSuccess.value = true;
-        id.value = errorId;
         props.handleHidden();
         msg.value = `本次共解析${totalCount}条数据，导入成功${totalCount}条数据`;
+        ElMsgBox.show(msg.value, "导入成功", {
+          confirmButtonText: "确认",
+          type: "success",
+        });
       }
+      handleClear();
     })
-    .catch((e) => console.warn(e));
+    .catch((e) => {
+      console.warn(e);
+      handleClear();
+    });
+};
+// 下载文件
+const downloadUrl = () => {
+  window.location.href = exportTemplateURL;
+};
+
+const handleClear = () => {
+  upload.value.clearFiles();
 };
 
 const beforeExcelUpload = (file: any) => {
@@ -156,3 +150,11 @@ const onDialogConfirmImport = () => {
   }, 1200);
 };
 </script>
+
+<style scoped lang="less">
+.downloadClass {
+  margin-left: 20px;
+  display: inline-block;
+  margin-right: 20px;
+}
+</style>
