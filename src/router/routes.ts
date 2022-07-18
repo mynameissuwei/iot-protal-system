@@ -9,7 +9,7 @@ const OrganManage = () => import("@/views/organManage/index.vue");
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/member",
+    redirect: "/organManage",
   },
   {
     path: "/",
