@@ -1,5 +1,4 @@
 <template>
-  <!-- <div>组织管理</div> -->
   <el-two-column
     v-model:value="valueWidth"
     ref="twoColumnLayout"
@@ -93,10 +92,12 @@
           ></el-button>
         </h4>
         <el-descriptions title="" class="table-orgain-des">
-          <el-descriptions-item label="组织ID">徐博韦</el-descriptions-item>
-          <el-descriptions-item label="创建时间"
-            >2022-07-01</el-descriptions-item
-          >
+          <el-descriptions-item label="组织ID">{{
+            orgMsg.deptName
+          }}</el-descriptions-item>
+          <el-descriptions-item label="创建时间">{{
+            orgMsg.time || "2022-07-01"
+          }}</el-descriptions-item>
         </el-descriptions>
         <template>
           <div class="header-bg-box">
@@ -139,6 +140,32 @@
             @current-change="handleCurrentChange"
           />
         </div>
+        <el-dialog v-model="dialogConnectMemberVisible" title="关联组织成员">
+          <el-combo-box
+            v-model="connectValue"
+            multiple
+            remote
+            reserve-keyword
+            placeholder="输入关键字"
+            :remote-method="remoteMethod"
+            :loading="connectLoading"
+          >
+            <el-option
+              v-for="item in connectOptions"
+              :key="item.id"
+              :label="item.account"
+              :value="item.id"
+            />
+          </el-combo-box>
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button type="primary" @click="dialogFormVisible = false">
+                确定
+              </el-button>
+              <el-button @click="dialogFormVisible = false">取消</el-button>
+            </span>
+          </template>
+        </el-dialog>
       </div>
     </template>
   </el-two-column>
@@ -146,14 +173,17 @@
 
 <script setup lang="ts">
 import { watch, ref, reactive, markRaw, onMounted } from "vue";
-// import { useRouter } from "vue-router";
-// import {
-//   addOrgan,
-//   updateOrgan,
-//   removeOrgan,
-//   search,
-//   organTree,
-// } from "@/api/organ";
+import { useRouter } from "vue-router";
+import {
+  //   addOrgan,
+  //   updateOrgan,
+  //   removeOrgan,
+  //   search,
+  geQueryUserList,
+  orgDetailMsg,
+  organMemberList,
+  organTree,
+} from "@/api/organ";
 import {
   Edit,
   Delete,
@@ -178,6 +208,13 @@ interface Tree {
   label: string;
   children?: Tree[];
 }
+
+interface OptionData {
+  id: string;
+  account: string;
+}
+
+let orgMsg = {};
 let id = 1000;
 // 分页数据
 const currentPage = ref(5);
@@ -198,19 +235,31 @@ const form = reactive({
 const orgNameVal = ref("");
 const orgainName = ref("北京燃气组织");
 
+// 关联组织成员
+const dialogConnectMemberVisible = ref(false);
+const connectLoading = ref(false);
+const connectValue = ref([]);
+const connectOptions = ref<OptionData[]>([]);
+
 const defaultProps = {
   children: "children",
   label: "label",
 };
-onMounted(() => {
-  //   initData();
-});
-// const initData = () => {
-//   organTree().then((res) => {
-//     console.log(res);
-//   });
-// };
+const initData = () => {
+  let id = "1123598813738675201";
+  organTree().then((res) => {
+    console.log(res);
+  });
+  organMemberList(id).then((res) => {
+    console.log(res);
+  });
+  orgDetailMsg(id).then((res) => {
+    orgMsg = res.data;
+  });
+  orgMsg;
+};
 // 组织成员列表
+const tableRowClassName = "``";
 const tableData = [
   {
     date: "zhanghaoming1",
@@ -254,6 +303,9 @@ const originData = reactive({
       },
     },
   ] as HeaderActionButtonGroupItem[],
+});
+let newData = reactive({
+  newTree: [],
 });
 
 watch(filterText, (val) => {
@@ -302,30 +354,32 @@ const saveOrganNameFn = () => {
     });
 };
 // 添加组织弹窗
-const formVisible = (data: Tree) => {
-  dialogFormVisible.value = true;
-};
 const addOrgan = () => {
-  console.log(1111);
+  console.log(222, newData.newTree);
+  let newTreeData = newData.newTree;
   dialogFormVisible.value = false;
-  console.log(form.orgName);
-  orgNameVal.value = form.orgName;
-  // append(a)
+  console.log(333, form.orgName);
+  orgNameVal.value = form.orgName || "默认组织";
+  console.log(3331, orgNameVal.value);
+  const newChild = { id: id++, label: orgNameVal.value, children: [] };
+  if (!newTreeData.children) {
+    newTreeData.children = [];
+  }
+  console.log(444, newChild);
+  newTreeData.children.push(newChild);
+  dataSource.value = [...dataSource.value];
+  console.log(4441, newChild, newTreeData.children);
 };
 const dleOrgan = () => {
   dialogFormVisible.value = false;
 };
 const append = (data: Tree) => {
+  console.log("111111", data);
+  //   localStorage.setItem("newTree", data);
+  newData.newTree = data;
+  console.log(11112, newData.newTree);
+  form.orgName = "";
   dialogFormVisible.value = true;
-  orgNameVal.value = form.orgName;
-  console.log(orgNameVal.value);
-  const newChild = { id: id++, label: orgNameVal.value, children: [] };
-  if (!data.children) {
-    data.children = [];
-  }
-  data.children.push(newChild);
-  dataSource.value = [...dataSource.value];
-  console.log(orgNameVal.value);
 };
 // 删除组织
 const remove = (node: Node, data: Tree) => {
@@ -357,6 +411,7 @@ const deleteMember = () => {
 //关联组织成员
 const relevanceMember = () => {
   console.log("关联成员");
+  dialogConnectMemberVisible.value = true;
 };
 const dataSource: Tree[] = [
   {
@@ -408,6 +463,24 @@ const dataSource: Tree[] = [
     ],
   },
 ];
+//初始化关联用户列表数据
+const getConnectUserData = (query = "") => {
+  let page = { current: 1, size: 20 };
+  geQueryUserList({ keyword: query, ...page }).then((res) => {
+    connectLoading.value = false;
+    connectOptions.value = res.records;
+  });
+};
+const remoteMethod = (query: string) => {
+  if (query) {
+    connectLoading.value = true;
+    getConnectUserData(query);
+  }
+};
+onMounted(() => {
+  getConnectUserData();
+  initData();
+});
 </script>
 
 <style scoped lang="less">

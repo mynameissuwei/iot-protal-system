@@ -4,9 +4,9 @@ import website from "@/config/website";
 // import { getToken } from "@/utils/auth";
 import { Base64 } from "js-base64";
 
-const baseURL = window._env_.baseURL;
+// const baseURL = window._env_.baseURL;
 const instance = axios.create({
-  baseURL,
+  // baseURL,
   timeout: 5 * 1000,
   headers: {
     "Content-Type": "application/json",

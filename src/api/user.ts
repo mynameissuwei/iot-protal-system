@@ -36,11 +36,20 @@ export function getUserDetail(params: any): Promise<any> {
   });
 }
 
+//更改用户基本信息
+export function updateUser(data: any): Promise<any> {
+  return Service({
+    method: "post",
+    url: `${API_ENN_USER}/user/update`,
+    data,
+  });
+}
+
 // 获取组织列表树形
 export function getOrg(params: any): Promise<any> {
   return Service({
     method: "get",
-    url: `/api/org/top`,
+    url: `${API_ENN_SYSTEM}/org/top`,
     params,
   });
 }

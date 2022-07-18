@@ -1,8 +1,10 @@
 <template>
   <section class="detail-content">
     <div class="header">
-      <div>张三</div>
-      <el-button type="secondary" @click="editInfo">编辑</el-button>
+      <div>{{ state.userInfo.realName }}</div>
+      <el-button v-show="type !== 'edit'" type="secondary" @click="editInfo"
+        >编辑</el-button
+      >
     </div>
     <div class="info">
       <el-descriptions title="基本信息" :column="2">
@@ -10,19 +12,20 @@
           state.userInfo.account
         }}</el-descriptions-item>
         <el-descriptions-item label="昵称">
-          <span v-show="type !== 'edit'">{{ state.userInfo.name }}</span>
+          <span v-show="type !== 'edit'">{{ state.formData.name }}</span>
           <el-input
             class="info-input"
             v-show="type === 'edit'"
-            v-model="state.userInfo.name"
+            v-model="state.formData.name"
           ></el-input>
         </el-descriptions-item>
         <el-descriptions-item label="手机号">
-          <span v-show="type !== 'edit'">{{ state.userInfo.phone }}</span>
+          <span v-show="type !== 'edit'">{{ state.formData.phone }}</span>
           <el-input
             class="info-input"
+            maxlength="11"
             v-show="type === 'edit'"
-            v-model="state.userInfo.phone"
+            v-model="state.formData.phone"
           ></el-input>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{
@@ -38,12 +41,14 @@
       <h1>组织信息</h1>
       <span class="title" v-show="type === 'edit'">所属组织：</span>
       <el-tree-select
+        node-key="id"
         v-show="type === 'edit'"
         v-model="valueStrictly"
         :props="defaultProps"
         multiple
         :load="loadNode"
         lazy
+        filterable
         :render-after-expand="false"
         placeholder="请选择组织"
         show-checkbox
@@ -85,158 +90,98 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { getUserDetail, getOrg, getRoletList, getOrgChildren } from "@/api";
-import { ElFooterActionBar } from "@enn/ency-design";
+import {
+  getUserDetail,
+  getOrg,
+  getRoletList,
+  getOrgChildren,
+  updateUser,
+} from "@/api";
+import { ElFooterActionBar, ElMsgToast } from "@enn/ency-design";
 import type { FooterActionButtonGroupItem } from "@enn/ency-design";
 import { ElTreeSelect } from "element-plus";
 
 interface Tree {
   deptName: string;
   parentName: string;
-  parentId: number;
-  id: number;
+  parentId: string;
+  id: string;
   hasChildren?: boolean;
 }
 
-const options = ref([]);
-
-const tagList = ref([]);
-
-const roleList = ref([]);
-
-const checkList = ref([]);
-
-const valueStrictly = ref();
+interface Options {
+  id: string;
+  roleName: string;
+}
 
 const route = useRoute();
-
+const router = useRouter();
+const options = ref([] as Options[]);
+const tagList = ref([]);
+const roleList = ref([]);
+const checkList = ref([]);
+const valueStrictly = ref();
 const type = ref(route.query.type);
 
 const defaultProps = {
-  // children: "children",
   label: "deptName",
-  isLeaf: "hasChildren",
+  isLeaf: function (data: any, node: any) {
+    return !data.hasChildren;
+  },
 };
 
-// const data = [
-//   {
-//     value: "1",
-//     label: "Level one 1",
-//     children: [
-//       {
-//         value: "1-1",
-//         label: "Level two 1-1",
-//         children: [
-//           {
-//             value: "1-1-1",
-//             label: "Level three 1-1-1",
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     value: "2",
-//     label: "Level one 2",
-//     children: [
-//       {
-//         value: "2-1",
-//         label: "Level two 2-1",
-//         children: [
-//           {
-//             value: "2-1-1",
-//             label: "Level three 2-1-1",
-//           },
-//         ],
-//       },
-//       {
-//         value: "2-2",
-//         label: "Level two 2-2",
-//         children: [
-//           {
-//             value: "2-2-1",
-//             label: "Level three 2-2-1",
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     value: "3",
-//     label: "Level one 3",
-//     children: [
-//       {
-//         value: "3-1",
-//         label: "Level two 3-1",
-//         children: [
-//           {
-//             value: "3-1-1",
-//             label: "Level three 3-1-1",
-//           },
-//         ],
-//       },
-//       {
-//         value: "3-2",
-//         label: "Level two 3-2",
-//         children: [
-//           {
-//             value: "3-2-1",
-//             label: "Level three 3-2-1",
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
-
-const treeData = ref([]);
-
-const checked = ref([]);
 const state = reactive({
   buttonGroup: [
     {
       label: "确定",
       buttonType: "primary",
       cb: () => {
-        alert("确定");
+        updateUserDetail();
       },
     },
     {
       label: "取消",
       buttonType: "secondary",
       cb: () => {
-        alert("取消");
         type.value = "view";
       },
     },
   ] as FooterActionButtonGroupItem[],
-  userInfo: {},
+  userInfo: {
+    realName: "",
+    account: "",
+    createTime: "",
+    createUserName: "",
+  },
+  formData: {
+    name: "",
+    phone: "",
+  },
 });
 
 onMounted(() => {
   initData();
 });
 
-// const filterMethod = (value) => {
-//   treeData.value = [...data].filter((item) => item.label.includes(value));
-// };
-
 const editInfo = () => {
   type.value = "edit";
-  //editData();
 };
 
 const initData = () => {
-  //"1123598821738675201"1471793838262865921
   let id = route.query.userId;
   getUserDetail({ id }).then((res) => {
-    console.log(res);
-    state.userInfo = res;
-    console.log(state.userInfo);
+    state.userInfo = { ...res };
+    state.formData.name = res.name;
+    state.formData.phone = res.phone;
     tagList.value = res.deptName
       ? res.deptName.indexOf(",") > -1
         ? res.deptName.split(",")
         : [res.deptName]
+      : [];
+    valueStrictly.value = res.deptId
+      ? res.deptId.indexOf(",") > -1
+        ? res.deptId.split(",")
+        : [res.deptId]
       : [];
     roleList.value = res.roleName
       ? res.roleName.indexOf(",") > -1
@@ -250,58 +195,44 @@ const initData = () => {
       : [];
   });
   getRoletList({ current: 1, size: 20 }).then((res) => {
-    console.log(res);
     options.value = res.records;
   });
-  //treeData.value =
-  // getOrg({}).then((res) => {
-  //   console.log(res);
-  //   treeData.value = res;
-  // });
 };
 
-const loadNode = (node, resolve: (data: Tree[]) => void) => {
-  console.log("333333", node);
+const loadNode = (node: any, resolve: (data: Tree[]) => void) => {
   if (node.level === 0) {
-    return resolve([
-      {
-        deptName: "2",
-        hasChildren: true,
-        id: 0,
-        parentId: 0,
-        parentName: "",
-      },
-      {
-        deptName: "3",
-        hasChildren: true,
-        id: 0,
-        parentId: 0,
-        parentName: "",
-      },
-    ]);
+    getOrg({}).then((res) => {
+      return resolve(res);
+    });
   }
-  setTimeout(() => {
-    const data: Tree[] = [
-      {
-        deptName: "21",
-        hasChildren: true,
-        id: 0,
-        parentId: 0,
-        parentName: "",
-      },
-      {
-        deptName: "31",
-        hasChildren: true,
-        id: 0,
-        parentId: 0,
-        parentName: "",
-      },
-    ];
-
-    resolve(data);
-  }, 500);
+  if (node.data.id) {
+    getOrgChildren({ pid: node.data.id }).then((res) => {
+      return resolve(res);
+    });
+  }
 };
-// const editData = () => {};
+
+//编辑用户信息
+const updateUserDetail = () => {
+  let data = {
+    id: route.query.userId,
+    account: state.userInfo.account,
+    deptId: valueStrictly.value.join(),
+    roleId: checkList.value.join(),
+    ...state.formData,
+  };
+  updateUser(data).then((res) => {
+    console.log(res);
+    if (res) {
+      ElMsgToast({
+        message: "编辑成功！",
+      });
+      router.push({
+        path: "/member",
+      });
+    }
+  });
+};
 </script>
 <style lang="less">
 //只针对于elementplus树选择的样式，无污染;后续ency有树选择组建后，可删除此代码
