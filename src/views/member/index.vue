@@ -76,9 +76,10 @@
         ></el-pagination>
       </div>
       <!-- 导入弹出框 -->
-      <el-dialog title="导入" v-model="importVisible" width="30%">
-        <v-upload></v-upload>
-      </el-dialog>
+      <v-upload
+        :importVisible="importVisible"
+        :handleHidden="handleHidden"
+      ></v-upload>
       <!-- 编辑弹出框 -->
       <el-dialog title="添加成员" v-model="editVisible" width="30%">
         <el-form
@@ -114,7 +115,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { fetchData, deleteList, createUser } from "@/api/member";
+import { fetchData, deleteList, createUser } from "@/api";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import vUpload from "../home";
 
@@ -244,6 +245,9 @@ const handleReset = () => {
 // 导入操作
 const handleImport = () => {
   importVisible.value = true;
+};
+const handleHidden = () => {
+  importVisible.value = false;
 };
 // 编辑
 const handleEdit = (data) => {
