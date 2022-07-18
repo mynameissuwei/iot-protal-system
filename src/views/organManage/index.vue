@@ -183,7 +183,7 @@ import {
   orgDetailMsg,
   organMemberList,
   organTree,
-} from "@/api/organ";
+} from "@/api";
 import {
   Edit,
   Delete,

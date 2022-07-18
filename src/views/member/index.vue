@@ -115,7 +115,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { fetchData, deleteList, createUser } from "@/api/member";
+import { fetchData, deleteList, createUser } from "@/api";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import vUpload from "../home";
 
