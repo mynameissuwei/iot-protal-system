@@ -413,7 +413,6 @@ const deleteMember = () => {
 };
 //关联组织成员
 const relevanceMember = () => {
-  console.log("关联成员");
   dialogConnectMemberVisible.value = true;
 };
 const dataSource: Tree[] = [
@@ -487,6 +486,11 @@ const connectMember = () => {
     uidList: connectValue.value,
   }).then((res) => {
     dialogConnectMemberVisible.value = false;
+    ElMsgToast({
+      type: "success",
+      message: "关联组织成员成功",
+    });
+    //需要刷新列表
   });
 };
 
