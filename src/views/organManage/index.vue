@@ -31,7 +31,7 @@
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
-              <span>{{ node.title }}</span>
+              <span>{{ node.label }}</span>
               <span>
                 <a @click="append(data)">
                   <el-icon :size="12" class="tit-editBtn"
@@ -56,7 +56,7 @@
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
-              <span>{{ node.title }}</span>
+              <span>{{ node.label }}</span>
               <span>
                 <a @click="append(data)">
                   <el-icon :size="12" class="tit-editBtn"
@@ -106,7 +106,6 @@
             placeholder="请输入名称"
             :suffix-icon="ScanQrCode"
           />
-          <!-- <el-input></el-input> {{ orgainName }} -->
           <el-button
             text
             :icon="UploadSuccess"
@@ -118,7 +117,7 @@
             orgMsg.deptName
           }}</el-descriptions-item>
           <el-descriptions-item label="创建时间">{{
-            orgMsg.time || "2022-07-01"
+            orgMsg.createTime || "2022-07-01"
           }}</el-descriptions-item>
         </el-descriptions>
         <!-- <template> -->
@@ -133,35 +132,41 @@
         </div>
         <!-- </template> -->
         <el-table
+          ref="multipleTableRef"
           :data="tableData"
+          highlight-current-row
           style="width: 100%; margin-top: 55px"
           :row-class-name="tableRowClassName"
+          @selection-change="handleSelectionChange"
         >
-          <el-table-column prop="date" label="账号名" width="180" />
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="account" label="账号名" width="180" />
           <el-table-column prop="name" label="昵称" width="100" />
-          <el-table-column prop="objectStatus" label="所属组织" />
+          <el-table-column prop="orgs" label="所属组织" />
           <el-table-column fixed="right" label="操作" width="120">
-            <template #default>
-              <el-link class="edit-link" :underline="false" @click="viewOrgan"
+            <template #default="scope">
+              <el-link
+                class="edit-link"
+                :underline="false"
+                @click="viewOrgan(scope.row)"
                 >查看</el-link
               >
             </template>
           </el-table-column>
         </el-table>
+
         <div class="pagination">
           <el-pagination
-            v-model:currentPage="currentPage"
-            v-model:page-size="pageSize"
-            class="flex justify-end mt-16px"
-            :small="small"
-            :disabled="disabled"
-            :background="background"
-            layout="prev, pager, next, jumper"
-            :total="1000"
+            background
+            layout="total,sizes, prev, pager, next, jumper"
+            v-model:currentPage="listQuery.current"
+            v-model:page-size="listQuery.size"
+            :total="pageTotal"
+            @current-change="handlePageChange"
             @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+          ></el-pagination>
         </div>
+
         <el-dialog v-model="dialogConnectMemberVisible" title="关联组织成员">
           <el-combo-box
             v-model="connectValue"
@@ -171,6 +176,7 @@
             placeholder="输入关键字"
             :remote-method="remoteMethod"
             :loading="connectLoading"
+            v-loading="listLoading"
           >
             <el-option
               v-for="item in connectOptions"
@@ -200,9 +206,10 @@ import type { TreeNode } from "element-plus/es/components/tree-v2/src/types";
 import { useRouter } from "vue-router";
 import {
   //   addOrgan,
-  //   updateOrgan,
+  updateOrgan,
   //   removeOrgan,
   //   search,
+  refOrganMemberApi,
   geQueryUserList,
   orgDetailMsg,
   organMemberList,
@@ -238,12 +245,19 @@ interface OptionData {
   account: string;
 }
 
-let orgMsg = {};
 let id = 1000;
+const router = useRouter();
 // 分页数据
-const currentPage = ref(5);
-const pageSize = ref(100);
-const small = ref(false);
+const listQuery = reactive({
+  id: id,
+  current: 1,
+  size: 10,
+});
+const pageTotal = ref(0);
+const listLoading = ref(false);
+// const currentPage = ref(5);
+// const pageSize = ref(100);
+// const small = ref(false);
 const background = ref(false);
 const disabled = ref(false);
 
@@ -252,13 +266,21 @@ const filterText = ref("");
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const dialogFormVisible = ref(false);
 const updateName = ref(true);
+// 组织详情
+const orgMsg = reactive({
+  deptName: "",
+  id: "",
+  createTime: "",
+});
 const form = reactive({
   orgName: "",
   parentName: "",
+  parentOrgId: "",
 });
 const orgNameVal = ref("");
 const orgainName = ref("北京燃气组织");
-
+const dataSource: Tree[] = ref([]);
+const refOrganMemberList = ref([]);
 // 关联组织成员
 const dialogConnectMemberVisible = ref(false);
 const connectLoading = ref(false);
@@ -277,38 +299,33 @@ const initData = () => {
     dataSource.value = res;
     console.log(10122, dataSource.value);
   });
-  organMemberList(id).then((res) => {
-    console.log(res);
-  });
-  orgDetailMsg(id).then((res) => {
-    orgMsg = res.data;
-  });
-  orgMsg;
+  getMemberList();
+  orgDetailMsgFn();
 };
 // 组织成员列表
 const tableRowClassName = "``";
-const tableData = [
+const tableData = ref([
   {
-    date: "zhanghaoming1",
+    account: "zhanghaoming1",
     name: "昵称1",
-    objectStatus: "北京燃气公司",
+    orgs: "北京燃气公司",
   },
   {
-    date: "zhanghaoming1",
+    account: "zhanghaoming1",
     name: "昵称1",
-    objectStatus: "北京燃气公司",
+    orgs: "北京燃气公司",
   },
   {
-    date: "zhanghaoming1",
+    account: "zhanghaoming1",
     name: "昵称1",
-    objectStatus: "北京燃气公司",
+    orgs: "北京燃气公司",
   },
   {
-    date: "zhanghaoming1",
+    account: "zhanghaoming1",
     name: "昵称1",
-    objectStatus: "北京燃气公司",
+    orgs: "北京燃气公司",
   },
-];
+]);
 const originData = reactive({
   buttonGroup: [
     {
@@ -344,15 +361,25 @@ const filterNode = (value: string, data: Tree) => {
   return data.label.includes(value);
 };
 // 分页
-const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`);
+const handleSizeChange = (val) => {
+  listQuery.size = val;
+  getMemberList();
 };
-const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`);
+const handlePageChange = (val) => {
+  listQuery.current = val;
+  getMemberList();
 };
 // 查看成员详情
-const viewOrgan = () => {
-  alert("跳转详情页");
+const viewOrgan = (data) => {
+  console.log(788888, data);
+  router.push({
+    path: "/detail",
+    query: {
+      userId: data.id,
+      type: "view",
+    },
+  });
+  //   alert("跳转详情页");
 };
 // 编辑组织名称
 const editOrganNameFn = () => {
@@ -367,10 +394,17 @@ const saveOrganNameFn = () => {
     type: "warning",
   })
     .then(() => {
-      ElMsgToast({
-        type: "success",
-        message: "组织名称修改成功",
+      let data = {
+        id: orgMsg.id,
+        orgName: orgMsg.deptName,
+      };
+      updateOrgan(data).then((res) => {
+        ElMsgToast({
+          type: "success",
+          message: "组织名称修改成功",
+        });
       });
+
       updateName.value = true;
     })
     .catch(() => {
@@ -380,7 +414,7 @@ const saveOrganNameFn = () => {
       });
     });
 };
-// 添加组织弹窗
+// 添加组织弹窗确认
 const addOrgan = () => {
   console.log(222, newData.newTree);
   let newTreeData = newData.newTree;
@@ -396,12 +430,29 @@ const addOrgan = () => {
   newTreeData.children.push(newChild);
   dataSource.value = [...dataSource.value];
   console.log(4441, newChild, newTreeData.children);
+  form.parentOrgId = newTreeData.parentId;
+  console.log(666111, form);
+  debugger;
+  let data = {
+    parentOrgId: newTreeData.parentId,
+    orgName: form.orgName,
+    parentName: form.parentName,
+  };
+  addOrgan(data).then((res) => {
+    console.log(666111, res);
+    if (res) {
+      ElMsgToast({
+        message: "新增成功！",
+      });
+    }
+  });
 };
 const dleOrgan = () => {
   dialogFormVisible.value = false;
 };
 const append = (data: Tree) => {
   console.log("111111", data);
+  form.parentName = data.title;
   //   localStorage.setItem("newTree", data);
   newData.newTree = data;
   console.log(11112, newData.newTree);
@@ -431,16 +482,61 @@ const remove = (node: Node, data: Tree) => {
     });
   });
 };
-//删除成员
+//删除组织成员
 const deleteMember = () => {
-  console.log("删除成员");
+  console.log("移除成员");
+  ElMsgBox.confirm("你确定要移除用户么?", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    buttonSize: "small",
+  }).then(async () => {
+    const result = refOrganMemberList.value.map((item) => item.id);
+    const ids = result.join(",");
+    await refOrganMemberApi({ ids });
+    // await deleteList({ ids });
+    // await getData();
+    ElMsgToast({
+      type: "success",
+      message: "删除成功",
+    });
+  });
 };
+//删除多个组织成员
+const handleSelectionChange = (val) => {
+  console.log(77771, val);
+  refOrganMemberList.value = val;
+};
+// 获取组织成员表格数据
+const getMemberList = () => {
+  listLoading.value = true;
+  organMemberList(listQuery).then((res) => {
+    console.log(777111, res);
+    if (res.records) {
+      tableData.value = res.records;
+      pageTotal.value = res.total || 50;
+      listLoading.value = false;
+    } else {
+      //   tableData.value = [];
+      ElMsgToast({
+        type: "warning",
+        message: "当前组织下暂无组织成员~",
+      });
+    }
+  });
+};
+// 获取组织详情
+const orgDetailMsgFn = () => {
+  orgDetailMsg(id).then((res) => {
+    orgMsg.value = res.data;
+  });
+};
+
 //关联组织成员
 const relevanceMember = () => {
   console.log("关联成员");
   dialogConnectMemberVisible.value = true;
 };
-const dataSource: Tree[] = [];
 //初始化关联用户列表数据
 const getConnectUserData = (query = "") => {
   let page = { current: 1, size: 20 };
@@ -497,13 +593,16 @@ onMounted(() => {
 }
 .table-orgain {
   //   margin-left: 20px;
+  overflow-x: hidden;
   position: relative;
   width: 100%;
   height: 100%;
   background: #fff;
   padding: 23px 15px 10px 15px;
   .pagination {
-    margin: 16px 0;
+    margin: 20px 0;
+    display: flex;
+    justify-content: right;
   }
   .header-bg-box {
     height: 200px;

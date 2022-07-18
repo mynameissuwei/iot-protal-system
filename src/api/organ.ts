@@ -3,6 +3,7 @@ import { API_ENN_USER, API_ENN_SYSTEM } from "@/const";
 
 //新增组织
 export function addOrgan(data: any): Promise<any> {
+  console.log(9999000, data);
   return Service({
     method: "post",
     url: `${API_ENN_SYSTEM}/org/add`,
@@ -58,6 +59,14 @@ export function orgDetailMsg(params: any): Promise<any> {
     method: "get",
     url: `${API_ENN_SYSTEM}/org/detail`,
     params,
+  });
+}
+
+//组织中移除成员关联
+export function refOrganMemberApi(params: any): Promise<any> {
+  return Service({
+    method: "post",
+    url: `${API_ENN_SYSTEM}/org/user/remove`,
   });
 }
 
