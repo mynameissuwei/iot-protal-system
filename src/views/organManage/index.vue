@@ -22,21 +22,18 @@
               <search />
             </el-icon> </template
         ></el-input>
-        <el-tree
+        <el-tree-v2
           ref="treeRef"
-          class="filter-tree"
           :data="dataSource"
           :props="defaultProps"
-          :expand-on-click-node="false"
-          default-expand-all
-          :filter-node-method="filterNode"
+          :filter-method="filterMethod"
+          :height="500"
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
-              <span>{{ node.label }}</span>
+              <span>{{ node.title }}</span>
               <span>
                 <a @click="append(data)">
-                  <!-- <el-button text :icon="Edit"></el-button> -->
                   <el-icon :size="12" class="tit-editBtn"
                     ><add-number
                   /></el-icon>
@@ -47,7 +44,32 @@
               </span>
             </span>
           </template>
-        </el-tree>
+        </el-tree-v2>
+        <!-- <el-tree
+          ref="treeRef"
+          class="filter-tree"
+          :data="dataSource"
+          :props="defaultProps"
+          :expand-on-click-node="false"
+          default-expand-all
+          :filter-node-method="filterNode"
+        >
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <span>{{ node.title }}</span>
+              <span>
+                <a @click="append(data)">
+                  <el-icon :size="12" class="tit-editBtn"
+                    ><add-number
+                  /></el-icon>
+                </a>
+                <a @click="remove(node, data)">
+                  <el-icon :size="12" class="tit-editBtn"><delete /></el-icon>
+                </a>
+              </span>
+            </span>
+          </template>
+        </el-tree> -->
         <el-dialog v-model="dialogFormVisible" title="添加组织">
           <el-form :model="form">
             <el-form-item
@@ -99,20 +121,20 @@
             orgMsg.time || "2022-07-01"
           }}</el-descriptions-item>
         </el-descriptions>
-        <template>
-          <div class="header-bg-box">
-            <div class="header-bar-demo">
-              <el-header-action-bar
-                :title="'组织成员'"
-                :button-group="originData.buttonGroup"
-              >
-              </el-header-action-bar>
-            </div>
+        <!-- <template> -->
+        <div class="header-bg-box">
+          <div class="header-bar-demo">
+            <el-header-action-bar
+              :title="'组织成员'"
+              :button-group="originData.buttonGroup"
+            >
+            </el-header-action-bar>
           </div>
-        </template>
+        </div>
+        <!-- </template> -->
         <el-table
           :data="tableData"
-          style="width: 100%"
+          style="width: 100%; margin-top: 55px"
           :row-class-name="tableRowClassName"
         >
           <el-table-column prop="date" label="账号名" width="180" />
@@ -173,6 +195,8 @@
 
 <script setup lang="ts">
 import { watch, ref, reactive, markRaw, onMounted } from "vue";
+import { ElTreeV2 } from "element-plus";
+import type { TreeNode } from "element-plus/es/components/tree-v2/src/types";
 import { useRouter } from "vue-router";
 import {
   //   addOrgan,
@@ -242,13 +266,16 @@ const connectValue = ref([]);
 const connectOptions = ref<OptionData[]>([]);
 
 const defaultProps = {
+  value: "id",
+  label: "title",
   children: "children",
-  label: "label",
 };
 const initData = () => {
   let id = "1123598813738675201";
   organTree().then((res) => {
-    console.log(res);
+    console.log(10111, res);
+    dataSource.value = res;
+    console.log(10122, dataSource.value);
   });
   organMemberList(id).then((res) => {
     console.log(res);
@@ -413,56 +440,7 @@ const relevanceMember = () => {
   console.log("关联成员");
   dialogConnectMemberVisible.value = true;
 };
-const dataSource: Tree[] = [
-  {
-    id: 1,
-    label: "Level one 1",
-    children: [
-      {
-        id: 4,
-        label: "Level two 1-1",
-        children: [
-          {
-            id: 9,
-            label: "Level three 1-1-1",
-          },
-          {
-            id: 10,
-            label: "Level three 1-1-2",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    label: "Level one 2",
-    children: [
-      {
-        id: 5,
-        label: "Level two 2-1",
-      },
-      {
-        id: 6,
-        label: "Level two 2-2",
-      },
-    ],
-  },
-  {
-    id: 3,
-    label: "Level one 3",
-    children: [
-      {
-        id: 7,
-        label: "Level two 3-1",
-      },
-      {
-        id: 8,
-        label: "Level two 3-2",
-      },
-    ],
-  },
-];
+const dataSource: Tree[] = [];
 //初始化关联用户列表数据
 const getConnectUserData = (query = "") => {
   let page = { current: 1, size: 20 };
@@ -476,6 +454,9 @@ const remoteMethod = (query: string) => {
     connectLoading.value = true;
     getConnectUserData(query);
   }
+};
+const filterMethod = (query: string, node: TreeNode) => {
+  return node.label!.includes(query);
 };
 onMounted(() => {
   getConnectUserData();
@@ -516,6 +497,7 @@ onMounted(() => {
 }
 .table-orgain {
   //   margin-left: 20px;
+  position: relative;
   width: 100%;
   height: 100%;
   background: #fff;
@@ -525,6 +507,14 @@ onMounted(() => {
   }
   .header-bg-box {
     height: 200px;
+    position: absolute;
+    width: calc(100% - 20px);
+    width: 100%;
+    top: 100px;
+    min-width: 200px;
+    .header-bar-demo .el-header-action-bar {
+      padding-left: 0;
+    }
   }
   .table-orgain-tit {
     font-size: 18px;
