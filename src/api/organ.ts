@@ -1,11 +1,11 @@
 import Service from "@/axios";
-import { API_ENN_USER } from "@/const";
+import { API_ENN_USER, API_ENN_SYSTEM } from "@/const";
 
 //新增组织
 export function addOrgan(data: any): Promise<any> {
   return Service({
     method: "post",
-    url: `${API_ENN_USER}/org/add`,
+    url: `${API_ENN_SYSTEM}/org/add`,
     data,
   });
 }
@@ -14,7 +14,7 @@ export function addOrgan(data: any): Promise<any> {
 export function updateOrgan(): Promise<any> {
   return Service({
     method: "post",
-    url: `${API_ENN_USER}/org/update`,
+    url: `${API_ENN_SYSTEM}/org/update`,
   });
 }
 
@@ -22,7 +22,7 @@ export function updateOrgan(): Promise<any> {
 export function removeOrgan(data: any): Promise<any> {
   return Service({
     method: "post",
-    url: `${API_ENN_USER}/org/remove`,
+    url: `${API_ENN_SYSTEM}/org/remove`,
     data,
   });
 }
@@ -31,7 +31,7 @@ export function removeOrgan(data: any): Promise<any> {
 export function search(): Promise<any> {
   return Service({
     method: "get",
-    url: `${API_ENN_USER}/org/search`,
+    url: `${API_ENN_SYSTEM}/org/search`,
   });
 }
 
@@ -39,14 +39,33 @@ export function search(): Promise<any> {
 export function organTree(): Promise<any> {
   return Service({
     method: "get",
-    url: `${API_ENN_USER}/org/tree`,
+    url: `${API_ENN_SYSTEM}/org/tree`,
   });
 }
 
 //获取组织成员列表
-export function organMemberList(): Promise<any> {
+export function organMemberList(params: any): Promise<any> {
   return Service({
     method: "get",
-    url: `${API_ENN_USER}/org/user/list`,
+    url: `${API_ENN_SYSTEM}/org/user/list`,
+    params,
+  });
+}
+
+// 组织信息
+export function orgDetailMsg(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/org/detail`,
+    params,
+  });
+}
+
+// 账号名和昵称模糊查询列表
+export function geQueryUserList(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_USER}/enn-user/user/query`,
+    params,
   });
 }
