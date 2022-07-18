@@ -146,7 +146,7 @@
             multiple
             remote
             reserve-keyword
-            placeholder="输入关键字"
+            placeholder="输入昵称或账号名查找"
             :remote-method="remoteMethod"
             :loading="connectLoading"
           >
@@ -159,10 +159,12 @@
           </el-combo-box>
           <template #footer>
             <span class="dialog-footer">
-              <el-button type="primary" @click="dialogFormVisible = false">
+              <el-button type="primary" @click="connectMember">
                 确定
               </el-button>
-              <el-button @click="dialogFormVisible = false">取消</el-button>
+              <el-button @click="dialogConnectMemberVisible = false"
+                >取消</el-button
+              >
             </span>
           </template>
         </el-dialog>
@@ -183,6 +185,7 @@ import {
   orgDetailMsg,
   organMemberList,
   organTree,
+  addConnectMember,
 } from "@/api/organ";
 import {
   Edit,
@@ -477,6 +480,16 @@ const remoteMethod = (query: string) => {
     getConnectUserData(query);
   }
 };
+//添加关联人员
+const connectMember = () => {
+  addConnectMember({
+    orgId: "1123598813738675201",
+    uidList: connectValue.value,
+  }).then((res) => {
+    dialogConnectMemberVisible.value = false;
+  });
+};
+
 onMounted(() => {
   getConnectUserData();
   initData();
