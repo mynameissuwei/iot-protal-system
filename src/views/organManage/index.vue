@@ -122,7 +122,35 @@
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="account" label="账号名" width="180" />
           <el-table-column prop="name" label="昵称" width="100" />
-          <el-table-column prop="orgs" label="所属组织" />
+          <el-table-column prop="orgs" label="所属组织">
+            <!-- <template #default="scope">
+              <el-tag
+                v-for="item in orgs"
+                :key="item.name"
+                :type="item.name"
+                class="mx-1"
+                effect="dark"
+              >
+                {{ item.name }}
+              </el-tag>
+            </template> -->
+            <template #default="scope">
+              <!-- <el-tag
+                :type="scope.row.tag === 'Home' ? '' : 'success'"
+                disable-transitions
+                >{{ scope.row.tag }}</el-tag
+              > -->
+              <el-tag
+                v-for="item in scope.orgs"
+                :key="item.name"
+                :type="item.name"
+                class="mx-1"
+                effect="dark"
+              >
+                {{ item.name }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" label="操作" width="120">
             <template #default="scope">
               <el-link
@@ -224,6 +252,7 @@ import {
   ElHeaderActionBar,
   ElSearchField,
   ElPagination,
+  ElTag,
 } from "@enn/ency-design";
 import type { HeaderActionButtonGroupItem } from "@enn/ency-design";
 
