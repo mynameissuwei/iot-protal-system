@@ -153,7 +153,7 @@
             multiple
             remote
             reserve-keyword
-            placeholder="输入关键字"
+            placeholder="输入昵称或账号名查找"
             :remote-method="remoteMethod"
             :loading="connectLoading"
             v-loading="listLoading"
@@ -167,10 +167,12 @@
           </el-combo-box>
           <template #footer>
             <span class="dialog-footer">
-              <el-button type="primary" @click="dialogFormVisible = false">
+              <el-button type="primary" @click="connectMember">
                 确定
               </el-button>
-              <el-button @click="dialogFormVisible = false">取消</el-button>
+              <el-button @click="dialogConnectMemberVisible = false"
+                >取消</el-button
+              >
             </span>
           </template>
         </el-dialog>
@@ -194,6 +196,7 @@ import {
   orgDetailMsg,
   organMemberList,
   organTree,
+  addConnectMember,
 } from "@/api/organ";
 import {
   Edit,
@@ -512,7 +515,6 @@ const clickNowNode = (data: TreeNode) => {
 };
 //关联组织成员
 const relevanceMember = () => {
-  console.log("关联成员");
   dialogConnectMemberVisible.value = true;
 };
 //初始化关联用户列表数据
@@ -529,9 +531,21 @@ const remoteMethod = (query: string) => {
     getConnectUserData(query);
   }
 };
-const filterMethod = (query: string, node: TreeNode) => {
-  return node?.title?.includes(query);
+//添加关联人员
+const connectMember = () => {
+  addConnectMember({
+    orgId: "1123598813738675201",
+    uidList: connectValue.value,
+  }).then((res) => {
+    dialogConnectMemberVisible.value = false;
+    ElMsgToast({
+      type: "success",
+      message: "关联组织成员成功",
+    });
+    //需要刷新列表
+  });
 };
+
 onMounted(() => {
   getConnectUserData();
   initData();

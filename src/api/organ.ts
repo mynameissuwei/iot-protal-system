@@ -75,7 +75,16 @@ export function refOrganMemberApi(params: any): Promise<any> {
 export function geQueryUserList(params: any): Promise<any> {
   return Service({
     method: "get",
-    url: `${API_ENN_USER}/enn-user/user/query`,
+    url: `${API_ENN_USER}/user/query`,
     params,
+  });
+}
+
+// 关联组织成员
+export function addConnectMember(data: any): Promise<any> {
+  return Service({
+    method: "post",
+    url: `${API_ENN_SYSTEM}/org/user/add`,
+    data,
   });
 }
