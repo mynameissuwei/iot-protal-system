@@ -166,7 +166,6 @@
             placeholder="输入昵称或账号名查找"
             :remote-method="remoteMethod"
             :loading="connectLoading"
-            v-loading="listLoading"
           >
             <el-option
               v-for="item in connectOptions"
@@ -545,7 +544,7 @@ const remoteMethod = (query: string) => {
 //添加关联人员
 const connectMember = () => {
   addConnectMember({
-    orgId: "1123598813738675201",
+    orgId: orgMsg.id,
     uidList: connectValue.value,
   }).then((res) => {
     dialogConnectMemberVisible.value = false;
@@ -554,6 +553,7 @@ const connectMember = () => {
       message: "关联组织成员成功",
     });
     //需要刷新列表
+    getMemberList();
   });
 };
 const filterMethod = (query: string, node: TreeNode) => {
