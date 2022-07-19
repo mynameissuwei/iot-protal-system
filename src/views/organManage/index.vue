@@ -133,6 +133,16 @@
               >
             </template>
           </el-table-column>
+          <template #empty>
+            <el-msg-page>
+              <template #icon>
+                <img src="/images/no-search-result.svg" alt="" />
+              </template>
+              <template #subTitle>
+                <div>组织下暂无成员</div>
+              </template>
+            </el-msg-page></template
+          >
         </el-table>
 
         <div class="pagination">
@@ -340,6 +350,7 @@ let newData = reactive({
 });
 
 watch(filterText, (val) => {
+  console.log(77777, val);
   treeRef.value!.filter(val);
 });
 
@@ -545,7 +556,9 @@ const connectMember = () => {
     //需要刷新列表
   });
 };
-
+const filterMethod = (query: string, node: TreeNode) => {
+  return node?.title?.includes(query);
+};
 onMounted(() => {
   getConnectUserData();
   initData();
