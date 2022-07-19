@@ -33,17 +33,19 @@ instance.interceptors.request.use(
 // http response 拦截器
 instance.interceptors.response.use(
   (response) => {
-    // debugger;
-    const { code, data, msg } = response.data || {};
-    if (+code === 200) {
+    // 网络层 状态码 200
+    const { code, data, msg, errorCode, errorMessage } = response.data || {};
+    if (+code === 200 || errorCode === "00000") {
       return data;
     } else {
-      ElMsgToast.error(msg);
+      ElMsgToast.error(
+        errorMessage !== "" ? `[${errorCode}]${errorMessage}` : `${msg}`
+      );
     }
-
     return Promise.reject(response.data); //需要在接口的catch里抓这个data
   },
   (error) => {
+    //网络层错误 200 之外
     const { message, status } = error.toJSON();
     if (status === 401) {
       ElMsgToast.error(message);
