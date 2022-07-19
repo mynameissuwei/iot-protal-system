@@ -465,8 +465,6 @@ const deleteMember = () => {
     console.log(666688, result);
     const ids = result.join(",");
     await refOrganMemberApi({ result });
-    // await deleteList({ ids });
-    // await getData();
     ElMsgToast({
       type: "success",
       message: "删除成功",
