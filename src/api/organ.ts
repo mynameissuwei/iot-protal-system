@@ -65,13 +65,13 @@ export function orgDetailMsg(params: any): Promise<any> {
 }
 
 //组织中移除成员关联
-export function refOrganMemberApi(params: any): Promise<any> {
-  console.log(666999, params.result);
+export function refOrganMemberApi(data: any): Promise<any> {
+  console.log(666999, data);
   //   let dataList = params.result
   return Service({
     method: "post",
-    url: `${API_ENN_SYSTEM}/org/user/remove?uidList=${params.result}`,
-    params,
+    url: `${API_ENN_SYSTEM}/org/user/remove`,
+    data,
   });
 }
 
