@@ -2,7 +2,7 @@ import Service from "@/axios";
 import { API_ENN_USER, API_ENN_SYSTEM } from "@/const";
 
 //新增组织
-export function addOrgan(data: any): Promise<any> {
+export function addOrganApi(data: any): Promise<any> {
   console.log(9999000, data);
   return Service({
     method: "post",
@@ -12,10 +12,11 @@ export function addOrgan(data: any): Promise<any> {
 }
 
 //编辑组织
-export function updateOrgan(): Promise<any> {
+export function updateOrgan(data: any): Promise<any> {
   return Service({
     method: "post",
     url: `${API_ENN_SYSTEM}/org/update`,
+    data,
   });
 }
 

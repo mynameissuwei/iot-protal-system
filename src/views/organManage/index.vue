@@ -23,17 +23,21 @@
             </el-icon> </template
         ></el-input>
         <el-tree-v2
+          class="treeStyle"
           ref="treeRef"
           :data="dataSource"
           :props="defaultProps"
+          :default-expanded-keys="arrStar.books"
           :filter-method="filterMethod"
+          :node-key="id"
+          @node-click="clickNowNode"
           :height="500"
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <span>{{ node.label }}</span>
-              <span>
-                <a @click="append(data)">
+              <span class="actveapan">
+                <a @click.stop="append(data)">
                   <el-icon :size="12" class="tit-editBtn"
                     ><add-number
                   /></el-icon>
@@ -45,31 +49,7 @@
             </span>
           </template>
         </el-tree-v2>
-        <!-- <el-tree
-          ref="treeRef"
-          class="filter-tree"
-          :data="dataSource"
-          :props="defaultProps"
-          :expand-on-click-node="false"
-          default-expand-all
-          :filter-node-method="filterNode"
-        >
-          <template #default="{ node, data }">
-            <span class="custom-tree-node">
-              <span>{{ node.label }}</span>
-              <span>
-                <a @click="append(data)">
-                  <el-icon :size="12" class="tit-editBtn"
-                    ><add-number
-                  /></el-icon>
-                </a>
-                <a @click="remove(node, data)">
-                  <el-icon :size="12" class="tit-editBtn"><delete /></el-icon>
-                </a>
-              </span>
-            </span>
-          </template>
-        </el-tree> -->
+
         <el-dialog v-model="dialogFormVisible" title="添加组织">
           <el-form :model="form">
             <el-form-item
@@ -114,7 +94,7 @@
         </h4>
         <el-descriptions title="" class="table-orgain-des">
           <el-descriptions-item label="组织ID">{{
-            orgMsg.deptName
+            orgMsg.id || "1"
           }}</el-descriptions-item>
           <el-descriptions-item label="创建时间">{{
             orgMsg.createTime || "2022-07-01"
@@ -205,7 +185,7 @@ import { ElTreeV2 } from "element-plus";
 import type { TreeNode } from "element-plus/es/components/tree-v2/src/types";
 import { useRouter } from "vue-router";
 import {
-  //   addOrgan,
+  addOrganApi,
   updateOrgan,
   //   removeOrgan,
   //   search,
@@ -249,7 +229,7 @@ let id = 1000;
 const router = useRouter();
 // 分页数据
 const listQuery = reactive({
-  id: id,
+  id: "1",
   current: 1,
   size: 10,
 });
@@ -261,13 +241,13 @@ const listLoading = ref(false);
 const background = ref(false);
 const disabled = ref(false);
 
+let arrStar = reactive({ books: [] });
 const valueWidth = ref(1 / 5);
 const filterText = ref("");
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const dialogFormVisible = ref(false);
 const updateName = ref(true);
-// 组织详情
-const orgMsg = reactive({
+let orgMsg = reactive({
   deptName: "",
   id: "",
   createTime: "",
@@ -278,7 +258,7 @@ const form = reactive({
   parentOrgId: "",
 });
 const orgNameVal = ref("");
-const orgainName = ref("北京燃气组织");
+const orgainName = ref("新奥集团");
 const dataSource: Tree[] = ref([]);
 const refOrganMemberList = ref([]);
 // 关联组织成员
@@ -293,38 +273,42 @@ const defaultProps = {
   children: "children",
 };
 const initData = () => {
-  let id = "1123598813738675201";
-  organTree().then((res) => {
-    console.log(10111, res);
-    dataSource.value = res;
-    console.log(10122, dataSource.value);
-  });
   getMemberList();
   orgDetailMsgFn();
+  organTreeFn();
+};
+const organTreeFn = () => {
+  organTree().then((res) => {
+    dataSource.value = res;
+    let arr = [];
+    arr.push(res[0].id);
+    arrStar.books = arr;
+    console.log(10122, dataSource.value, arrStar.books);
+  });
 };
 // 组织成员列表
 const tableRowClassName = "``";
 const tableData = ref([
-  {
-    account: "zhanghaoming1",
-    name: "昵称1",
-    orgs: "北京燃气公司",
-  },
-  {
-    account: "zhanghaoming1",
-    name: "昵称1",
-    orgs: "北京燃气公司",
-  },
-  {
-    account: "zhanghaoming1",
-    name: "昵称1",
-    orgs: "北京燃气公司",
-  },
-  {
-    account: "zhanghaoming1",
-    name: "昵称1",
-    orgs: "北京燃气公司",
-  },
+  //   {
+  //     account: "zhanghaoming1",
+  //     name: "昵称1",
+  //     orgs: "北京燃气公司",
+  //   },
+  //   {
+  //     account: "zhanghaoming1",
+  //     name: "昵称1",
+  //     orgs: "北京燃气公司",
+  //   },
+  //   {
+  //     account: "zhanghaoming1",
+  //     name: "昵称1",
+  //     orgs: "北京燃气公司",
+  //   },
+  //   {
+  //     account: "zhanghaoming1",
+  //     name: "昵称1",
+  //     orgs: "北京燃气公司",
+  //   },
 ]);
 const originData = reactive({
   buttonGroup: [
@@ -361,16 +345,16 @@ const filterNode = (value: string, data: Tree) => {
   return data.label.includes(value);
 };
 // 分页
-const handleSizeChange = (val) => {
+const handleSizeChange = (val: number) => {
   listQuery.size = val;
   getMemberList();
 };
-const handlePageChange = (val) => {
+const handlePageChange = (val: number) => {
   listQuery.current = val;
   getMemberList();
 };
 // 查看成员详情
-const viewOrgan = (data) => {
+const viewOrgan = (data: { id: any }) => {
   console.log(788888, data);
   router.push({
     path: "/detail",
@@ -396,13 +380,15 @@ const saveOrganNameFn = () => {
     .then(() => {
       let data = {
         id: orgMsg.id,
-        orgName: orgMsg.deptName,
+        orgName: orgainName.value,
       };
+      console.log(11100, data);
       updateOrgan(data).then((res) => {
         ElMsgToast({
           type: "success",
           message: "组织名称修改成功",
         });
+        organTreeFn();
       });
 
       updateName.value = true;
@@ -416,34 +402,21 @@ const saveOrganNameFn = () => {
 };
 // 添加组织弹窗确认
 const addOrgan = () => {
-  console.log(222, newData.newTree);
   let newTreeData = newData.newTree;
   dialogFormVisible.value = false;
-  console.log(333, form.orgName);
   orgNameVal.value = form.orgName || "默认组织";
-  console.log(3331, orgNameVal.value);
-  const newChild = { id: id++, label: orgNameVal.value, children: [] };
-  if (!newTreeData.children) {
-    newTreeData.children = [];
-  }
-  console.log(444, newChild);
-  newTreeData.children.push(newChild);
-  dataSource.value = [...dataSource.value];
-  console.log(4441, newChild, newTreeData.children);
-  form.parentOrgId = newTreeData.parentId;
-  console.log(666111, form);
-  debugger;
   let data = {
-    parentOrgId: newTreeData.parentId,
+    parentOrgId: newTreeData?.id,
     orgName: form.orgName,
     parentName: form.parentName,
   };
-  addOrgan(data).then((res) => {
+  addOrganApi(data).then((res) => {
     console.log(666111, res);
     if (res) {
       ElMsgToast({
         message: "新增成功！",
       });
+      organTreeFn();
     }
   });
 };
@@ -451,11 +424,8 @@ const dleOrgan = () => {
   dialogFormVisible.value = false;
 };
 const append = (data: Tree) => {
-  console.log("111111", data);
   form.parentName = data.title;
-  //   localStorage.setItem("newTree", data);
   newData.newTree = data;
-  console.log(11112, newData.newTree);
   form.orgName = "";
   dialogFormVisible.value = true;
 };
@@ -503,7 +473,7 @@ const deleteMember = () => {
   });
 };
 //删除多个组织成员
-const handleSelectionChange = (val) => {
+const handleSelectionChange = (val: never[]) => {
   console.log(77771, val);
   refOrganMemberList.value = val;
 };
@@ -527,11 +497,19 @@ const getMemberList = () => {
 };
 // 获取组织详情
 const orgDetailMsgFn = () => {
-  orgDetailMsg(id).then((res) => {
+  orgDetailMsg(newData.newTree.id).then((res) => {
     orgMsg.value = res.data;
   });
 };
-
+// 点击当前节点
+const clickNowNode = (data: TreeNode) => {
+  console.log(data.id, "99");
+  orgMsg.id = data.id;
+  orgMsg.createTime = data.createTime;
+  orgainName.value = data.title;
+  listQuery.id = data.id;
+  getMemberList();
+};
 //关联组织成员
 const relevanceMember = () => {
   console.log("关联成员");
@@ -552,7 +530,7 @@ const remoteMethod = (query: string) => {
   }
 };
 const filterMethod = (query: string, node: TreeNode) => {
-  return node.label!.includes(query);
+  return node?.title?.includes(query);
 };
 onMounted(() => {
   getConnectUserData();
@@ -590,9 +568,17 @@ onMounted(() => {
   a {
     margin: 0 11px;
   }
+  .actveapan {
+    display: none;
+  }
+  &:hover {
+    .actveapan {
+      display: block;
+    }
+  }
 }
 .table-orgain {
-  //   margin-left: 20px;
+  margin-left: 6px;
   overflow-x: hidden;
   position: relative;
   width: 100%;
@@ -657,6 +643,9 @@ onMounted(() => {
   }
   .el-tree {
     // width: 260px;
+  }
+  .treeStyle .el-vl__wrapper .el-vl__window::-webkit-scrollbar {
+    width: 0 !important;
   }
 }
 .tit-editBtn {
