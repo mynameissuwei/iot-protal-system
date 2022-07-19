@@ -159,9 +159,9 @@ let ruleForm = reactive({
 });
 const handleAdd = () => {
   const data = {
-    account: "",
-    name: "",
-    phone: "",
+    account: null,
+    name: null,
+    phone: null,
   };
   Object.assign(ruleForm, data);
   editVisible.value = true;
