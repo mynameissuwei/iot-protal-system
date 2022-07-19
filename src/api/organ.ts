@@ -47,9 +47,10 @@ export function organTree(): Promise<any> {
 
 //获取组织成员列表
 export function organMemberList(params: any): Promise<any> {
+  console.log(777777, params);
   return Service({
     method: "get",
-    url: `${API_ENN_SYSTEM}/org/user/list`,
+    url: `${API_ENN_SYSTEM}/org/user/list?orgId=${params.id}`,
     params,
   });
 }
@@ -65,9 +66,12 @@ export function orgDetailMsg(params: any): Promise<any> {
 
 //组织中移除成员关联
 export function refOrganMemberApi(params: any): Promise<any> {
+  console.log(666999, params.result);
+  //   let dataList = params.result
   return Service({
     method: "post",
-    url: `${API_ENN_SYSTEM}/org/user/remove`,
+    url: `${API_ENN_SYSTEM}/org/user/remove?uidList=${params.result}`,
+    params,
   });
 }
 

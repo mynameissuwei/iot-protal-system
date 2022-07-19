@@ -123,23 +123,7 @@
           <el-table-column prop="account" label="账号名" width="180" />
           <el-table-column prop="name" label="昵称" width="100" />
           <el-table-column prop="orgs" label="所属组织">
-            <!-- <template #default="scope">
-              <el-tag
-                v-for="item in orgs"
-                :key="item.name"
-                :type="item.name"
-                class="mx-1"
-                effect="dark"
-              >
-                {{ item.name }}
-              </el-tag>
-            </template> -->
             <template #default="scope">
-              <!-- <el-tag
-                :type="scope.row.tag === 'Home' ? '' : 'success'"
-                disable-transitions
-                >{{ scope.row.tag }}</el-tag
-              > -->
               <el-tag
                 v-for="item in scope.orgs"
                 :key="item.name"
@@ -227,7 +211,6 @@ import {
   addOrganApi,
   updateOrgan,
   //   removeOrgan,
-  //   search,
   refOrganMemberApi,
   geQueryUserList,
   orgDetailMsg,
@@ -276,9 +259,6 @@ const listQuery = reactive({
 });
 const pageTotal = ref(0);
 const listLoading = ref(false);
-// const currentPage = ref(5);
-// const pageSize = ref(100);
-// const small = ref(false);
 const background = ref(false);
 const disabled = ref(false);
 
@@ -329,28 +309,7 @@ const organTreeFn = () => {
 };
 // 组织成员列表
 const tableRowClassName = "``";
-const tableData = ref([
-  //   {
-  //     account: "zhanghaoming1",
-  //     name: "昵称1",
-  //     orgs: "北京燃气公司",
-  //   },
-  //   {
-  //     account: "zhanghaoming1",
-  //     name: "昵称1",
-  //     orgs: "北京燃气公司",
-  //   },
-  //   {
-  //     account: "zhanghaoming1",
-  //     name: "昵称1",
-  //     orgs: "北京燃气公司",
-  //   },
-  //   {
-  //     account: "zhanghaoming1",
-  //     name: "昵称1",
-  //     orgs: "北京燃气公司",
-  //   },
-]);
+const tableData = ref([]);
 const originData = reactive({
   buttonGroup: [
     {
@@ -405,7 +364,6 @@ const viewOrgan = (data: { id: any }) => {
       type: "view",
     },
   });
-  //   alert("跳转详情页");
 };
 // 编辑组织名称
 const editOrganNameFn = () => {
@@ -504,14 +462,16 @@ const deleteMember = () => {
     buttonSize: "small",
   }).then(async () => {
     const result = refOrganMemberList.value.map((item) => item.id);
+    console.log(666688, result);
     const ids = result.join(",");
-    await refOrganMemberApi({ ids });
+    await refOrganMemberApi({ result });
     // await deleteList({ ids });
     // await getData();
     ElMsgToast({
       type: "success",
       message: "删除成功",
     });
+    getMemberList();
   });
 };
 //删除多个组织成员
