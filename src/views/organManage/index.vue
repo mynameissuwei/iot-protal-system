@@ -31,7 +31,9 @@
           :filter-method="filterMethod"
           :node-key="id"
           @node-click="clickNowNode"
+          :loading="treeLoading"
           :height="500"
+          empty-text="数据加载中..."
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
@@ -52,12 +54,12 @@
 
         <el-dialog v-model="dialogFormVisible" title="添加组织">
           <el-form :model="form">
-            <el-form-item
-              label="组织名称"
-              :label-width="formLabelWidth"
-              placeholder="最多20个字符"
-            >
-              <el-input v-model="form.orgName" autocomplete="off"></el-input>
+            <el-form-item label="组织名称" :label-width="formLabelWidth">
+              <el-input
+                v-model="form.orgName"
+                autocomplete="off"
+                placeholder="最多50个字符"
+              ></el-input>
             </el-form-item>
             <el-form-item label="上级组织" :label-width="formLabelWidth">
               <span>{{ form.parentName }}</span>
@@ -83,7 +85,7 @@
         <h4 class="table-orgain-tit" v-if="!updateName">
           <el-input
             v-model="orgainName"
-            placeholder="请输入名称"
+            placeholder="请输入名称(最多50个字符)"
             :suffix-icon="ScanQrCode"
           />
           <el-button
@@ -125,10 +127,10 @@
           <el-table-column prop="orgs" label="所属组织">
             <template #default="scope">
               <el-tag
-                v-for="item in scope.orgs"
+                v-for="item in scope.row.orgs"
                 :key="item.name"
                 :type="item.name"
-                class="mx-1"
+                class="mx-1 tagStyle"
                 effect="dark"
               >
                 {{ item.name }}
@@ -285,6 +287,7 @@ const refOrganMemberList = ref([]);
 // 关联组织成员
 const dialogConnectMemberVisible = ref(false);
 const connectLoading = ref(false);
+const treeLoading = ref(false);
 const connectValue = ref([]);
 const connectOptions = ref<OptionData[]>([]);
 
@@ -299,11 +302,13 @@ const initData = () => {
   organTreeFn();
 };
 const organTreeFn = () => {
+  treeLoading.value = true;
   organTree().then((res) => {
     dataSource.value = res;
     let arr = [];
     arr.push(res[0].id);
     arrStar.books = arr;
+    treeLoading.value = false;
     console.log(10122, dataSource.value, arrStar.books);
   });
 };
@@ -337,7 +342,6 @@ let newData = reactive({
 });
 
 watch(filterText, (val) => {
-  console.log(77777, val);
   treeRef.value!.filter(val);
 });
 
@@ -356,7 +360,6 @@ const handlePageChange = (val: number) => {
 };
 // 查看成员详情
 const viewOrgan = (data: { id: any }) => {
-  console.log(788888, data);
   router.push({
     path: "/detail",
     query: {
@@ -368,7 +371,6 @@ const viewOrgan = (data: { id: any }) => {
 // 编辑组织名称
 const editOrganNameFn = () => {
   updateName.value = false;
-  console.log(updateName.value);
 };
 // 保存组织名称
 const saveOrganNameFn = () => {
@@ -454,7 +456,6 @@ const remove = (node: Node, data: Tree) => {
 };
 //删除组织成员
 const deleteMember = () => {
-  console.log("移除成员");
   ElMsgBox.confirm("你确定要移除用户么?", "警告", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
@@ -462,9 +463,13 @@ const deleteMember = () => {
     buttonSize: "small",
   }).then(async () => {
     const result = refOrganMemberList.value.map((item) => item.id);
-    console.log(666688, result);
-    const ids = result.join(",");
-    await refOrganMemberApi({ result });
+    // const result = result.join(",");
+    let refData = {
+      //   uids: JSON.stringify(result),
+      uids: result,
+      orgId: orgMsg.id,
+    };
+    await refOrganMemberApi(refData);
     ElMsgToast({
       type: "success",
       message: "删除成功",
@@ -474,14 +479,12 @@ const deleteMember = () => {
 };
 //删除多个组织成员
 const handleSelectionChange = (val: never[]) => {
-  console.log(77771, val);
   refOrganMemberList.value = val;
 };
 // 获取组织成员表格数据
 const getMemberList = () => {
   listLoading.value = true;
   organMemberList(listQuery).then((res) => {
-    console.log(777111, res);
     if (res.records) {
       tableData.value = res.records;
       pageTotal.value = res.total || 50;
@@ -599,6 +602,9 @@ onMounted(() => {
   height: 100%;
   background: #fff;
   padding: 23px 15px 10px 15px;
+  .tagStyle {
+    margin: 0 2px;
+  }
   .pagination {
     margin: 20px 0;
     display: flex;
