@@ -3,8 +3,6 @@
     v-model:value="valueWidth"
     ref="twoColumnLayout"
     class="two-column-container"
-    @close-detail="closeDetail"
-    @full-screen="fullScreenEvent"
     @move-end="moveEnd"
     :show-full-screen="false"
     :show-close="false"
@@ -23,11 +21,12 @@
             </el-icon> </template
         ></el-input>
         <el-tree-v2
+          v-loading="treeLoading"
           class="treeStyle"
           ref="treeRef"
           :data="dataSource"
           :props="defaultProps"
-          :default-expanded-keys="arrStar.books"
+          :default-expanded-keys="arrStar"
           :filter-method="filterMethod"
           :node-key="id"
           @node-click="clickNowNode"
@@ -44,7 +43,7 @@
                     ><add-number
                   /></el-icon>
                 </a>
-                <a @click="remove(node, data)">
+                <a @click.stop="removeOrganFn(node, data)">
                   <el-icon :size="12" class="tit-editBtn"><delete /></el-icon>
                 </a>
               </span>
@@ -78,11 +77,11 @@
     <template #right>
       <!-- <div class="two-column-right"> -->
       <div class="table-orgain">
-        <h4 class="table-orgain-tit" v-if="updateName">
+        <h4 class="table-orgain-tit" v-if="isUpdateName">
           {{ orgainName }}
           <el-button text :icon="Edit" @click="editOrganNameFn"></el-button>
         </h4>
-        <h4 class="table-orgain-tit" v-if="!updateName">
+        <h4 class="table-orgain-tit" v-if="!isUpdateName">
           <el-input
             v-model="orgainName"
             placeholder="请输入名称(最多50个字符)"
@@ -96,10 +95,10 @@
         </h4>
         <el-descriptions title="" class="table-orgain-des">
           <el-descriptions-item label="组织ID">{{
-            orgMsg.id || "1"
+            orgMsg.id || "--"
           }}</el-descriptions-item>
           <el-descriptions-item label="创建时间">{{
-            orgMsg.createTime || "2022-07-01"
+            orgMsg.createTime || "--"
           }}</el-descriptions-item>
         </el-descriptions>
         <!-- <template> -->
@@ -161,8 +160,7 @@
 
         <div class="pagination">
           <el-pagination
-            background
-            layout="total,sizes, prev, pager, next, jumper"
+            :layout="PAGINATION_CONFIG"
             v-model:currentPage="listQuery.current"
             v-model:page-size="listQuery.size"
             :total="pageTotal"
@@ -209,13 +207,14 @@ import { watch, ref, reactive, markRaw, onMounted } from "vue";
 import { ElTreeV2 } from "element-plus";
 import type { TreeNode } from "element-plus/es/components/tree-v2/src/types";
 import { useRouter } from "vue-router";
+import { PAGINATION_CONFIG } from "@/const";
 import {
   addOrganApi,
   updateOrgan,
-  //   removeOrgan,
+  removeOrgan,
   refOrganMemberApi,
   geQueryUserList,
-  orgDetailMsg,
+  //   orgDetailMsg,
   organMemberList,
   organTree,
   addConnectMember,
@@ -234,11 +233,10 @@ import {
   ElMsgToast,
   ElIcon,
   ElHeaderActionBar,
-  ElSearchField,
   ElPagination,
   ElTag,
+  HeaderActionButtonGroupItem,
 } from "@enn/ency-design";
-import type { HeaderActionButtonGroupItem } from "@enn/ency-design";
 
 interface Tree {
   id: number;
@@ -251,7 +249,7 @@ interface OptionData {
   account: string;
 }
 
-let id = 1000;
+// let id = 1000;
 const router = useRouter();
 // 分页数据
 const listQuery = reactive({
@@ -261,19 +259,17 @@ const listQuery = reactive({
 });
 const pageTotal = ref(0);
 const listLoading = ref(false);
-const background = ref(false);
-const disabled = ref(false);
 
-let arrStar = reactive({ books: [] });
+const arrStar = ref([]);
 const valueWidth = ref(1 / 5);
 const filterText = ref("");
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const dialogFormVisible = ref(false);
-const updateName = ref(true);
-let orgMsg = reactive({
+const isUpdateName = ref(true);
+const orgMsg = reactive({
   deptName: "",
-  id: "",
-  createTime: "",
+  id: "1",
+  createTime: "2022-07-18",
 });
 const form = reactive({
   orgName: "",
@@ -282,7 +278,7 @@ const form = reactive({
 });
 const orgNameVal = ref("");
 const orgainName = ref("新奥集团");
-const dataSource: Tree[] = ref([]);
+const dataSource = ref<Tree[]>([]);
 const refOrganMemberList = ref([]);
 // 关联组织成员
 const dialogConnectMemberVisible = ref(false);
@@ -290,28 +286,6 @@ const connectLoading = ref(false);
 const treeLoading = ref(false);
 const connectValue = ref([]);
 const connectOptions = ref<OptionData[]>([]);
-
-const defaultProps = {
-  value: "id",
-  label: "title",
-  children: "children",
-};
-const initData = () => {
-  getMemberList();
-  orgDetailMsgFn();
-  organTreeFn();
-};
-const organTreeFn = () => {
-  treeLoading.value = true;
-  organTree().then((res) => {
-    dataSource.value = res;
-    let arr = [];
-    arr.push(res[0].id);
-    arrStar.books = arr;
-    treeLoading.value = false;
-    console.log(10122, dataSource.value, arrStar.books);
-  });
-};
 // 组织成员列表
 const tableRowClassName = "``";
 const tableData = ref([]);
@@ -337,18 +311,41 @@ const originData = reactive({
     },
   ] as HeaderActionButtonGroupItem[],
 });
-let newData = reactive({
+const newData = reactive({
   newTree: [],
 });
+const defaultProps = {
+  value: "id",
+  label: "title",
+  children: "children",
+};
+
+const initData = () => {
+  getMemberList();
+  //   orgDetailMsgFn();
+  organTreeFn();
+  getConnectUserData();
+};
+const organTreeFn = () => {
+  treeLoading.value = true;
+  organTree().then((res) => {
+    dataSource.value = res;
+    let arr = [];
+    arr.push(res[0].id);
+    arrStar.value = arr;
+    treeLoading.value = false;
+    console.log(10122, dataSource.value, arrStar.value);
+  });
+};
 
 watch(filterText, (val) => {
   treeRef.value!.filter(val);
 });
 
-const filterNode = (value: string, data: Tree) => {
-  if (!value) return true;
-  return data.label.includes(value);
-};
+// const filterNode = (value: string, data: Tree) => {
+//   if (!value) return true;
+//   return data.label.includes(value);
+// };
 // 分页
 const handleSizeChange = (val: number) => {
   listQuery.size = val;
@@ -370,7 +367,7 @@ const viewOrgan = (data: { id: any }) => {
 };
 // 编辑组织名称
 const editOrganNameFn = () => {
-  updateName.value = false;
+  isUpdateName.value = false;
 };
 // 保存组织名称
 const saveOrganNameFn = () => {
@@ -393,7 +390,7 @@ const saveOrganNameFn = () => {
         organTreeFn();
       });
 
-      updateName.value = true;
+      isUpdateName.value = true;
     })
     .catch(() => {
       ElMsgToast({
@@ -432,7 +429,7 @@ const append = (data: Tree) => {
   dialogFormVisible.value = true;
 };
 // 删除组织
-const remove = (node: Node, data: Tree) => {
+const removeOrganFn = (node: Node, data: Tree) => {
   ElMsgBox.confirm(
     "此操作将删除本组织节点下的所有子组织，是否继续?",
     "删除组织",
@@ -448,6 +445,8 @@ const remove = (node: Node, data: Tree) => {
     const index = children.findIndex((d) => d.id === data.id);
     children.splice(index, 1);
     dataSource.value = [...dataSource.value];
+    console.log(99911199, node, data, data.id, index);
+    await removeOrgan(data.id);
     ElMsgToast({
       type: "success",
       message: "删除成功",
@@ -484,13 +483,15 @@ const handleSelectionChange = (val: never[]) => {
 // 获取组织成员表格数据
 const getMemberList = () => {
   listLoading.value = true;
-  organMemberList(listQuery).then((res) => {
+  const params = { orgId: listQuery.id };
+  organMemberList(params).then((res) => {
     if (res.records) {
+      console.log(res.records, 888);
       tableData.value = res.records;
       pageTotal.value = res.total || 50;
       listLoading.value = false;
     } else {
-      //   tableData.value = [];
+      tableData.value = [];
       ElMsgToast({
         type: "warning",
         message: "当前组织下暂无组织成员~",
@@ -499,13 +500,17 @@ const getMemberList = () => {
   });
 };
 // 获取组织详情
-const orgDetailMsgFn = () => {
-  orgDetailMsg(newData.newTree.id).then((res) => {
-    orgMsg.value = res.data;
-  });
-};
+// const orgDetailMsgFn = () => {
+//   orgDetailMsg(newData.newTree.id).then((res) => {
+//     orgMsg.value = res.data;
+//   });
+// };
 // 点击当前节点
-const clickNowNode = (data: TreeNode) => {
+const clickNowNode = (data: {
+  id: string;
+  createTime: string;
+  title: string;
+}) => {
   console.log(data.id, "99");
   orgMsg.id = data.id;
   orgMsg.createTime = data.createTime;
@@ -550,7 +555,6 @@ const filterMethod = (query: string, node: TreeNode) => {
   return node?.title?.includes(query);
 };
 onMounted(() => {
-  getConnectUserData();
   initData();
 });
 </script>
@@ -651,7 +655,7 @@ onMounted(() => {
 .organ-tree {
   padding: 21px 11px 21px 16px;
   background: #fff;
-  //   width: 290px;
+  //   height: 100%;
   .organ-tit {
     font-size: 16px;
     font-weight: 500;
