@@ -26,7 +26,11 @@
             maxlength="11"
             v-show="type === 'edit'"
             v-model="state.formData.phone"
+            @blur="handleInput"
           ></el-input>
+          <div class="errormsg" v-show="type === 'edit' && errormsg">
+            {{ errormsg }}
+          </div>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{
           state.userInfo.createTime
@@ -34,20 +38,25 @@
         <el-descriptions-item label="创建人">
           {{ state.userInfo.createUserName }}
         </el-descriptions-item>
-        <el-descriptions-item label="账号状体">正常</el-descriptions-item>
+        <el-descriptions-item label="账号状态">正常</el-descriptions-item>
       </el-descriptions>
     </div>
     <div class="org">
       <h1>组织信息</h1>
       <span class="title" v-show="type === 'edit'">所属组织：</span>
-      <el-tree-select
+
+      <com-tree-select
+        v-if="type === 'edit' && loading"
+        :options="treeOptions"
+        v-model="valueStrictly"
+      />
+      <!-- <el-tree-select
         node-key="id"
         v-show="type === 'edit'"
         v-model="valueStrictly"
         :props="defaultProps"
         multiple
-        :load="loadNode"
-        lazy
+        :data="treeOptions"
         filterable
         :render-after-expand="false"
         placeholder="请选择组织"
@@ -56,7 +65,7 @@
         collapse-tags-tooltip
         check-strictly
         check-on-click-node
-      />
+      /> -->
       <div v-show="type !== 'edit'">
         <el-tag v-for="(item, index) in tagList" :key="index">{{
           item
@@ -96,10 +105,12 @@ import {
   getRoletList,
   getOrgChildren,
   updateUser,
+  getOrgTree,
 } from "@/api";
 import { ElFooterActionBar, ElMsgToast } from "@enn/ency-design";
 import type { FooterActionButtonGroupItem } from "@enn/ency-design";
-import { ElTreeSelect } from "element-plus";
+// import { ElTreeSelect } from "element-plus";
+import comTreeSelect from "./components/treeSelect.vue";
 
 interface Tree {
   deptName: string;
@@ -120,15 +131,18 @@ const options = ref([] as Options[]);
 const tagList = ref([]);
 const roleList = ref([]);
 const checkList = ref([]);
+const treeOptions = ref([]);
 const valueStrictly = ref();
+const loading = ref(false);
+const errormsg = ref("");
 const type = ref(route.query.type);
 
-const defaultProps = {
-  label: "deptName",
-  isLeaf: function (data: any, node: any) {
-    return !data.hasChildren;
-  },
-};
+// const defaultProps = {
+//   label: "deptName",
+//   isLeaf: function (data: any, node: any) {
+//     return !data.hasChildren;
+//   },
+// };
 
 const state = reactive({
   buttonGroup: [
@@ -143,11 +157,15 @@ const state = reactive({
       label: "取消",
       buttonType: "secondary",
       cb: () => {
+        state.formData.name = state.userInfo.name;
+        state.formData.phone = state.userInfo.phone;
         type.value = "view";
       },
     },
   ] as FooterActionButtonGroupItem[],
   userInfo: {
+    name: "",
+    phone: "",
     realName: "",
     account: "",
     createTime: "",
@@ -168,6 +186,16 @@ const editInfo = () => {
 };
 
 const initData = () => {
+  getOrgTree().then((res) => {
+    treeOptions.value = res;
+  });
+  getUserInfo();
+  getRoletList({ current: 1, size: 20 }).then((res) => {
+    options.value = res.records;
+  });
+};
+const getUserInfo = () => {
+  loading.value = false;
   let id = route.query.userId;
   getUserDetail({ id }).then((res) => {
     state.userInfo = { ...res };
@@ -193,24 +221,32 @@ const initData = () => {
         ? res.roleId.split(",")
         : [res.roleId]
       : [];
-  });
-  getRoletList({ current: 1, size: 20 }).then((res) => {
-    options.value = res.records;
+    loading.value = true;
   });
 };
 
-const loadNode = (node: any, resolve: (data: Tree[]) => void) => {
-  if (node.level === 0) {
-    getOrg({}).then((res) => {
-      return resolve(res);
-    });
-  }
-  if (node.data.id) {
-    getOrgChildren({ pid: node.data.id }).then((res) => {
-      return resolve(res);
-    });
+const handleInput = (e: any) => {
+  const reg =
+    /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+  if (reg.test(e.target.value)) {
+    errormsg.value = "";
+  } else {
+    errormsg.value = "手机号格式不对";
   }
 };
+
+// const loadNode = (node: any, resolve: (data: Tree[]) => void) => {
+//   if (node.level === 0) {
+//     getOrg({}).then((res) => {
+//       return resolve(res);
+//     });
+//   }
+//   if (node.data.id) {
+//     getOrgChildren({ pid: node.data.id }).then((res) => {
+//       return resolve(res);
+//     });
+//   }
+// };
 
 //编辑用户信息
 const updateUserDetail = () => {
@@ -222,7 +258,6 @@ const updateUserDetail = () => {
     ...state.formData,
   };
   updateUser(data).then((res) => {
-    console.log(res);
     if (res) {
       ElMsgToast({
         message: "编辑成功！",
@@ -288,6 +323,10 @@ const updateUserDetail = () => {
     & .info-input {
       width: 230px;
       display: inline-block;
+    }
+    & .errormsg {
+      margin-left: 60px;
+      color: #ee6b6b;
     }
   }
   .org {

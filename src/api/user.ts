@@ -71,3 +71,11 @@ export function getRoletList(params: any): Promise<any> {
     params,
   });
 }
+
+//获取所有组织树
+export function getOrgTree(): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/org/tree`,
+  });
+}
