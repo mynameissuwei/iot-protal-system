@@ -22,9 +22,10 @@ export function updateOrgan(data: any): Promise<any> {
 
 //删除组织
 export function removeOrgan(data: any): Promise<any> {
+  console.log(data, 999333);
   return Service({
     method: "post",
-    url: `${API_ENN_SYSTEM}/org/remove`,
+    url: `${API_ENN_SYSTEM}/org/remove?ids=${data}`,
     data,
   });
 }
@@ -50,8 +51,8 @@ export function organMemberList(params: any): Promise<any> {
   console.log(777777, params);
   return Service({
     method: "get",
-    url: `${API_ENN_SYSTEM}/org/user/list?orgId=${params.id}`,
-    params,
+    url: `${API_ENN_SYSTEM}/org/user/list?orgId=${params.orgId}`,
+    // orgId: params.orgId
   });
 }
 

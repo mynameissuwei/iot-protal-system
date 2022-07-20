@@ -4,7 +4,7 @@ import useOrganizationStore from "./organization";
 // 统一导出useStore方法
 export default function useStore() {
   return {
-    user: useOrganizationStore(),
+    organ: useOrganizationStore(),
     // counter: useCounterStore(),
   };
 }

@@ -54,13 +54,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, onMounted } from "vue";
+import { ref, defineProps } from "vue";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import { importUser } from "@/api";
 import { API_ENN_USER } from "@/const";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
 const exportTemplateURL = `${API_ENN_USER}/user/export-template?blade-auth=${localStorage.getItem(
   "blade-auth"
 )}`;
