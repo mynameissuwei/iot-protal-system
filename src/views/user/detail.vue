@@ -26,7 +26,11 @@
             maxlength="11"
             v-show="type === 'edit'"
             v-model="state.formData.phone"
+            @blur="handleInput"
           ></el-input>
+          <div class="errormsg" v-show="type === 'edit' && errormsg">
+            {{ errormsg }}
+          </div>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{
           state.userInfo.createTime
@@ -130,6 +134,7 @@ const checkList = ref([]);
 const treeOptions = ref([]);
 const valueStrictly = ref();
 const loading = ref(false);
+const errormsg = ref("");
 const type = ref(route.query.type);
 
 // const defaultProps = {
@@ -220,6 +225,16 @@ const getUserInfo = () => {
   });
 };
 
+const handleInput = (e: any) => {
+  const reg =
+    /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+  if (reg.test(e.target.value)) {
+    errormsg.value = "";
+  } else {
+    errormsg.value = "手机号格式不对";
+  }
+};
+
 // const loadNode = (node: any, resolve: (data: Tree[]) => void) => {
 //   if (node.level === 0) {
 //     getOrg({}).then((res) => {
@@ -308,6 +323,10 @@ const updateUserDetail = () => {
     & .info-input {
       width: 230px;
       display: inline-block;
+    }
+    & .errormsg {
+      margin-left: 60px;
+      color: #ee6b6b;
     }
   }
   .org {
