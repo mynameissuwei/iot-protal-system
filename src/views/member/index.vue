@@ -117,6 +117,7 @@ import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { fetchData, deleteList, createUser } from "@/api";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
+import { phonePattern } from "@/utils/pattern";
 import vUpload from "../home";
 
 const listQuery = reactive({
@@ -145,8 +146,7 @@ const rules = reactive({
   name: [{ min: 0, max: 20, message: "请输入0到20位", trigger: "blur" }],
   phone: [
     {
-      pattern:
-        /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
+      pattern: phonePattern,
       message: "手机号格式不对",
       trigger: "blur",
     },
