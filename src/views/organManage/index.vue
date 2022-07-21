@@ -105,7 +105,7 @@
         <div class="header-bg-box">
           <div class="header-bar-demo">
             <el-header-action-bar
-              :title="'组织成员'"
+              :title="actionBarTit"
               :button-group="originData.buttonGroup"
             >
             </el-header-action-bar>
@@ -258,6 +258,7 @@ const listQuery = reactive({
   size: 10,
 });
 const pageTotal = ref(0);
+const actionBarTit = ref(`组织成员(${pageTotal.value})`);
 const listLoading = ref(false);
 
 const arrStar = ref([]);
@@ -284,7 +285,7 @@ const refOrganMemberList = ref([]);
 const dialogConnectMemberVisible = ref(false);
 const connectLoading = ref(false);
 const treeLoading = ref(false);
-const connectValue = ref([]);
+let connectValue = ref([]);
 const connectOptions = ref<OptionData[]>([]);
 // 组织成员列表
 const tableRowClassName = "``";
@@ -440,17 +441,26 @@ const removeOrganFn = (node: Node, data: Tree) => {
       buttonSize: "small",
     }
   ).then(async () => {
-    const parent = node.parent;
-    const children: Tree[] = parent.data.children || parent.data;
-    const index = children.findIndex((d) => d.id === data.id);
-    children.splice(index, 1);
-    dataSource.value = [...dataSource.value];
-    console.log(99911199, node, data, data.id, index);
-    await removeOrgan(data.id);
-    ElMsgToast({
-      type: "success",
-      message: "删除成功",
-    });
+    if (node.parent) {
+      console.log(99911111, node, node.parent, data, data.id);
+      const parent = node.parent;
+      const children: Tree[] = parent.data.children || parent.data;
+      const index = children.findIndex((d) => d.id === data.id);
+      children.splice(index, 1);
+      dataSource.value = [...dataSource.value];
+      console.log(99911199, node, data, data.id, index);
+      await removeOrgan(data.id);
+      ElMsgToast({
+        type: "success",
+        message: "删除成功",
+      });
+      organTreeFn();
+    } else {
+      ElMsgToast({
+        type: "warning",
+        message: "当前组织为根组织节点，不可删除~",
+      });
+    }
   });
 };
 //删除组织成员
@@ -521,6 +531,7 @@ const clickNowNode = (data: {
 //关联组织成员
 const relevanceMember = () => {
   dialogConnectMemberVisible.value = true;
+  connectValue.value = [];
 };
 //初始化关联用户列表数据
 const getConnectUserData = (query = "") => {
@@ -655,6 +666,7 @@ onMounted(() => {
 .organ-tree {
   padding: 21px 11px 21px 16px;
   background: #fff;
+  margin-right: 6px;
   //   height: 100%;
   .organ-tit {
     font-size: 16px;
