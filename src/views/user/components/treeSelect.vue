@@ -1,5 +1,5 @@
 <template>
-  <div class="tree_box" v-loading="loading">
+  <div class="tree_box">
     <el-select
       v-model="select.valueNames"
       multiple
@@ -61,18 +61,19 @@ export default defineComponent({
       required: true,
     },
     modelValue: [],
+    checkNames: [],
   },
   components: {
     ElTreeV2,
     ElSelect,
   },
   setup(props, { emit }) {
-    const { modelValue } = toRefs(props);
+    const { modelValue, checkNames } = toRefs(props);
     const select: any = reactive({
       value: modelValue.value,
-      valueNames: [],
+      valueNames: checkNames.value,
     });
-    const loading = ref(true);
+    // const loading = ref(true);
     const treeSelect = ref<HTMLElement | null>(null);
     const treeV2: any = ref<HTMLElement | null>(null);
 
@@ -108,21 +109,22 @@ export default defineComponent({
     // 回显数据
     onMounted(async () => {
       await nextTick();
-      setTimeout(() => {
-        if (select.value) {
-          let arr = treeV2.value.getCheckedNodes();
-          arr.map((item: any) => {
-            select.valueNames.push(item.title);
-          });
-          loading.value = false;
-        }
-      }, 2000);
+      // console.log(select.value);
+      // setTimeout(() => {
+      // if (select.value) {
+      //   let arr = treeV2.value.getCheckedNodes();
+      //   arr.map((item: any) => {
+      //     select.valueNames.push(item.title);
+      //   });
+      //   loading.value = false;
+      // }
+      // }, 2000);
     });
     return {
       treeSelect,
       treeV2,
       TreeProps,
-      loading,
+      // loading,
       select,
       selectFilter,
       treeFilter,

@@ -15,9 +15,14 @@
           <span v-show="type !== 'edit'">{{ state.formData.name }}</span>
           <el-input
             class="info-input"
+            maxlength="20"
             v-show="type === 'edit'"
             v-model="state.formData.name"
+            @blur="handleInputCheck('name', $event.target.value)"
           ></el-input>
+          <div class="errormsg name" v-show="type === 'edit' && errorname">
+            {{ errorname }}
+          </div>
         </el-descriptions-item>
         <el-descriptions-item label="手机号">
           <span v-show="type !== 'edit'">{{ state.formData.phone }}</span>
@@ -26,7 +31,7 @@
             maxlength="11"
             v-show="type === 'edit'"
             v-model="state.formData.phone"
-            @blur="handleInput"
+            @blur="handleInputCheck('phone', $event.target.value)"
           ></el-input>
           <div class="errormsg" v-show="type === 'edit' && errormsg">
             {{ errormsg }}
@@ -49,6 +54,7 @@
         v-if="type === 'edit' && loading"
         :options="treeOptions"
         v-model="valueStrictly"
+        :checkNames="tagList"
       />
       <!-- <el-tree-select
         node-key="id"
@@ -79,7 +85,7 @@
           item.roleName
         }}</el-checkbox>
       </el-checkbox-group>
-      <el-checkbox-group v-if="type !== 'edit'">
+      <el-checkbox-group v-else>
         <el-checkbox
           v-for="(item, index) in roleList"
           :key="index"
@@ -109,6 +115,7 @@ import {
 } from "@/api";
 import { ElFooterActionBar, ElMsgToast } from "@enn/ency-design";
 import type { FooterActionButtonGroupItem } from "@enn/ency-design";
+import { phonePattern, namePattern } from "@/utils/pattern";
 // import { ElTreeSelect } from "element-plus";
 import comTreeSelect from "./components/treeSelect.vue";
 
@@ -128,13 +135,14 @@ interface Options {
 const route = useRoute();
 const router = useRouter();
 const options = ref([] as Options[]);
-const tagList = ref([]);
+const tagList = ref();
 const roleList = ref([]);
 const checkList = ref([]);
 const treeOptions = ref([]);
 const valueStrictly = ref();
 const loading = ref(false);
 const errormsg = ref("");
+const errorname = ref("");
 const type = ref(route.query.type);
 
 // const defaultProps = {
@@ -190,7 +198,7 @@ const initData = () => {
     treeOptions.value = res;
   });
   getUserInfo();
-  getRoletList({ current: 1, size: 20 }).then((res) => {
+  getRoletList({ current: 1, size: 50 }).then((res) => {
     options.value = res.records;
   });
 };
@@ -201,37 +209,30 @@ const getUserInfo = () => {
     state.userInfo = { ...res };
     state.formData.name = res.name;
     state.formData.phone = res.phone;
-    tagList.value = res.deptName
-      ? res.deptName.indexOf(",") > -1
-        ? res.deptName.split(",")
-        : [res.deptName]
-      : [];
-    valueStrictly.value = res.deptId
-      ? res.deptId.indexOf(",") > -1
-        ? res.deptId.split(",")
-        : [res.deptId]
-      : [];
-    roleList.value = res.roleName
-      ? res.roleName.indexOf(",") > -1
-        ? res.roleName.split(",")
-        : [res.roleName]
-      : [];
-    checkList.value = res.roleId
-      ? res.roleId.indexOf(",") > -1
-        ? res.roleId.split(",")
-        : [res.roleId]
-      : [];
+    tagList.value = res.deptName ? res.deptName.split(",") : [];
+    valueStrictly.value = res.deptId ? res.deptId.split(",") : [];
+    roleList.value = res.roleName ? res.roleName.split(",") : [];
+    checkList.value = res.roleId ? res.roleId.split(",") : [];
     loading.value = true;
   });
 };
 
-const handleInput = (e: any) => {
-  const reg =
-    /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
-  if (reg.test(e.target.value)) {
-    errormsg.value = "";
+const handleInputCheck = (type: string, value: string) => {
+  const pattern = type === "name" ? namePattern : phonePattern;
+  if (pattern.test(value)) {
+    if (type === "name") {
+      errorname.value = "";
+    } else {
+      errormsg.value = "";
+    }
+    return true;
   } else {
-    errormsg.value = "手机号格式不对";
+    if (type === "name") {
+      errorname.value = "只能包含中英文字符、数字、下划线";
+    } else {
+      errormsg.value = "手机号格式不对";
+    }
+    return false;
   }
 };
 
@@ -250,44 +251,35 @@ const handleInput = (e: any) => {
 
 //编辑用户信息
 const updateUserDetail = () => {
-  let data = {
-    id: route.query.userId,
-    account: state.userInfo.account,
-    deptId: valueStrictly.value.join(),
-    roleId: checkList.value.join(),
-    ...state.formData,
-  };
-  updateUser(data).then((res) => {
-    if (res) {
-      ElMsgToast({
-        message: "编辑成功！",
-      });
-      router.push({
-        path: "/member",
-      });
-    }
-  });
+  let p1 = handleInputCheck("name", state.formData.name);
+  let p2 = handleInputCheck("phone", state.formData.phone);
+  Promise.all([p1, p2])
+    .then((values) => {
+      if (values[0] && values[1]) {
+        let data = {
+          id: route.query.userId,
+          account: state.userInfo.account,
+          deptId: valueStrictly.value.join(),
+          roleId: checkList.value.join(),
+          ...state.formData,
+        };
+        updateUser(data).then((res) => {
+          if (res) {
+            ElMsgToast({
+              message: "编辑成功！",
+            });
+            router.push({
+              path: "/member",
+            });
+          }
+        });
+      }
+    })
+    .catch((error) => {
+      console.log("error==>", error);
+    });
 };
 </script>
-<style lang="less">
-//只针对于elementplus树选择的样式，无污染;后续ency有树选择组建后，可删除此代码
-.el-tree-select__popper
-  .el-select-dropdown.is-multiple
-  .el-select-dropdown__item.selected:hover {
-  background: transparent;
-}
-.el-tree-select__popper
-  .el-select-dropdown.is-multiple
-  .el-select-dropdown__item.selected {
-  background: transparent;
-}
-.el-tree-select__popper .el-select-dropdown__item.hover {
-  background: transparent;
-}
-.el-tree-select__popper .el-popper__arrow {
-  display: none;
-}
-</style>
 <style scoped lang="less">
 .detail-content {
   //   position: relative;
@@ -327,6 +319,9 @@ const updateUserDetail = () => {
     & .errormsg {
       margin-left: 60px;
       color: #ee6b6b;
+      &.name {
+        margin-left: 48px;
+      }
     }
   }
   .org {
