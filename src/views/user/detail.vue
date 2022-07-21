@@ -54,6 +54,7 @@
         v-if="type === 'edit' && loading"
         :options="treeOptions"
         v-model="valueStrictly"
+        :checkNames="tagList"
       />
       <!-- <el-tree-select
         node-key="id"
@@ -134,7 +135,7 @@ interface Options {
 const route = useRoute();
 const router = useRouter();
 const options = ref([] as Options[]);
-const tagList = ref([]);
+const tagList = ref();
 const roleList = ref([]);
 const checkList = ref([]);
 const treeOptions = ref([]);
@@ -208,10 +209,10 @@ const getUserInfo = () => {
     state.userInfo = { ...res };
     state.formData.name = res.name;
     state.formData.phone = res.phone;
-    tagList.value = res.deptName.split(",");
-    valueStrictly.value = res.deptId.split(",");
-    roleList.value = res.roleName.split(",");
-    checkList.value = res.roleId.split(",");
+    tagList.value = res.deptName ? res.deptName.split(",") : [];
+    valueStrictly.value = res.deptId ? res.deptId.split(",") : [];
+    roleList.value = res.roleName ? res.roleName.split(",") : [];
+    checkList.value = res.roleId ? res.roleId.split(",") : [];
     loading.value = true;
   });
 };
