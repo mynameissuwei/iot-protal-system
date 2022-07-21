@@ -79,6 +79,7 @@
       <v-upload
         :importVisible="importVisible"
         :handleHidden="handleHidden"
+        :getData="getData"
       ></v-upload>
       <!-- 编辑弹出框 -->
       <el-dialog title="添加成员" v-model="editVisible" width="30%">
