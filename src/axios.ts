@@ -46,7 +46,7 @@ instance.interceptors.response.use(
   },
   (error) => {
     //网络层错误 200 之外
-    const { message, status } = error.toJSON();
+    const { message, status, response } = error.toJSON();
     if (status === 401) {
       if (window.self === window.top) {
         window.location.href =
@@ -67,6 +67,12 @@ instance.interceptors.response.use(
     }
     if (status !== 417 && status !== 418) {
       ElMsgToast.error(message);
+    }
+    const { code, msg, errorCode, errorMessage } = error?.response?.data || {};
+    if (code !== 200 || errorCode !== "00000") {
+      ElMsgToast.error(
+        errorMessage !== "" ? `[${errorCode}]${errorMessage}` : `${msg}`
+      );
     }
   }
 );
