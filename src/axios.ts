@@ -48,13 +48,22 @@ instance.interceptors.response.use(
     //网络层错误 200 之外
     const { message, status } = error.toJSON();
     if (status === 401) {
-      ElMsgToast.error(message);
-      window.location.href =
-        "http://10.39.68.150:8082" +
-        "/login?redirect=" +
-        window.location.protocol +
-        "//" +
-        window.location.host;
+      if (window.self === window.top) {
+        window.location.href =
+          "http://10.39.68.150:8082" +
+          "/login?redirect=" +
+          window.location.protocol +
+          "//" +
+          window.location.host; //  http://10.39.68.150:8082 -> dev环境的登录页面
+      } else {
+        window.parent.postMessage(
+          {
+            type: "logout",
+            data: "1", // 权限数据
+          },
+          "*"
+        );
+      }
     }
     if (status !== 417 && status !== 418) {
       ElMsgToast.error(message);
