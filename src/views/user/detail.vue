@@ -18,7 +18,7 @@
             maxlength="20"
             v-show="type === 'edit'"
             v-model="state.formData.name"
-            @blur="handleInputName"
+            @blur="handleInputCheck('name', $event.target.value)"
           ></el-input>
           <div class="errormsg name" v-show="type === 'edit' && errorname">
             {{ errorname }}
@@ -31,7 +31,7 @@
             maxlength="11"
             v-show="type === 'edit'"
             v-model="state.formData.phone"
-            @blur="handleInput"
+            @blur="handleInputCheck('phone', $event.target.value)"
           ></el-input>
           <div class="errormsg" v-show="type === 'edit' && errormsg">
             {{ errormsg }}
@@ -216,19 +216,22 @@ const getUserInfo = () => {
   });
 };
 
-const handleInput = (e: any) => {
-  if (phonePattern.test(e.target.value)) {
-    errormsg.value = "";
+const handleInputCheck = (type: string, value: string) => {
+  const pattern = type === "name" ? namePattern : phonePattern;
+  if (pattern.test(value)) {
+    if (type === "name") {
+      errorname.value = "";
+    } else {
+      errormsg.value = "";
+    }
+    return true;
   } else {
-    errormsg.value = "手机号格式不对";
-  }
-};
-
-const handleInputName = (e: any) => {
-  if (namePattern.test(e.target.value)) {
-    errorname.value = "";
-  } else {
-    errorname.value = "只能包含中英文字符、数字、下划线";
+    if (type === "name") {
+      errorname.value = "只能包含中英文字符、数字、下划线";
+    } else {
+      errormsg.value = "手机号格式不对";
+    }
+    return false;
   }
 };
 
@@ -247,26 +250,33 @@ const handleInputName = (e: any) => {
 
 //编辑用户信息
 const updateUserDetail = () => {
-  if (errormsg.value || errorname.value) {
-    return;
-  }
-  let data = {
-    id: route.query.userId,
-    account: state.userInfo.account,
-    deptId: valueStrictly.value.join(),
-    roleId: checkList.value.join(),
-    ...state.formData,
-  };
-  updateUser(data).then((res) => {
-    if (res) {
-      ElMsgToast({
-        message: "编辑成功！",
-      });
-      router.push({
-        path: "/member",
-      });
-    }
-  });
+  let p1 = handleInputCheck("name", state.formData.name);
+  let p2 = handleInputCheck("phone", state.formData.phone);
+  Promise.all([p1, p2])
+    .then((values) => {
+      if (values[0] && values[1]) {
+        let data = {
+          id: route.query.userId,
+          account: state.userInfo.account,
+          deptId: valueStrictly.value.join(),
+          roleId: checkList.value.join(),
+          ...state.formData,
+        };
+        updateUser(data).then((res) => {
+          if (res) {
+            ElMsgToast({
+              message: "编辑成功！",
+            });
+            router.push({
+              path: "/member",
+            });
+          }
+        });
+      }
+    })
+    .catch((error) => {
+      console.log("error==>", error);
+    });
 };
 </script>
 <style scoped lang="less">
