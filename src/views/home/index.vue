@@ -7,9 +7,9 @@
     <div v-loading="upLoading" element-loading-text="导入中">
       <el-row style="margin: 20px">
         <el-col :span="4">导入文件：</el-col>
-        <el-col :span="20">
+        <el-col :span="4">
           <el-upload
-            style="display: inline-block"
+            style="display: inline-block; margin-top: -5px"
             ref="upload"
             action="string"
             accept=".xls, .xlsx"
@@ -24,10 +24,12 @@
             :file-list="fileList"
           >
             <el-button :icon="Export">选择文件</el-button>
-            <div class="actionClass downloadClass" @click="downloadUrl">
-              下载模板
-            </div>
           </el-upload>
+        </el-col>
+        <el-col :span="4">
+          <div class="actionClass downloadClass" @click="downloadUrl">
+            下载模板
+          </div>
         </el-col>
       </el-row>
 
