@@ -2,7 +2,7 @@
   <el-dialog
     :title="upLoading ? '导入进行中' : '导入'"
     v-model="props.importVisible"
-    width="40%"
+    width="700px"
   >
     <div v-loading="upLoading" element-loading-text="导入中">
       <el-row style="margin: 20px">
