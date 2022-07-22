@@ -7,9 +7,9 @@
     <div v-loading="upLoading" element-loading-text="导入中">
       <el-row style="margin: 20px">
         <el-col :span="4">导入文件：</el-col>
-        <el-col :span="20">
+        <el-col :span="4">
           <el-upload
-            style="display: inline-block"
+            style="display: inline-block; margin-top: -5px"
             ref="upload"
             action="string"
             accept=".xls, .xlsx"
@@ -24,10 +24,12 @@
             :file-list="fileList"
           >
             <el-button :icon="Export">选择文件</el-button>
-            <div class="actionClass downloadClass" @click="downloadUrl">
-              下载模板
-            </div>
           </el-upload>
+        </el-col>
+        <el-col :span="8">
+          <div class="actionClass downloadClass" @click="downloadUrl">
+            下载模板
+          </div>
         </el-col>
       </el-row>
 
@@ -68,7 +70,7 @@ const fileList = ref([]);
 const upLoading = ref(false);
 const msg = ref("");
 
-const props = defineProps(["importVisible", "handleHidden"]);
+const props = defineProps(["importVisible", "handleHidden", "getData"]);
 
 const handleExceed = () => {
   ElMsgToast({ message: "只能选择一个文件", type: "warning" });
@@ -98,6 +100,7 @@ const httpRequest = (params: any) => {
         });
       } else {
         props.handleHidden();
+        props.getData();
         msg.value = `本次共解析${totalCount}条数据，导入成功${totalCount}条数据`;
         ElMsgBox.show(msg.value, "导入成功", {
           confirmButtonText: "确认",

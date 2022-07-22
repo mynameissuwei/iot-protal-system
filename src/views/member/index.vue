@@ -60,7 +60,15 @@
         <el-table-column prop="createTime" label="创建时间" />
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
-            <span @click="handleEdit(scope.row)" class="actionClass">编辑</span>
+            <span
+              @click="handleEdit(scope.row, 'view')"
+              class="actionClass"
+              style="margin-right: 10px"
+              >查看</span
+            >
+            <span @click="handleEdit(scope.row, 'edit')" class="actionClass"
+              >编辑</span
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -79,6 +87,7 @@
       <v-upload
         :importVisible="importVisible"
         :handleHidden="handleHidden"
+        :getData="getData"
       ></v-upload>
       <!-- 编辑弹出框 -->
       <el-dialog title="添加成员" v-model="editVisible" width="30%">
@@ -250,12 +259,12 @@ const handleHidden = () => {
   importVisible.value = false;
 };
 // 编辑
-const handleEdit = (data) => {
+const handleEdit = (data, type) => {
   router.push({
     path: "/detail",
     query: {
       userId: data.id,
-      type: "edit",
+      type,
     },
   });
 };
@@ -280,6 +289,7 @@ onMounted(() => {
   margin-bottom: 7px;
   margin-left: 0px !important;
   margin-right: 0px !important;
+  padding: 0px 16px;
   background: #fff;
 }
 .table-box {

@@ -1,17 +1,17 @@
 <template>
   <section class="detail-content">
     <div class="header">
-      <div>{{ state.userInfo.realName }}</div>
+      <div>{{ state.userInfo.account }}</div>
       <el-button v-show="type !== 'edit'" type="secondary" @click="editInfo"
         >编辑</el-button
       >
     </div>
     <div class="info">
       <el-descriptions title="基本信息" :column="2">
-        <el-descriptions-item label="账户名">{{
+        <el-descriptions-item label="账户名:">{{
           state.userInfo.account
         }}</el-descriptions-item>
-        <el-descriptions-item label="昵称">
+        <el-descriptions-item label="昵称:">
           <span v-show="type !== 'edit'">{{ state.formData.name }}</span>
           <el-input
             class="info-input"
@@ -20,11 +20,11 @@
             v-model="state.formData.name"
             @blur="handleInputCheck('name', $event.target.value)"
           ></el-input>
-          <div class="errormsg name" v-show="type === 'edit' && errorname">
+          <div class="errormsg" v-show="type === 'edit' && errorname">
             {{ errorname }}
           </div>
         </el-descriptions-item>
-        <el-descriptions-item label="手机号">
+        <el-descriptions-item label="手机号:" label-class-name="info-label">
           <span v-show="type !== 'edit'">{{ state.formData.phone }}</span>
           <el-input
             class="info-input"
@@ -37,13 +37,13 @@
             {{ errormsg }}
           </div>
         </el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{
+        <el-descriptions-item label="创建时间:">{{
           state.userInfo.createTime
         }}</el-descriptions-item>
-        <el-descriptions-item label="创建人">
+        <el-descriptions-item label="创建人:">
           {{ state.userInfo.createUserName }}
         </el-descriptions-item>
-        <el-descriptions-item label="账号状态">正常</el-descriptions-item>
+        <el-descriptions-item label="账号状态:">正常</el-descriptions-item>
       </el-descriptions>
     </div>
     <div class="org">
@@ -94,10 +94,10 @@
           readonly
         ></el-checkbox>
       </el-checkbox-group>
-    </div>
-    <div class="operate" v-if="type === 'edit'">
-      <el-footer-action-bar :button-group="state.buttonGroup">
-      </el-footer-action-bar>
+      <div class="operate" v-if="type === 'edit'">
+        <el-footer-action-bar :button-group="state.buttonGroup">
+        </el-footer-action-bar>
+      </div>
     </div>
   </section>
 </template>
@@ -155,7 +155,7 @@ const type = ref(route.query.type);
 const state = reactive({
   buttonGroup: [
     {
-      label: "确定",
+      label: "保存",
       buttonType: "primary",
       cb: () => {
         updateUserDetail();
@@ -282,9 +282,11 @@ const updateUserDetail = () => {
 </script>
 <style scoped lang="less">
 .detail-content {
-  //   position: relative;
-  // height: calc(100%-40px);
+  // position: relative;
+  height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
   & .header {
     display: flex;
     justify-content: space-between;
@@ -309,22 +311,27 @@ const updateUserDetail = () => {
     padding: 24px;
   }
   & .limit {
-    height: calc(100% - 110px);
+    position: relative;
+    flex: 1;
+    padding-bottom: 80px;
   }
   & .info {
+    height: 200px;
     & .info-input {
       width: 230px;
       display: inline-block;
     }
     & .errormsg {
-      margin-left: 60px;
+      margin-left: 76px;
       color: #ee6b6b;
-      &.name {
-        margin-left: 48px;
-      }
+    }
+    :deep(.el-descriptions__label) {
+      display: inline-block;
+      width: 60px;
     }
   }
   .org {
+    height: 130px;
     & .title {
       margin-left: 10%;
       font-size: 14px;

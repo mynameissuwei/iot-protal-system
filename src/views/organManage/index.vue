@@ -172,7 +172,12 @@
           ></el-pagination>
         </div>
 
-        <el-dialog v-model="dialogConnectMemberVisible" title="关联组织成员">
+        <el-dialog
+          :width="600"
+          v-model="dialogConnectMemberVisible"
+          title="关联组织成员"
+        >
+          <p class="conect-title">选择关联成员:</p>
           <el-combo-box
             v-model="connectValue"
             multiple
@@ -181,6 +186,7 @@
             placeholder="输入昵称或账号名查找"
             :remote-method="remoteMethod"
             :loading="connectLoading"
+            style="width: 420px"
           >
             <el-option
               v-for="item in connectOptions"
@@ -708,5 +714,9 @@ onMounted(() => {
   //   margin: 0 13px;
   color: #4068d4;
   cursor: pointer;
+}
+.conect-title {
+  display: inline-block;
+  margin-right: 12px;
 }
 </style>

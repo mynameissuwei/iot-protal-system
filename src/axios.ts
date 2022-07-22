@@ -68,6 +68,13 @@ instance.interceptors.response.use(
     if (status !== 417 && status !== 418) {
       ElMsgToast.error(message);
     }
+    //兼容630之前 后端代码报错信息
+    const { code, errorCode, errorMessage, msg } = error?.response?.data || {};
+    if ((code !== 200 || errorCode !== "00000") && (errorMessage || msg)) {
+      ElMsgToast.error(
+        errorMessage !== "" ? `[${errorCode}]${errorMessage}` : `${msg}`
+      );
+    }
   }
 );
 
