@@ -94,10 +94,10 @@
           readonly
         ></el-checkbox>
       </el-checkbox-group>
-    </div>
-    <div class="operate" v-if="type === 'edit'">
-      <el-footer-action-bar :button-group="state.buttonGroup">
-      </el-footer-action-bar>
+      <div class="operate" v-if="type === 'edit'">
+        <el-footer-action-bar :button-group="state.buttonGroup">
+        </el-footer-action-bar>
+      </div>
     </div>
   </section>
 </template>
@@ -282,9 +282,11 @@ const updateUserDetail = () => {
 </script>
 <style scoped lang="less">
 .detail-content {
-  //   position: relative;
-  // height: calc(100%-40px);
+  // position: relative;
+  height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
   & .header {
     display: flex;
     justify-content: space-between;
@@ -309,9 +311,12 @@ const updateUserDetail = () => {
     padding: 24px;
   }
   & .limit {
-    height: calc(100% - 110px);
+    position: relative;
+    flex: 1;
+    padding-bottom: 80px;
   }
   & .info {
+    height: 200px;
     & .info-input {
       width: 230px;
       display: inline-block;
@@ -326,6 +331,7 @@ const updateUserDetail = () => {
     }
   }
   .org {
+    height: 130px;
     & .title {
       margin-left: 10%;
       font-size: 14px;
