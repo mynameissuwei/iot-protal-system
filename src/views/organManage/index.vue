@@ -32,19 +32,21 @@
           @node-click="clickNowNode"
           :loading="treeLoading"
           :height="500"
-          empty-text="数据加载中..."
+          empty-text="无搜索结果"
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <span>{{ node.label }}</span>
               <span class="actveapan">
                 <a @click.stop="append(data)">
-                  <el-icon :size="12" class="tit-editBtn"
+                  <!-- <el-icon :size="12" class="tit-editBtn"
                     ><add-number
-                  /></el-icon>
+                  /></el-icon> -->
+                  <!-- <el-icon><addNumber /></el-icon> -->
+                  <el-button text :icon="AddNumber"></el-button>
                 </a>
                 <a @click.stop="removeOrganFn(node, data)">
-                  <el-icon :size="12" class="tit-editBtn"><delete /></el-icon>
+                  <el-button text :icon="Delete"></el-button>
                 </a>
               </span>
             </span>
@@ -122,14 +124,15 @@
         >
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="account" label="账号名" width="180" />
-          <el-table-column prop="name" label="昵称" width="100" />
+          <el-table-column prop="name" label="昵称" width="150" />
           <el-table-column prop="orgs" label="所属组织">
             <template #default="scope">
               <el-tag
-                v-for="item in scope.row.orgs"
+                v-for="(item, index) in scope.row.orgs"
                 :key="item.name"
                 :type="item.name"
                 class="mx-1 tagStyle"
+                :class="'tagColor' + index"
                 effect="dark"
               >
                 {{ item.name }}
@@ -437,16 +440,12 @@ const append = (data: Tree) => {
 };
 // 删除组织
 const removeOrganFn = (node: Node, data: Tree) => {
-  ElMsgBox.confirm(
-    "此操作将删除本组织节点下的所有子组织，是否继续?",
-    "删除组织",
-    {
-      confirmButtonText: "确认",
-      cancelButtonText: "取消",
-      type: "warning",
-      buttonSize: "small",
-    }
-  ).then(async () => {
+  ElMsgBox.confirm("删除后此操作不可恢复，是否继续？", "删除组织", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    buttonSize: "small",
+  }).then(async () => {
     if (node.parent) {
       console.log(99911111, node, node.parent, data, data.id);
       const parent = node.parent;
@@ -471,7 +470,7 @@ const removeOrganFn = (node: Node, data: Tree) => {
 };
 //删除组织成员
 const deleteMember = () => {
-  ElMsgBox.confirm("你确定要移除用户么?", "警告", {
+  ElMsgBox.confirm("你确定要移除用户么?", "移除成员", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning",
@@ -604,7 +603,7 @@ onMounted(() => {
   font-size: 14px;
   padding-right: 8px;
   a {
-    margin: 0 11px;
+    // margin: 0 11px;
   }
   .actveapan {
     display: none;
@@ -622,9 +621,25 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   background: #fff;
-  padding: 23px 15px 10px 15px;
+  padding: 23px 16px 10px 16px;
   .tagStyle {
     margin: 0 2px;
+  }
+  .tagColor0 {
+    background: #e6ecff;
+    color: #3455ad;
+  }
+  .tagColor1 {
+    background: #e1f5e7;
+    color: #3ea35c;
+  }
+  .tagColor2 {
+    background: #f3eafe;
+    color: #7a4db8;
+  }
+  .tagColor3 {
+    background: #e6ecff;
+    color: #3455ad;
   }
   .pagination {
     margin: 20px 0;
@@ -639,12 +654,13 @@ onMounted(() => {
     top: 100px;
     min-width: 200px;
     .header-bar-demo .el-header-action-bar {
+      padding: 0 33px;
       padding-left: 0;
     }
   }
   .table-orgain-tit {
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 600;
     color: #343a40;
     line-height: 16px;
     .el-input {
@@ -675,8 +691,8 @@ onMounted(() => {
   margin-right: 6px;
   //   height: 100%;
   .organ-tit {
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
     color: #343a40;
     line-height: 22px;
   }
@@ -686,8 +702,12 @@ onMounted(() => {
   .el-tree {
     // width: 260px;
   }
-  .treeStyle .el-vl__wrapper .el-vl__window::-webkit-scrollbar {
-    width: 0 !important;
+  /deep/.treeStyle .el-vl__wrapper .el-vl__window::-webkit-scrollbar {
+    width: 0;
+  }
+  /deep/.treeStyle .el-vl__wrapper .el-virtual-scrollbar {
+    position: absolute;
+    right: -10px !important;
   }
 }
 .tit-editBtn {

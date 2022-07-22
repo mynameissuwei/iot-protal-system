@@ -26,7 +26,7 @@
             <el-button :icon="Export">选择文件</el-button>
           </el-upload>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="8">
           <div class="actionClass downloadClass" @click="downloadUrl">
             下载模板
           </div>
