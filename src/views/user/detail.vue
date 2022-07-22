@@ -18,7 +18,7 @@
             maxlength="20"
             v-show="type === 'edit'"
             v-model="state.formData.name"
-            @blur="handleInputCheck('name', $event.target.value)"
+            @input="(value) => handleInputCheck('name', value)"
           ></el-input>
           <div class="errormsg" v-show="type === 'edit' && errorname">
             {{ errorname }}
@@ -31,7 +31,7 @@
             maxlength="11"
             v-show="type === 'edit'"
             v-model="state.formData.phone"
-            @blur="handleInputCheck('phone', $event.target.value)"
+            @input="(value) => handleInputCheck('phone', value)"
           ></el-input>
           <div class="errormsg" v-show="type === 'edit' && errormsg">
             {{ errormsg }}
@@ -72,20 +72,28 @@
         check-strictly
         check-on-click-node
       /> -->
-      <div v-show="type !== 'edit'">
+      <div v-show="type !== 'edit' && tagList && tagList.length > 0">
         <el-tag v-for="(item, index) in tagList" :key="index">{{
           item
         }}</el-tag>
       </div>
+      <div
+        class="nodata"
+        v-show="type !== 'edit' && tagList && tagList.length === 0"
+      >
+        暂无数据
+      </div>
     </div>
     <div class="limit">
       <h1>权限信息</h1>
-      <el-checkbox-group v-model="checkList" v-if="type === 'edit'">
+      <el-checkbox-group v-model="checkList" v-show="type === 'edit'">
         <el-checkbox v-for="item in options" :label="item.id" :key="item.id">{{
           item.roleName
         }}</el-checkbox>
       </el-checkbox-group>
-      <el-checkbox-group v-else>
+      <el-checkbox-group
+        v-show="type !== 'edit' && roleList && roleList.length > 0"
+      >
         <el-checkbox
           v-for="(item, index) in roleList"
           :key="index"
@@ -94,6 +102,9 @@
           readonly
         ></el-checkbox>
       </el-checkbox-group>
+      <div v-show="type !== 'edit' && roleList && roleList.length === 0">
+        <el-empty :image-size="100"></el-empty>
+      </div>
       <div class="operate" v-if="type === 'edit'">
         <el-footer-action-bar :button-group="state.buttonGroup">
         </el-footer-action-bar>
@@ -332,6 +343,11 @@ const updateUserDetail = () => {
   }
   .org {
     height: 130px;
+    & .nodata {
+      font-size: 14px;
+      color: #969799;
+      text-align: center;
+    }
     & .title {
       margin-left: 10%;
       font-size: 14px;
