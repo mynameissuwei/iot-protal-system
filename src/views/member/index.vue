@@ -90,7 +90,7 @@
         :getData="getData"
       ></v-upload>
       <!-- 编辑弹出框 -->
-      <el-dialog title="添加成员" v-model="editVisible" width="30%">
+      <el-dialog title="添加成员" v-model="editVisible" width="500px">
         <el-form
           label-width="90px"
           ref="ruleFormRef"
@@ -149,15 +149,15 @@ const importVisible = ref(false);
 const buttonLoadingRef = ref(false);
 const rules = reactive({
   account: [
-    { required: true, message: "请输入账号名", trigger: "blur" },
-    { min: 1, max: 20, message: "请输入1到20位", trigger: "blur" },
+    { required: true, message: "请输入账号名", trigger: "change" },
+    { min: 1, max: 20, message: "请输入1到20位", trigger: "change" },
   ],
-  name: [{ min: 0, max: 20, message: "请输入0到20位", trigger: "blur" }],
+  name: [{ min: 0, max: 20, message: "请输入0到20位", trigger: "change" }],
   phone: [
     {
       pattern: phonePattern,
       message: "手机号格式不对",
-      trigger: "blur",
+      trigger: "change",
     },
   ],
 });
