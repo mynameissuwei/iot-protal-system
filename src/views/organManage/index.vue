@@ -96,10 +96,10 @@
           ></el-button>
         </h4>
         <el-descriptions title="" class="table-orgain-des">
-          <el-descriptions-item label="组织ID">{{
+          <el-descriptions-item label="组织ID :">{{
             orgMsg.id || "--"
           }}</el-descriptions-item>
-          <el-descriptions-item label="创建时间">{{
+          <el-descriptions-item label="创建时间 :">{{
             orgMsg.createTime || "--"
           }}</el-descriptions-item>
         </el-descriptions>
@@ -107,9 +107,12 @@
         <div class="header-bg-box">
           <div class="header-bar-demo">
             <el-header-action-bar
-              :title="actionBarTit"
+              :title="actionBarTit.actionBarTitVlu"
               :button-group="originData.buttonGroup"
             >
+              <span class="actionBar-tit">{{
+                actionBarTit.actionBarTitVlu
+              }}</span>
             </el-header-action-bar>
           </div>
         </div>
@@ -267,7 +270,10 @@ const listQuery = reactive({
   size: 10,
 });
 const pageTotal = ref(0);
-const actionBarTit = ref(`组织成员(${pageTotal.value})`);
+// const actionBarTit = ref(`组织成员(${pageTotal.value})`);
+const actionBarTit = reactive({
+  actionBarTitVlu: "",
+});
 const listLoading = ref(false);
 
 const arrStar = ref([]);
@@ -503,7 +509,9 @@ const getMemberList = () => {
     if (res.records) {
       console.log(res.records, 888);
       tableData.value = res.records;
-      pageTotal.value = res.total || 50;
+      pageTotal.value = res.total || 0;
+      actionBarTit.actionBarTitVlu = `组织成员(${pageTotal.value})`;
+      console.log(111111, actionBarTit.actionBarTitVlu);
       listLoading.value = false;
     } else {
       tableData.value = [];
@@ -581,9 +589,12 @@ onMounted(() => {
 }
 .two-column-container {
   width: 100%;
-  height: 500px;
+  height: 100% !important;
   background-color: #f1f1f1;
   display: flex;
+  /deep/.el-two-column__horizontal .el-two-column__right-pane {
+    background: #fff;
+  }
 }
 .two-column-left {
   width: 100%;
@@ -638,8 +649,16 @@ onMounted(() => {
     color: #7a4db8;
   }
   .tagColor3 {
-    background: #e6ecff;
-    color: #3455ad;
+    background: #fff2eb;
+    color: #cc7846;
+  }
+  .tagColor4 {
+    background: #ebf9ff;
+    color: #318db8;
+  }
+  .tagColor5 {
+    background: #fff8db;
+    color: #d8b422;
   }
   .pagination {
     margin: 20px 0;
@@ -656,6 +675,14 @@ onMounted(() => {
     .header-bar-demo .el-header-action-bar {
       padding: 0 33px;
       padding-left: 0;
+      position: relative;
+      .actionBar-tit {
+        position: absolute;
+        top: 10px;
+        font-size: 16px;
+        font-weight: 400;
+        color: #323233;
+      }
     }
   }
   .table-orgain-tit {
@@ -680,6 +707,7 @@ onMounted(() => {
   }
   .table-orgain-des {
     margin: 19px 0 17px;
+    height: 100%;
     .el-descriptions__cell {
       width: 300px !important;
     }
@@ -689,7 +717,8 @@ onMounted(() => {
   padding: 21px 11px 21px 16px;
   background: #fff;
   margin-right: 6px;
-  //   height: 100%;
+  height: 100% !important;
+  overflow: hidden;
   .organ-tit {
     font-size: 18px;
     font-weight: 600;
@@ -701,6 +730,15 @@ onMounted(() => {
   }
   .el-tree {
     // width: 260px;
+  }
+  .treeStyle {
+    height: 100%;
+  }
+  /deep/.treeStyle .el-vl__wrapper .el-vl__window {
+    height: calc(100% -20px) !important;
+    height: 700px !important;
+    min-height: 400px !important;
+    overflow-y: scroll;
   }
   /deep/.treeStyle .el-vl__wrapper .el-vl__window::-webkit-scrollbar {
     width: 0;
