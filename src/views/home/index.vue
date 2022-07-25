@@ -3,6 +3,7 @@
     :title="upLoading ? '导入进行中' : '导入'"
     v-model="props.importVisible"
     width="700px"
+    :before-close="props.handleHidden"
   >
     <div v-loading="upLoading" element-loading-text="导入中">
       <el-row style="margin: 20px">
@@ -120,6 +121,7 @@ const downloadUrl = () => {
 };
 
 const handleClear = () => {
+  fileList.value = [];
   upload.value.clearFiles();
 };
 
