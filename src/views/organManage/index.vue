@@ -3,7 +3,6 @@
     v-model:value="valueWidth"
     ref="twoColumnLayout"
     class="two-column-container"
-    @move-end="moveEnd"
     :show-full-screen="false"
     :show-close="false"
   >
@@ -16,11 +15,12 @@
           v-model="filterText"
           placeholder="输入组织名称"
           ><template #suffix>
-            <el-icon class="el-input__icon" @click="handleIconClick">
+            <el-icon class="el-input__icon">
               <search />
             </el-icon> </template
         ></el-input>
         <el-tree-v2
+          :height="treeHeight"
           v-loading="treeLoading"
           class="treeStyle"
           ref="treeRef"
@@ -28,10 +28,8 @@
           :props="defaultProps"
           :default-expanded-keys="arrStar"
           :filter-method="filterMethod"
-          :node-key="id"
           @node-click="clickNowNode"
           :loading="treeLoading"
-          :height="500"
           empty-text="无搜索结果"
         >
           <template #default="{ node, data }">
@@ -54,8 +52,12 @@
         </el-tree-v2>
 
         <el-dialog v-model="dialogFormVisible" title="添加组织">
-          <el-form :model="form">
-            <el-form-item label="组织名称" :label-width="formLabelWidth">
+          <el-form :model="form" :rules="rules" ref="ruleFormRef">
+            <el-form-item
+              label="组织名称"
+              :label-width="formLabelWidth"
+              prop="orgName"
+            >
               <el-input
                 v-model="form.orgName"
                 autocomplete="off"
@@ -68,7 +70,9 @@
           </el-form>
           <template #footer>
             <span class="dialog-footer">
-              <el-button type="primary" @click="addOrgan"> 确认 </el-button>
+              <el-button type="primary" @click="addOrgan(ruleFormRef)">
+                确认
+              </el-button>
               <el-button @click="dleOrgan">取消</el-button>
             </span>
           </template>
@@ -87,7 +91,7 @@
           <el-input
             v-model="orgainName"
             placeholder="请输入名称(最多50个字符)"
-            :suffix-icon="ScanQrCode"
+            @blur="orgainNameBlur()"
           />
           <el-button
             text
@@ -133,7 +137,6 @@
               <el-tag
                 v-for="(item, index) in scope.row.orgs"
                 :key="item.name"
-                :type="item.name"
                 class="mx-1 tagStyle"
                 :class="'tagColor' + index"
                 effect="dark"
@@ -215,7 +218,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, reactive, markRaw, onMounted } from "vue";
+import { watch, ref, reactive, markRaw, onMounted, onBeforeMount } from "vue";
 import { ElTreeV2 } from "element-plus";
 import type { TreeNode } from "element-plus/es/components/tree-v2/src/types";
 import { useRouter } from "vue-router";
@@ -302,6 +305,7 @@ const connectLoading = ref(false);
 const treeLoading = ref(false);
 let connectValue = ref([]);
 const connectOptions = ref<OptionData[]>([]);
+const treeHeight = ref(0);
 // 组织成员列表
 const tableRowClassName = "``";
 const tableData = ref([]);
@@ -335,7 +339,16 @@ const defaultProps = {
   label: "title",
   children: "children",
 };
+const buttonLoadingRef = ref(false);
+const ruleFormRef = ref();
+const rules = reactive({
+  orgName: [
+    { required: true, message: "请输入组织名", trigger: "change" },
+    { min: 1, max: 20, message: "请输入1到50位", trigger: "change" },
+  ],
+});
 
+// method
 const initData = () => {
   getMemberList();
   //   orgDetailMsgFn();
@@ -350,7 +363,7 @@ const organTreeFn = () => {
     arr.push(res[0].id);
     arrStar.value = arr;
     treeLoading.value = false;
-    console.log(10122, dataSource.value, arrStar.value);
+    // console.log(10122, dataSource.value, arrStar.value);
   });
 };
 
@@ -385,6 +398,10 @@ const viewOrgan = (data: { id: any }) => {
 const editOrganNameFn = () => {
   isUpdateName.value = false;
 };
+const orgainNameBlur = () => {
+  isUpdateName.value = true;
+  saveOrganNameFn();
+};
 // 保存组织名称
 const saveOrganNameFn = () => {
   ElMsgBox.confirm("是否保存修改的组织名称?", "确认", {
@@ -397,7 +414,6 @@ const saveOrganNameFn = () => {
         id: orgMsg.id,
         orgName: orgainName.value,
       };
-      console.log(11100, data);
       updateOrgan(data).then((res) => {
         ElMsgToast({
           type: "success",
@@ -416,22 +432,31 @@ const saveOrganNameFn = () => {
     });
 };
 // 添加组织弹窗确认
-const addOrgan = () => {
-  let newTreeData = newData.newTree;
-  dialogFormVisible.value = false;
-  orgNameVal.value = form.orgName || "默认组织";
-  let data = {
-    parentOrgId: newTreeData?.id,
-    orgName: form.orgName,
-    parentName: form.parentName,
-  };
-  addOrganApi(data).then((res) => {
-    console.log(666111, res);
-    if (res) {
-      ElMsgToast({
-        message: "新增成功！",
+
+const addOrgan = async (formEl) => {
+  buttonLoadingRef.value = true;
+  if (!formEl) return;
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      buttonLoadingRef.value = false;
+      let newTreeData = newData.newTree;
+      dialogFormVisible.value = false;
+      orgNameVal.value = form.orgName || "默认组织";
+      let data = {
+        parentOrgId: newTreeData?.id,
+        orgName: form.orgName,
+        parentName: form.parentName,
+      };
+      addOrganApi(data).then((res) => {
+        if (res) {
+          ElMsgToast({
+            message: "新增成功！",
+          });
+          organTreeFn();
+        }
       });
-      organTreeFn();
+    } else {
+      console.log("error submit!", fields);
     }
   });
 };
@@ -453,13 +478,11 @@ const removeOrganFn = (node: Node, data: Tree) => {
     buttonSize: "small",
   }).then(async () => {
     if (node.parent) {
-      console.log(99911111, node, node.parent, data, data.id);
       const parent = node.parent;
       const children: Tree[] = parent.data.children || parent.data;
       const index = children.findIndex((d) => d.id === data.id);
       children.splice(index, 1);
       dataSource.value = [...dataSource.value];
-      console.log(99911199, node, data, data.id, index);
       await removeOrgan(data.id);
       ElMsgToast({
         type: "success",
@@ -507,11 +530,10 @@ const getMemberList = () => {
   const params = { orgId: listQuery.id };
   organMemberList(params).then((res) => {
     if (res.records) {
-      console.log(res.records, 888);
       tableData.value = res.records;
       pageTotal.value = res.total || 0;
       actionBarTit.actionBarTitVlu = `组织成员(${pageTotal.value})`;
-      console.log(111111, actionBarTit.actionBarTitVlu);
+      //   console.log(111111, actionBarTit.actionBarTitVlu);
       listLoading.value = false;
     } else {
       tableData.value = [];
@@ -528,13 +550,13 @@ const getMemberList = () => {
 //     orgMsg.value = res.data;
 //   });
 // };
+
 // 点击当前节点
 const clickNowNode = (data: {
   id: string;
   createTime: string;
   title: string;
 }) => {
-  console.log(data.id, "99");
   orgMsg.id = data.id;
   orgMsg.createTime = data.createTime;
   orgainName.value = data.title;
@@ -578,6 +600,11 @@ const connectMember = () => {
 const filterMethod = (query: string, node: TreeNode) => {
   return node?.title?.includes(query);
 };
+onBeforeMount(() => {
+  const screenHeight =
+    document.documentElement.clientHeight || document.body.clientHeight;
+  treeHeight.value = screenHeight - 280;
+});
 onMounted(() => {
   initData();
 });

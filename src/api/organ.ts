@@ -3,7 +3,6 @@ import { API_ENN_USER, API_ENN_SYSTEM } from "@/const";
 
 //新增组织
 export function addOrganApi(data: any): Promise<any> {
-  console.log(9999000, data);
   return Service({
     method: "post",
     url: `${API_ENN_SYSTEM}/org/add`,
@@ -22,7 +21,6 @@ export function updateOrgan(data: any): Promise<any> {
 
 //删除组织
 export function removeOrgan(data: any): Promise<any> {
-  console.log(data, 999333);
   return Service({
     method: "post",
     url: `${API_ENN_SYSTEM}/org/remove?ids=${data}`,
@@ -48,7 +46,6 @@ export function organTree(): Promise<any> {
 
 //获取组织成员列表
 export function organMemberList(params: any): Promise<any> {
-  console.log(777777, params);
   return Service({
     method: "get",
     url: `${API_ENN_SYSTEM}/org/user/list?orgId=${params.orgId}`,
@@ -67,7 +64,6 @@ export function orgDetailMsg(params: any): Promise<any> {
 
 //组织中移除成员关联
 export function refOrganMemberApi(data: any): Promise<any> {
-  console.log(666999, data);
   //   let dataList = params.result
   return Service({
     method: "post",
