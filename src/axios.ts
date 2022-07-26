@@ -4,6 +4,8 @@ import website from "@/config/website";
 // import { getToken } from "@/utils/auth";
 import { Base64 } from "js-base64";
 
+console.log(process.env.VUE_APP_PINGTAI_PORTAL_URL);
+
 const instance = axios.create({
   // baseURL,
   timeout: 5 * 1000,
@@ -45,18 +47,6 @@ instance.interceptors.response.use(
   (error) => {
     //网络层错误 200 之外
     const { message, status } = error.toJSON();
-    let targetOrigin1, targetOrigin2;
-    const envName = process.env.NODE_ENV;
-    if (envName === "DEV") {
-      targetOrigin1 = "http://10.39.68.150:8081";
-      targetOrigin2 = "http://10.39.68.150:8083";
-    } else if (envName === "TEST") {
-      targetOrigin1 = "http://10.39.68.49:8081";
-      targetOrigin2 = "http://10.39.68.49:8083";
-    } else {
-      targetOrigin1 = "https://o-iot.ennew.com";
-      targetOrigin2 = "https://console-iot.ennew.com";
-    }
     if (status === 401) {
       if (window.self === window.top) {
         window.location.href =
@@ -71,14 +61,14 @@ instance.interceptors.response.use(
             type: "logout",
             data: "1", // 权限数据
           },
-          targetOrigin1
+          process.env.VUE_APP_YINGYONG_PORTAL_URL!
         );
         window.parent.postMessage(
           {
             type: "logout",
             data: "1", // 权限数据
           },
-          targetOrigin2
+          process.env.VUE_APP_PINGTAI_PORTAL_URL!
         );
       }
     }
