@@ -1,22 +1,7 @@
 const { join } = require("path"); // eslint-disable-line
-const CopyPlugin = require("copy-webpack-plugin"); // eslint-disable-line
 const CompressionPlugin = require("compression-webpack-plugin"); // eslint-disable-line
 const resolve = (dir) => join(__dirname, dir);
 const isProduction = process.env.NODE_ENV === "production";
-
-const copy = !isProduction
-  ? [
-      {
-        from: join(__dirname, `env/env_${process.env.APP_ENV}.js`),
-        to: join(__dirname, "dist/env_config.js"),
-      },
-    ]
-  : [
-      {
-        from: join(__dirname, "env"),
-        to: join(__dirname, "dist/env"),
-      },
-    ];
 
 module.exports = {
   chainWebpack: (config) => {
@@ -48,7 +33,6 @@ module.exports = {
   },
 
   configureWebpack(config) {
-    config.plugins.push(new CopyPlugin(copy));
     if (isProduction) {
       // gzip
       config.plugins.push(
@@ -71,7 +55,7 @@ module.exports = {
     hotOnly: true, // 热更新
     proxy: {
       "/api": {
-        target: "http://10.39.68.150:8082",
+        target: process.env.VUE_APP_API_BASE_URL,
         changeOrigin: true,
         // secure: false,
       },
