@@ -71,7 +71,7 @@ module.exports = {
     hotOnly: true, // 热更新
     proxy: {
       "/api": {
-        target: "http://10.39.68.150:8082",
+        target: process.env.VUE_APP_API_BASE_URL,
         changeOrigin: true,
         // secure: false,
       },

@@ -50,7 +50,7 @@ instance.interceptors.response.use(
     if (status === 401) {
       if (window.self === window.top) {
         window.location.href =
-          "http://10.39.68.150:8082" +
+          process.env.VUE_APP_LOGIN_URL +
           "/login?redirect=" +
           window.location.protocol +
           "//" +

@@ -5,10 +5,12 @@
   "scripts": {
     "start": "enpm run serve",
     "serve": "cross-env ENV_TYPE=local APP_ENV=DEV vue-cli-service serve",
-    "serve:test": "cross-env ENV_TYPE=local APP_ENV=TEST vue-cli-service serve",
-    "serve:uat": "cross-env ENV_TYPE=local APP_ENV=UAT vue-cli-service serve",
+    "serve:test": "cross-env ENV_TYPE=local APP_ENV=TEST vue-cli-service serve --mode test",
+    "serve:uat": "cross-env ENV_TYPE=local APP_ENV=UAT vue-cli-service serve --mode production",
     "serve:prod": "cross-env ENV_TYPE=local APP_ENV=PRO vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:test": "vue-cli-service build --mode test",
+    "build:prod": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
