@@ -4,8 +4,6 @@ import website from "@/config/website";
 // import { getToken } from "@/utils/auth";
 import { Base64 } from "js-base64";
 
-// const baseURL = window._env_.baseURL;
-declare const VUE_APP_LOGIN_URL: string;
 const instance = axios.create({
   // baseURL,
   timeout: 5 * 1000,
@@ -50,7 +48,7 @@ instance.interceptors.response.use(
     if (status === 401) {
       if (window.self === window.top) {
         window.location.href =
-          VUE_APP_LOGIN_URL +
+          process.env.VUE_APP_LOGIN_URL +
           "/login?redirect=" +
           window.location.protocol +
           "//" +
