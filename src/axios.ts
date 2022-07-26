@@ -5,12 +5,12 @@ import website from "@/config/website";
 import { Base64 } from "js-base64";
 
 // const baseURL = window._env_.baseURL;
+declare const VUE_APP_LOGIN_URL: string;
 const instance = axios.create({
   // baseURL,
   timeout: 5 * 1000,
   headers: {
     "Content-Type": "application/json",
-    // "X-GW-AccessKey": window._env_.accessKey,
   },
 });
 
@@ -50,7 +50,7 @@ instance.interceptors.response.use(
     if (status === 401) {
       if (window.self === window.top) {
         window.location.href =
-          process.env.VUE_APP_LOGIN_URL +
+          VUE_APP_LOGIN_URL +
           "/login?redirect=" +
           window.location.protocol +
           "//" +
