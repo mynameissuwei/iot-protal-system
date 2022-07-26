@@ -45,7 +45,7 @@ instance.interceptors.response.use(
   (error) => {
     //网络层错误 200 之外
     const { message, status } = error.toJSON();
-    if (status === 401) {
+    if (+status === 401) {
       if (window.self === window.top) {
         window.location.href =
           process.env.VUE_APP_LOGIN_URL +
@@ -68,7 +68,11 @@ instance.interceptors.response.use(
         );
       }
     }
-    if (status !== 417 && status !== 418) {
+    if (+status === 400) {
+      // 后端无法处理 “请求参数” 的报错，前端兼容处理
+      const { msg } = error?.response?.data || {};
+      ElMsgToast.error(msg);
+    } else if (+status !== 417 && +status !== 418) {
       ElMsgToast.error(message);
     }
   }
