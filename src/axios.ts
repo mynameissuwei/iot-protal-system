@@ -34,13 +34,11 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => {
     // 网络层 状态码 200
-    const { code, data, msg, errorCode, errorMessage } = response.data || {};
-    if (+code === 200 || errorCode === "00000") {
+    const { code, data, msg } = response.data || {};
+    if (+code === 200) {
       return data;
     } else {
-      ElMsgToast.error(
-        errorMessage !== "" ? `[${errorCode}]${errorMessage}` : `${msg}`
-      );
+      ElMsgToast.error(`${msg}`);
     }
     return Promise.reject(response.data); //需要在接口的catch里抓这个data
   },
@@ -52,9 +50,7 @@ instance.interceptors.response.use(
         window.location.href =
           process.env.VUE_APP_LOGIN_URL +
           "/login?redirect=" +
-          window.location.protocol +
-          "//" +
-          window.location.host; //  http://10.39.68.150:8082 -> dev环境的登录页面
+          window.location.origin;
       } else {
         window.parent.postMessage(
           {
@@ -74,13 +70,6 @@ instance.interceptors.response.use(
     }
     if (status !== 417 && status !== 418) {
       ElMsgToast.error(message);
-    }
-    //兼容630之前 后端代码报错信息
-    const { code, errorCode, errorMessage, msg } = error?.response?.data || {};
-    if ((code !== 200 || errorCode !== "00000") && (errorMessage || msg)) {
-      ElMsgToast.error(
-        errorMessage !== "" ? `[${errorCode}]${errorMessage}` : `${msg}`
-      );
     }
   }
 );
