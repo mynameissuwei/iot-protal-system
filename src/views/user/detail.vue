@@ -18,7 +18,7 @@
             maxlength="20"
             v-show="type === 'edit'"
             v-model="state.formData.name"
-            @input="(value) => handleInputCheck('name', value)"
+            @input="(value:string) => handleInputCheck('name', value)"
           ></el-input>
           <div class="errormsg" v-show="type === 'edit' && errorname">
             {{ errorname }}
@@ -31,7 +31,7 @@
             maxlength="11"
             v-show="type === 'edit'"
             v-model="state.formData.phone"
-            @input="(value) => handleInputCheck('phone', value)"
+            @input="(value:string) => handleInputCheck('phone', value)"
           ></el-input>
           <div class="errormsg" v-show="type === 'edit' && errormsg">
             {{ errormsg }}
