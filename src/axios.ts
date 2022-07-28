@@ -57,14 +57,14 @@ instance.interceptors.response.use(
             type: "logout",
             data: "1", // 权限数据
           },
-          process.env.VUE_APP_YINGYONG_PORTAL_URL!
+          process.env.VUE_APP_YINGYONG_PORTAL_URL as string
         );
         window.parent.postMessage(
           {
             type: "logout",
             data: "1", // 权限数据
           },
-          process.env.VUE_APP_PINGTAI_PORTAL_URL!
+          process.env.VUE_APP_PINGTAI_PORTAL_URL as string
         );
       }
     }
