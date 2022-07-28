@@ -86,9 +86,7 @@ const httpRequest = (params: any) => {
       const { errorId, errorCount, totalCount } = data;
       if (errorCount != 0) {
         props.handleHidden();
-        msg.value = `本次共解析${totalCount}条数据，其中${errorCount}条解析失败，导入${
-          totalCount - errorCount
-        }条。`;
+        msg.value = `本次共解析${totalCount}条数据，其中${errorCount}条解析失败。`;
 
         ElMsgBox.show(msg.value, "导入失败", {
           confirmButtonText: "关闭并下载错误文件",
