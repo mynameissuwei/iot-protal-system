@@ -89,6 +89,7 @@
         </h4>
         <h4 class="table-orgain-tit" v-if="!isUpdateName">
           <el-input
+            ref="refInput"
             v-model="orgainName"
             placeholder="请输入名称(最多50个字符)"
             @blur="orgainNameBlur()"
@@ -219,7 +220,15 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, reactive, markRaw, onMounted, onBeforeMount } from "vue";
+import {
+  watch,
+  ref,
+  reactive,
+  markRaw,
+  onMounted,
+  onBeforeMount,
+  nextTick,
+} from "vue";
 import { ElTreeV2 } from "element-plus";
 import type { TreeNode } from "element-plus/es/components/tree-v2/src/types";
 import { useRouter } from "vue-router";
@@ -281,6 +290,7 @@ const actionBarTit = reactive({
 });
 const listLoading = ref(false);
 
+const refInput = ref();
 const arrStar = ref([]);
 const valueWidth = ref(1 / 5);
 const filterText = ref("");
@@ -371,6 +381,7 @@ const organTreeFn = () => {
 
 watch(filterText, (val) => {
   treeRef.value!.filter(val);
+  isUpdateName.value = false;
 });
 
 // const filterNode = (value: string, data: Tree) => {
@@ -399,6 +410,10 @@ const viewOrgan = (data: { id: any }) => {
 // 编辑组织名称
 const editOrganNameFn = () => {
   isUpdateName.value = false;
+  nextTick(() => {
+    console.log("进入");
+    refInput.value.focus();
+  });
 };
 const orgainNameBlur = () => {
   isUpdateName.value = true;
