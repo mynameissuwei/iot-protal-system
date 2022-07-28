@@ -3,6 +3,7 @@ import { ElMsgToast } from "@enn/ency-design";
 import website from "@/config/website";
 // import { getToken } from "@/utils/auth";
 import { Base64 } from "js-base64";
+import { de } from "element-plus/lib/locale";
 
 console.log(process.env.VUE_APP_PINGTAI_PORTAL_URL);
 

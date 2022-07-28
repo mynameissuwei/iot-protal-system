@@ -381,7 +381,6 @@ const organTreeFn = () => {
 
 watch(filterText, (val) => {
   treeRef.value!.filter(val);
-  isUpdateName.value = false;
 });
 
 // const filterNode = (value: string, data: Tree) => {
