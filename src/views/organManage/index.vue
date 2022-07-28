@@ -182,6 +182,7 @@
           :width="600"
           v-model="dialogConnectMemberVisible"
           title="关联组织成员"
+          custom-class="connectSelect"
         >
           <p class="conect-title">选择关联成员:</p>
           <el-combo-box
@@ -197,7 +198,7 @@
             <el-option
               v-for="item in connectOptions"
               :key="item.id"
-              :label="item.account"
+              :label="`${item.account}(${item.name ? item.name : '无昵称'})`"
               :value="item.id"
             />
           </el-combo-box>
@@ -262,6 +263,7 @@ interface Tree {
 interface OptionData {
   id: string;
   account: string;
+  name: string;
 }
 
 // let id = 1000;
@@ -774,6 +776,10 @@ onMounted(() => {
     position: absolute;
     right: -10px !important;
   }
+}
+
+:deep(.el-dialog.connectSelect .el-select__input) {
+  height: 40px !important;
 }
 .tit-editBtn {
   //   margin: 0 13px;
