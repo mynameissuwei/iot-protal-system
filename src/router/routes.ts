@@ -5,6 +5,7 @@ const Home = () => import("@/views/home/index.vue");
 const Detail = () => import("@/views/user/detail.vue");
 const Member = () => import("@/views/member/index.vue");
 const OrganManage = () => import("@/views/organManage/index.vue");
+const RoleManage = () => import("@/views/roleManage/index.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -51,6 +52,15 @@ const routes: Array<RouteRecordRaw> = [
           key: "organManage",
         },
         component: OrganManage,
+      },
+      {
+        path: "/roleManage",
+        name: "roleManage",
+        meta: {
+          title: "角色管理",
+          key: "roleManage",
+        },
+        component: RoleManage,
       },
     ],
   },

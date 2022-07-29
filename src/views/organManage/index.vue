@@ -333,7 +333,7 @@ const originData = reactive({
       },
     },
     {
-      label: "删除",
+      label: "移除成员",
       icon: markRaw(Delete),
       buttonType: "secondary",
       operateType: "business",
