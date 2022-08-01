@@ -15,12 +15,12 @@ const menuList: MenuInfo[] = [
     url: "/member",
     icon: "",
   },
-  // {
-  //   name: "角色管理",
-  //   desc: "角色管理",
-  //   key: "roleManage",
-  //   url: "/roleManage",
-  //   icon: "",
-  // },
+  {
+    name: "角色管理",
+    desc: "角色管理",
+    key: "roleManage",
+    url: "/roleManage",
+    icon: "",
+  },
 ];
 export default menuList;

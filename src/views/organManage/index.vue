@@ -805,3 +805,14 @@ onMounted(() => {
   margin-right: 12px;
 }
 </style>
+<style lang="less">
+.table-orgain {
+  margin-left: 6px;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  padding: 23px 16px 10px 16px;
+}
+</style>

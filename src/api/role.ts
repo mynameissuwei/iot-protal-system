@@ -5,7 +5,7 @@ import { API_ENN_USER, API_ENN_SYSTEM } from "@/const";
 export function refRoleApi(data: any): Promise<any> {
   return Service({
     method: "post",
-    url: `${API_ENN_SYSTEM}/enn-system/role/remove`,
+    url: `${API_ENN_SYSTEM}/role/remove`,
     data,
   });
 }
@@ -13,7 +13,7 @@ export function refRoleApi(data: any): Promise<any> {
 export function roleListApi(params: any): Promise<any> {
   return Service({
     method: "get",
-    url: `${API_ENN_SYSTEM}/enn-system/role/list`,
-    // orgId: params.orgId
+    url: `${API_ENN_SYSTEM}/role/list`,
+    params: params,
   });
 }
