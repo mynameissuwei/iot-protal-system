@@ -85,7 +85,7 @@
       </div>
     </div>
     <div class="limit">
-      <h1>权限信息</h1>
+      <h1>角色信息</h1>
       <el-checkbox-group v-model="checkList" v-show="type === 'edit'">
         <el-checkbox v-for="item in options" :label="item.id" :key="item.id">{{
           item.roleName
@@ -209,9 +209,11 @@ const initData = () => {
     treeOptions.value = res;
   });
   getUserInfo();
-  getRoletList({ current: 1, size: 50 }).then((res) => {
-    options.value = res.records;
-  });
+  getRoletList({ tenantId: route.query.tenantId, current: 1, size: 50 }).then(
+    (res) => {
+      options.value = res.records;
+    }
+  );
 };
 const getUserInfo = () => {
   loading.value = false;

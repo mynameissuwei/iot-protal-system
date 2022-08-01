@@ -264,6 +264,7 @@ const handleEdit = (data, type) => {
     path: "/detail",
     query: {
       userId: data.id,
+      tenantId: data.tenantId,
       type,
     },
   });

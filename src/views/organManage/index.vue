@@ -397,12 +397,13 @@ const handlePageChange = (val: number) => {
   getMemberList();
 };
 // 查看成员详情
-const viewOrgan = (data: { id: any }) => {
+const viewOrgan = (data: { id: string; tenantId: string }) => {
   router.push({
     path: "/detail",
     query: {
       userId: data.id,
       type: "view",
+      tenantId: data.tenantId,
     },
   });
 };
