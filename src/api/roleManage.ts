@@ -9,15 +9,15 @@ export function fetchData(params: any): Promise<any> {
   });
 }
 
-export const deleteList = (params: any): any => {
+export const deleteList = (data: any): Promise<any> => {
   return Service({
     url: `${API_ENN_SYSTEM}/role/remove/user`,
     method: "post",
-    params,
+    data,
   });
 };
 
-export function addConnectMember(data: any): any {
+export function addConnectMember(data: any): Promise<any> {
   return Service({
     method: "post",
     url: `${API_ENN_SYSTEM}/role/add/user`,

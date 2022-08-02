@@ -120,7 +120,7 @@ import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import { geQueryUserList } from "@/api/organ";
 
 const listQuery = reactive({
-  roleId: 1123598816738675201,
+  roleId: "1123598816738675201",
   account: "",
   name: "",
   phone: "",
@@ -162,8 +162,9 @@ const remoteMethod = (query) => {
 const connectMember = () => {
   connectButtonLoading.value = true;
   addConnectMember({
+    roleId: listQuery.roleId,
     orgId: orgMsg.id,
-    uidList: connectValue.value,
+    userList: connectValue.value,
   }).then(() => {
     dialogConnectMemberVisible.value = false;
     ElMsgToast({
@@ -183,7 +184,6 @@ const handleSelectionChange = (val) => {
 const getData = () => {
   listLoading.value = true;
   fetchData(listQuery).then((res) => {
-    console.log(res, "ressssssss");
     tableData.value = res.records;
     pageTotal.value = res.total || 50;
     listLoading.value = false;
@@ -197,9 +197,9 @@ const handleDelete = () => {
     type: "warning",
     buttonSize: "small",
   }).then(async () => {
-    const result = multipleSelection.value.map((item) => item.id);
-    const ids = result.join(",");
-    await deleteList({ ids });
+    const userList = multipleSelection.value.map((item) => item.id);
+
+    await deleteList({ userList, roleId: listQuery.roleId });
     await getData();
     ElMsgToast({
       type: "success",
