@@ -14,11 +14,26 @@
         ref="multipleTable"
         v-loading="listLoading"
       >
-        <!-- <el-table-column type="selection" width="55"></el-table-column> -->
-        <el-table-column prop="account" label="资源名称" />
-        <el-table-column prop="name" label="资源标识" />
-        <el-table-column prop="phone" label="资源类型" />
-        <el-table-column prop="createTime" label="资源位置" />
+        <el-table-column
+          v-for="item in tableColumns"
+          :key="item.key"
+          :prop="item.key"
+          :label="item.title"
+          :width="item.width"
+        >
+          <template v-if="item.render" #default="scope">
+            <div class="flex items-center">
+              <el-avatar
+                v-if="item.avatar"
+                shape="square"
+                :size="20"
+                fit="fill"
+                :src="scope.row.avatarSrc"
+              ></el-avatar>
+              <span v-html="item.render(scope.row)"></span>
+            </div>
+          </template>
+        </el-table-column>
         <!-- <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
             <span @click="handleEdit(scope.row, 'edit')" class="actionClass"
@@ -77,18 +92,19 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
-import { fetchData, getMenuTree, getRolesTree, grantRoles } from "@/api";
-import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
+import { useRoute, useRouter } from "vue-router";
+import { getRoleListMenu } from "@/api";
 import { MenuTreeData } from "@/types";
+const route = useRoute();
+const roleId = ref(route.query.roleId) ?? "1123598816738675201";
 
-const listQuery = reactive({
-  account: "",
-  name: "",
-  phone: "",
+const initListQueryData = {
+  roleId: "1123598816738675201",
   current: 1,
   size: 10,
-});
+};
+
+const listQuery = reactive(initListQueryData);
 const tableData = ref([]);
 const pageTotal = ref(0);
 const listLoading = ref(false);
@@ -101,6 +117,31 @@ const menuProps = {
   label: "title",
   children: "children",
 };
+const tableColumns = [
+  {
+    title: "资源名称",
+    key: "name",
+    // width: "120",
+  },
+  {
+    title: "资源标识",
+    key: "code",
+    // width: "120",
+  },
+  {
+    title: "资源类型",
+    key: "category",
+    width: "120",
+    render: (row) => {
+      return +row.category === 1 ? "菜单" : "按钮";
+    },
+  },
+  {
+    title: "资源位置",
+    key: "path",
+    width: "340",
+  },
+];
 
 const dialogResourceVisible = ref(false);
 const selectKeys = ref([]);
@@ -109,27 +150,27 @@ const roleIds = "1529740265311748097"; // 当前角色id
 const menuTreeData = ref<MenuTreeData[]>([]);
 const treeRef: any = ref<HTMLElement | null>(null);
 
-// 打开资源范围弹窗
-const handleResourceDialog = () => {
-  getRolesTree({ roleIds }).then((res) => {
-    selectKeys.value = res;
-  });
-  dialogResourceVisible.value = true;
-};
+// // 打开资源范围弹窗
+// const handleResourceDialog = () => {
+//   getRolesTree({ roleIds }).then((res) => {
+//     selectKeys.value = res;
+//   });
+//   dialogResourceVisible.value = true;
+// };
 
-// 编辑资源范围确定
-const editResource = () => {
-  grantRoles({
-    roleIds: [roleIds],
-    menuIds: selectKeys.value,
-  }).then((res) => {
-    console.log(res);
-    ElMsgToast({
-      message: "编辑成功！",
-    });
-    dialogResourceVisible.value = false;
-  });
-};
+// // 编辑资源范围确定
+// const editResource = () => {
+//   grantRoles({
+//     roleIds: [roleIds],
+//     menuIds: selectKeys.value,
+//   }).then((res) => {
+//     console.log(res);
+//     ElMsgToast({
+//       message: "编辑成功！",
+//     });
+//     dialogResourceVisible.value = false;
+//   });
+// };
 
 // 监听搜索
 watch(filterText, (val) => {
@@ -152,7 +193,7 @@ const filterNode = (value: string, data: MenuTreeData) => {
 // 获取表格数据
 const getData = () => {
   listLoading.value = true;
-  fetchData(listQuery).then((res) => {
+  getRoleListMenu(listQuery).then((res) => {
     tableData.value = res.records;
     pageTotal.value = res.total || 50;
     listLoading.value = false;
@@ -192,14 +233,7 @@ const handleSizeChange = (val) => {
 };
 // 重置操作
 const handleReset = () => {
-  const data = {
-    account: "",
-    name: "",
-    phone: null,
-    current: 1,
-    size: 10,
-  };
-  Object.assign(listQuery, data);
+  Object.assign(listQuery, initListQueryData);
   multipleSelection.value = [];
   getData();
 };
@@ -222,10 +256,6 @@ const handleEdit = (data, type) => {
 };
 onMounted(() => {
   getData();
-  getMenuTree().then((res) => {
-    console.log(res);
-    menuTreeData.value = res;
-  });
 });
 </script>
 
