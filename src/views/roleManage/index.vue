@@ -220,6 +220,7 @@ const roleEdit = (data: any) => {
 };
 // 查看
 const roleView = (data: { id: number }) => {
+  console.log(111111, data);
   router.push({
     path: "/roleList",
     query: {
