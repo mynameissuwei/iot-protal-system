@@ -13,12 +13,21 @@ export interface Rule {
 }
 
 export interface MenuItem {
-  name: string
-  desc: string
-  key: string
-  url: string
-  icon?: string
+  name: string;
+  desc: string;
+  key: string;
+  url: string;
+  icon?: string;
 }
 export interface MenuInfo extends MenuItem {
-  subMenu?: MenuItem[]
+  subMenu?: MenuItem[];
+}
+
+//菜单树
+export interface MenuTreeData extends MenuItem {
+  id: string;
+  key: string;
+  parentId: string;
+  title: string;
+  children?: MenuTreeData[];
 }

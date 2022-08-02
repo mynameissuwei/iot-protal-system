@@ -2,6 +2,8 @@ const { join } = require("path"); // eslint-disable-line
 const CompressionPlugin = require("compression-webpack-plugin"); // eslint-disable-line
 const resolve = (dir) => join(__dirname, dir);
 const isProduction = process.env.NODE_ENV === "production";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const VersionWebpackPlugin = require("./webpack-plugin/version-webpck-plugin");
 
 module.exports = {
   chainWebpack: (config) => {
@@ -33,6 +35,7 @@ module.exports = {
   },
 
   configureWebpack(config) {
+    config.plugins.push(new VersionWebpackPlugin());
     if (isProduction) {
       // gzip
       config.plugins.push(
