@@ -36,28 +36,29 @@ const buildDate = `${
   ":" +
   nowDate.getMinutes()
 }`;
+const versionInfo = `版本信息：${commitHash}, ${branchName}, ${commitDate}, ${buildDate}`;
+module.exports = { versionInfo };
 
-// webpack插件
-class VersionWebpackPlugin {
-  constructor(options) {
-    // options 为调用时传的参数
-  }
-  /**
-   * compiler: webpack 的实例 所有的内容
-   * compilation: 本次打包的内容
-   * */
-  apply(compiler) {
-    // 异步方法，生成打包目录时：生成文件
-    compiler.hooks.emit.tapAsync("VersionWebpackPlugin", (compilation, cb) => {
-      const versionInfo = `版本信息：${commitHash}, ${branchName}, ${commitDate}, ${buildDate}`;
-      console.log(JSON.stringify(versionInfo));
-      // compilation.assets["version.txt"] = {
-      //   source: () => versionInfo,
-      //   size: () => versionInfo.length,
-      // };
-      cb();
-    });
-  }
-}
-
-module.exports = VersionWebpackPlugin;
+// // webpack插件
+// class VersionWebpackPlugin {
+//   constructor(options) {
+//     // options 为调用时传的参数
+//   }
+//   /**
+//    * compiler: webpack 的实例 所有的内容
+//    * compilation: 本次打包的内容
+//    * */
+//   apply(compiler) {
+//     console.log("vvvv", compiler.options.plugins[1]);
+//     // 异步方法，生成打包目录时：生成文件
+//     compiler.hooks.emit.tapAsync("VersionWebpackPlugin", (compilation, cb) => {
+//       const versionInfo = `版本信息：${commitHash}, ${branchName}, ${commitDate}, ${buildDate}`;
+//       console.log(JSON.stringify(versionInfo));
+//       // compilation.assets["version.txt"] = {
+//       //   source: () => versionInfo,
+//       //   size: () => versionInfo.length,
+//       // };
+//       cb();
+//     });
+//   }
+// }

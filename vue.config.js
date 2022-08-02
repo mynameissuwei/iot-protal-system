@@ -3,7 +3,7 @@ const CompressionPlugin = require("compression-webpack-plugin"); // eslint-disab
 const resolve = (dir) => join(__dirname, dir);
 const isProduction = process.env.NODE_ENV === "production";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const VersionWebpackPlugin = require("./webpack-plugin/version-webpck-plugin");
+const { versionInfo } = require("./webpack-plugin/version-webpck-plugin");
 
 module.exports = {
   chainWebpack: (config) => {
@@ -32,10 +32,14 @@ module.exports = {
       .test(/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/)
       .exclude.add(resolve("src/assets/images/svg-icon/icons"))
       .end();
+    config.plugin("define").tap((args) => {
+      args[0]["process.env"].VERSION = JSON.stringify(versionInfo);
+      return args;
+    });
   },
 
   configureWebpack(config) {
-    config.plugins.push(new VersionWebpackPlugin());
+    // config.plugins.push(new VersionWebpackPlugin());
     if (isProduction) {
       // gzip
       config.plugins.push(
