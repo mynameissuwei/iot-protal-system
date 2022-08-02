@@ -133,13 +133,20 @@ const tableColumns = [
     key: "category",
     width: "120",
     render: (row) => {
-      return +row.category === 1 ? "菜单" : "按钮";
+      switch (+row.category) {
+        case 1:
+          return "菜单";
+        case 2:
+          return "按钮";
+        default:
+          return "--";
+      }
     },
   },
   {
     title: "资源位置",
     key: "path",
-    width: "340",
+    width: "540",
   },
 ];
 
