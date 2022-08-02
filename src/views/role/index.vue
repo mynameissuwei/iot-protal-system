@@ -2,18 +2,19 @@
   <div class="member-container">
     <div class="view-container">
       <div class="table-box">
-        <el-button type="primary" @click="handleAdd">编辑资源范围</el-button>
-        <el-button @click="handleDelete">删除</el-button>
+        <el-button type="primary" @click="handleResourceDialog"
+          >编辑资源范围</el-button
+        >
+        <!-- <el-button @click="handleDelete">删除</el-button> -->
       </div>
       <el-table
         :header-cell-style="{ background: '#F6F7FB' }"
         :data="tableData"
         highlight-current-row
         ref="multipleTable"
-        @selection-change="handleSelectionChange"
         v-loading="listLoading"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <!-- <el-table-column type="selection" width="55"></el-table-column> -->
         <el-table-column prop="account" label="资源名称" />
         <el-table-column prop="name" label="资源标识" />
         <el-table-column prop="phone" label="资源类型" />
@@ -44,30 +45,29 @@
         :getData="getData"
       ></v-upload>
       <!-- 编辑弹出框 -->
-      <el-dialog title="编辑资源范围" v-model="editVisible" width="500px">
-        <el-form
-          label-width="90px"
-          ref="ruleFormRef"
-          :rules="rules"
-          :model="ruleForm"
-        >
-          <el-form-item label="账号名" prop="account">
-            <el-input v-model="ruleForm.account"></el-input>
-          </el-form-item>
-          <el-form-item label="昵称" prop="name">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-          <el-form-item label="手机号" prop="phone">
-            <el-input v-model="ruleForm.phone"></el-input>
-          </el-form-item>
-        </el-form>
-        <div class="userDiag">注：成员创建成功后，初始密码为账号名</div>
+      <el-dialog
+        :width="320"
+        v-model="dialogResourceVisible"
+        title="编辑资源范围"
+      >
+        <div class="tree-body">
+          <el-input v-model="filterText" placeholder="关键字搜索" />
+          <el-tree
+            ref="treeRef"
+            :data="menuTreeData"
+            show-checkbox
+            node-key="id"
+            :props="menuProps"
+            :filter-node-method="filterNode"
+            :default-checked-keys="selectKeys"
+            @check-change="getCurrentSelectArray"
+            style="margin-top: 10px"
+          />
+        </div>
         <template #footer>
           <span class="dialog-footer">
-            <el-button type="primary" @click="saveAdd(ruleFormRef)"
-              >确 定</el-button
-            >
-            <el-button @click="editVisible = false">取 消</el-button>
+            <el-button type="primary" @click="editResource"> 确定 </el-button>
+            <el-button @click="dialogResourceVisible = false">取消</el-button>
           </span>
         </template>
       </el-dialog>
@@ -75,12 +75,19 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, onMounted } from "vue";
+<script setup lang="ts">
+import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { fetchData, deleteList, createUser } from "@/api";
+import {
+  fetchData,
+  deleteList,
+  createUser,
+  getMenuTree,
+  getRolesTree,
+  grantRoles,
+} from "@/api";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
-import { phonePattern } from "@/utils/pattern";
+import { MenuTreeData } from "@/types";
 import vUpload from "../home";
 
 const listQuery = reactive({
@@ -95,62 +102,61 @@ const pageTotal = ref(0);
 const listLoading = ref(false);
 const multipleSelection = ref([]);
 const router = useRouter();
-
-// 表格编辑时弹窗和保存
-const ruleFormRef = ref();
-const editVisible = ref(false);
 const importVisible = ref(false);
-const buttonLoadingRef = ref(false);
-const rules = reactive({
-  account: [
-    { required: true, message: "请输入账号名", trigger: "change" },
-    { min: 1, max: 20, message: "请输入1到20位", trigger: "change" },
-  ],
-  name: [{ min: 0, max: 20, message: "请输入0到20位", trigger: "change" }],
-  phone: [
-    {
-      pattern: phonePattern,
-      message: "手机号格式不对",
-      trigger: "change",
-    },
-  ],
-});
-let ruleForm = reactive({
-  account: "",
-  name: "",
-  phone: "",
-});
-const handleAdd = () => {
-  const data = {
-    account: null,
-    name: null,
-    phone: null,
-  };
-  Object.assign(ruleForm, data);
-  editVisible.value = true;
+
+// 编辑资源范围弹窗
+const menuProps = {
+  label: "title",
+  children: "children",
 };
-const saveAdd = async (formEl) => {
-  buttonLoadingRef.value = true;
-  if (!formEl) return;
-  await formEl.validate(async (valid, fields) => {
-    if (valid) {
-      await createUser(ruleForm);
-      await getData();
-      buttonLoadingRef.value = false;
-      editVisible.value = false;
-      // ElMsgToast({
-      //   type: "success",
-      //   message: "添加成功",
-      // });
-    } else {
-      console.log("error submit!", fields);
-    }
+
+const dialogResourceVisible = ref(false);
+const selectKeys = ref([]);
+const filterText = ref("");
+const roleIds = "1529740265311748097"; // 当前角色id
+const menuTreeData = ref<MenuTreeData[]>([]);
+const treeRef: any = ref<HTMLElement | null>(null);
+
+// 打开资源范围弹窗
+const handleResourceDialog = () => {
+  getRolesTree({ roleIds }).then((res) => {
+    selectKeys.value = res;
+  });
+  dialogResourceVisible.value = true;
+};
+
+// 编辑资源范围确定
+const editResource = () => {
+  grantRoles({
+    roleIds: [roleIds],
+    menuIds: selectKeys.value,
+  }).then((res) => {
+    console.log(res);
+    ElMsgToast({
+      message: "编辑成功！",
+    });
+    dialogResourceVisible.value = false;
   });
 };
-//多选删除
-const handleSelectionChange = (val) => {
-  multipleSelection.value = val;
+
+// 监听搜索
+watch(filterText, (val) => {
+  treeRef.value?.filter(val);
+});
+
+// 获取选择树节点
+const getCurrentSelectArray = () => {
+  selectKeys.value = treeRef.value?.getCheckedKeys();
 };
+
+const filterNode = (value: string, data: MenuTreeData) => {
+  if (!value) return true;
+  return data.title.includes(value);
+};
+//多选删除
+// const handleSelectionChange = (val) => {
+//   multipleSelection.value = val;
+// };
 // 获取表格数据
 const getData = () => {
   listLoading.value = true;
@@ -161,23 +167,23 @@ const getData = () => {
   });
 };
 // 删除操作
-const handleDelete = () => {
-  ElMsgBox.confirm("你确定要删除该用户么?", "警告", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-    buttonSize: "small",
-  }).then(async () => {
-    const result = multipleSelection.value.map((item) => item.id);
-    const ids = result.join(",");
-    await deleteList({ ids });
-    await getData();
-    ElMsgToast({
-      type: "success",
-      message: "删除成功",
-    });
-  });
-};
+// const handleDelete = () => {
+//   ElMsgBox.confirm("你确定要删除该用户么?", "警告", {
+//     confirmButtonText: "确认",
+//     cancelButtonText: "取消",
+//     type: "warning",
+//     buttonSize: "small",
+//   }).then(async () => {
+//     const result = multipleSelection.value.map((item) => item.id);
+//     const ids = result.join(",");
+//     await deleteList({ ids });
+//     await getData();
+//     ElMsgToast({
+//       type: "success",
+//       message: "删除成功",
+//     });
+//   });
+// };
 // 查询操作
 const handleSearch = () => {
   listQuery.current = 1;
@@ -224,6 +230,10 @@ const handleEdit = (data, type) => {
 };
 onMounted(() => {
   getData();
+  getMenuTree().then((res) => {
+    console.log(res);
+    menuTreeData.value = res;
+  });
 });
 </script>
 
@@ -252,5 +262,9 @@ onMounted(() => {
 }
 .userDiag {
   margin-left: 90px;
+}
+.tree-body {
+  max-height: 600px;
+  overflow-y: auto;
 }
 </style>
