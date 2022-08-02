@@ -1,7 +1,7 @@
 import Service from "@/axios";
 import { API_ENN_SYSTEM } from "@/const";
 
-export function fetchData(params: any): Promise<any> {
+export function fetchDataRoleList(params: any): Promise<any> {
   return Service({
     method: "get",
     url: `${API_ENN_SYSTEM}/role/list/user`,
@@ -9,7 +9,7 @@ export function fetchData(params: any): Promise<any> {
   });
 }
 
-export const deleteList = (data: any): Promise<any> => {
+export const deleteListRole = (data: any): Promise<any> => {
   return Service({
     url: `${API_ENN_SYSTEM}/role/remove/user`,
     method: "post",
@@ -17,7 +17,7 @@ export const deleteList = (data: any): Promise<any> => {
   });
 };
 
-export function addConnectMember(data: any): Promise<any> {
+export function addConnectMemberRole(data: any): Promise<any> {
   return Service({
     method: "post",
     url: `${API_ENN_SYSTEM}/role/add/user`,

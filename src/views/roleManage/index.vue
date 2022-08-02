@@ -115,7 +115,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { fetchData, deleteList, addConnectMember } from "@/api/roleManage";
+import { fetchDataRoleList, deleteListRole, addConnectMemberRole } from "@/api";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import { geQueryUserList } from "@/api/organ";
 
@@ -161,7 +161,7 @@ const remoteMethod = (query) => {
 };
 const connectMember = () => {
   connectButtonLoading.value = true;
-  addConnectMember({
+  addConnectMemberRole({
     roleId: listQuery.roleId,
     orgId: orgMsg.id,
     userList: connectValue.value,
@@ -183,7 +183,7 @@ const handleSelectionChange = (val) => {
 // 获取表格数据
 const getData = () => {
   listLoading.value = true;
-  fetchData(listQuery).then((res) => {
+  fetchDataRoleList(listQuery).then((res) => {
     tableData.value = res.records;
     pageTotal.value = res.total || 50;
     listLoading.value = false;
@@ -199,7 +199,7 @@ const handleDelete = () => {
   }).then(async () => {
     const userList = multipleSelection.value.map((item) => item.id);
 
-    await deleteList({ userList, roleId: listQuery.roleId });
+    await deleteListRole({ userList, roleId: listQuery.roleId });
     await getData();
     ElMsgToast({
       type: "success",

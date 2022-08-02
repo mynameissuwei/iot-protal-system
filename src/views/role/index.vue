@@ -78,17 +78,9 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import {
-  fetchData,
-  deleteList,
-  createUser,
-  getMenuTree,
-  getRolesTree,
-  grantRoles,
-} from "@/api";
+import { fetchData, getMenuTree, getRolesTree, grantRoles } from "@/api";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import { MenuTreeData } from "@/types";
-import vUpload from "../home";
 
 const listQuery = reactive({
   account: "",
