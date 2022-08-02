@@ -815,4 +815,9 @@ onMounted(() => {
   background: #fff;
   padding: 23px 16px 10px 16px;
 }
+.pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: right;
+}
 </style>

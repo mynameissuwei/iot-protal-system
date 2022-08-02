@@ -6,6 +6,7 @@
           <el-input
             v-model="roleListQuery.roleName"
             placeholder="请输入角色名称"
+            @change="searchRoleFn"
             clearable
             class="handle-input mr10 roleSearch"
           ></el-input>
@@ -27,52 +28,21 @@
           <el-link
             class="actionClass"
             :underline="false"
-            @click="roleEdit(scope.row.id)"
+            @click="roleEdit(scope.row)"
             >编辑</el-link
           >
           <el-link
             class="actionClass edit-link-view"
             :underline="false"
-            @click="roleView(scope.row.id)"
+            @click="roleView(scope.row)"
             >查看用户</el-link
           >
           <el-link
             class="actionClass"
             :underline="false"
-            @click="roleOrgan(scope.row.id)"
+            @click="roleOrgan(scope.row)"
             >管理角色权限</el-link
           >
-          <el-dialog v-model="dialogRoleVisible" title="添加角色">
-            <el-form :model="roleForm" :rules="rules" ref="ruleFormRef">
-              <el-form-item label="角色名称" prop="roleName">
-                <el-input
-                  v-model="roleForm.roleName"
-                  autocomplete="off"
-                  placeholder="最多50个字符"
-                ></el-input>
-              </el-form-item>
-              <el-form-item
-                label="角色定位描述"
-                :label-width="formLabelWidth"
-                prop="description"
-              >
-                <el-input
-                  v-model="roleForm.description"
-                  autocomplete="off"
-                  type="textarea"
-                  placeholder="请输入描述"
-                ></el-input>
-              </el-form-item>
-            </el-form>
-            <template #footer>
-              <span class="dialog-footer">
-                <el-button type="primary" @click="addRole(ruleFormRef)">
-                  确认
-                </el-button>
-                <el-button @click="dleOrgan">取消</el-button>
-              </span>
-            </template>
-          </el-dialog>
         </template>
       </el-table-column>
       <template #empty>
@@ -86,6 +56,45 @@
         </el-msg-page>
       </template>
     </el-table>
+    <div class="pagination">
+      <el-pagination
+        :layout="PAGINATION_CONFIG"
+        v-model:currentPage="roleListQuery.current"
+        v-model:page-size="roleListQuery.size"
+        :total="roleTotalNum"
+        @size-change="handleSizeChange"
+        @current-change="handlePageChange"
+      ></el-pagination>
+    </div>
+    <el-dialog v-model="dialogRoleVisible" :title="roleDialogTit">
+      <el-form :model="roleForm" label-width="120px">
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input
+            v-model="roleForm.roleName"
+            autocomplete="off"
+            placeholder="最多50个字符"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="角色定位描述" prop="description">
+          <el-input
+            v-model="roleForm.description"
+            autocomplete="off"
+            type="textarea"
+            maxlength="100"
+            show-word-limit
+            placeholder="请输入描述"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="addRole(roleForm)">
+            确认
+          </el-button>
+          <el-button @click="dleOrgan">取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -96,9 +105,13 @@ import {
   HeaderActionButtonGroupItem,
   ElMsgBox,
   ElMsgToast,
+  ElPagination,
+  ElInput,
 } from "@enn/ency-design";
 import { Edit, Delete } from "@enn/ency-design-icons";
-import { refRoleApi, roleListApi } from "@/api/role";
+import { refRoleApi, roleListApi, roleAddApi } from "@/api/role";
+import { useRouter } from "vue-router";
+import { PAGINATION_CONFIG } from "@/const";
 const originData = reactive({
   buttonGroup: [
     {
@@ -122,6 +135,7 @@ const originData = reactive({
   ] as HeaderActionButtonGroupItem[],
 });
 
+const router = useRouter();
 const dialogRoleVisible = ref(false);
 const roleForm = reactive({
   roleName: "",
@@ -129,16 +143,18 @@ const roleForm = reactive({
 });
 const tableData = ref([]);
 const refRoleList = ref([]);
+const roleDialogTit = ref("添加角色");
+// 分页数据
+const roleTotalNum = ref(0);
 const roleListQuery = reactive({
-  roleAlias: "",
-  roleName: "",
+  roleAlias: null,
+  roleName: null,
   current: 1,
   size: 10,
 });
 
 const addRoleFn = () => {
   dialogRoleVisible.value = true;
-  console.log("新增角色", dialogRoleVisible.value);
 };
 // 删除成员
 const deleteRoleFn = () => {
@@ -149,13 +165,14 @@ const deleteRoleFn = () => {
   }).then(async () => {
     const result = refRoleList.value.map((item) => item.id);
     let refData = {
-      uids: result,
+      ids: result.join(","),
     };
     await refRoleApi(refData);
     ElMsgToast({
       type: "success",
       message: "删除成功",
     });
+    getRoleList;
   });
 };
 const roleSelectionChange = (val: never[]) => {
@@ -163,13 +180,11 @@ const roleSelectionChange = (val: never[]) => {
 };
 // 角色列表
 const getRoleList = () => {
-  console.log("111");
   //   listLoading.value = true;
   roleListApi(roleListQuery).then((res) => {
     if (res.records) {
       tableData.value = res.records;
-      //   pageTotal.value = res.total || 50;
-      console.log(222, res.records);
+      roleTotalNum.value = res.total;
       //   listLoading.value = false;
     } else {
       tableData.value = [];
@@ -180,32 +195,83 @@ const getRoleList = () => {
     }
   });
 };
+// 搜索
+const searchRoleFn = () => {
+  roleListApi(roleListQuery).then((res) => {
+    if (res.records) {
+      tableData.value = res.records;
+      roleTotalNum.value = res.total;
+    } else {
+      tableData.value = [];
+      ElMsgToast({
+        type: "warning",
+        message: "暂无角色~",
+      });
+    }
+  });
+};
 // 编辑
-const roleEdit = (id) => {
-  console.log(id);
+const roleEdit = (data: any) => {
+  roleDialogTit.value = "编辑角色";
+  dialogRoleVisible.value = true;
+  roleForm.description = data.description;
+  roleForm.roleName = data.roleName;
+  roleForm.id = data.id;
 };
 // 查看
-const roleView = (id) => {
-  console.log(id);
+const roleView = (data: { id: number }) => {
+  router.push({
+    path: "/roleList",
+    query: {
+      roleId: data.id,
+    },
+  });
 };
 // 管理
-const roleOrgan = (id) => {
-  console.log(id);
+const roleOrgan = (data: { id: number }) => {
+  router.push({
+    path: "/role",
+    query: {
+      roleId: data.id,
+    },
+  });
 };
-// 新增保存
-const addRole = (roleForm: unknown) => {
+// 新增/编辑保存
+const addRole = (roleForm: any) => {
   console.log("保存", roleForm);
+  roleAddApi(roleForm).then((res) => {
+    if (roleForm.id) {
+      ElMsgToast({
+        type: "success",
+        message: `${roleForm.roleName} 角色编辑成功~`,
+      });
+    } else {
+      ElMsgToast({
+        type: "success",
+        message: `${roleForm.roleName} 角色新增成功~`,
+      });
+    }
+    getRoleList();
+    dialogRoleVisible.value = false;
+  });
 };
 const dleOrgan = () => {
   dialogRoleVisible.value = false;
 };
 
+// 分页
+const handleSizeChange = (val: number) => {
+  roleListQuery.size = val;
+  getRoleList();
+};
+const handlePageChange = (val: number) => {
+  roleListQuery.current = val;
+  getRoleList();
+};
 const initData = () => {
-  console.log("init");
   getRoleList();
 };
 onMounted(() => {
-  console.log("00001");
   initData();
 });
 </script>
