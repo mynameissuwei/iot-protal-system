@@ -67,7 +67,7 @@
       ></el-pagination>
     </div>
     <el-dialog v-model="dialogRoleVisible" :title="roleDialogTit">
-      <el-form :model="roleForm" label-width="120px">
+      <el-form :model="roleForm" label-width="120px" :rules="roleRules">
         <el-form-item label="角色名称" prop="roleName">
           <el-input
             v-model="roleForm.roleName"
@@ -152,32 +152,45 @@ const roleListQuery = reactive({
   current: 1,
   size: 10,
 });
+const roleRules = reactive({
+  roleName: [
+    { required: true, message: "角色名称不能为空", trigger: "change" },
+  ],
+});
 
 const addRoleFn = () => {
   dialogRoleVisible.value = true;
 };
 // 删除成员
 const deleteRoleFn = () => {
-  ElMsgBox.confirm("你确定要删除吗?", "删除角色", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-  }).then(async () => {
-    const result = refRoleList.value.map((item) => item.id);
-    let refData = {
-      ids: result.join(","),
-    };
-    removeRole(refData)
-      .then((res) => {
-        ElMsgToast({
-          type: "success",
-          message: "删除成功",
+  console.log(1111, refRoleList.value.length);
+  if (refRoleList.value.length) {
+    ElMsgBox.confirm("你确定要删除吗?", "删除角色", {
+      confirmButtonText: "确认",
+      cancelButtonText: "取消",
+      type: "warning",
+    }).then(async () => {
+      const result = refRoleList.value.map((item) => item.id);
+      let refData = {
+        ids: result.join(","),
+      };
+      removeRole(refData)
+        .then((res) => {
+          ElMsgToast({
+            type: "success",
+            message: "删除成功",
+          });
+        })
+        .finally(() => {
+          getRoleList();
         });
-      })
-      .finally(() => {
-        getRoleList();
-      });
-  });
+    });
+  } else {
+    ElMsgToast({
+      type: "warning",
+      message: "请勾选将要删除的角色~",
+    });
+  }
 };
 const roleSelectionChange = (val: never[]) => {
   refRoleList.value = val;
@@ -243,22 +256,29 @@ const roleOrgan = (data: { id: number }) => {
 };
 // 新增/编辑保存
 const addRole = (roleForm: any) => {
-  console.log("保存", roleForm);
-  roleAddApi(roleForm).then((res) => {
-    if (roleForm.id) {
-      ElMsgToast({
-        type: "success",
-        message: `${roleForm.roleName} 角色编辑成功~`,
-      });
-    } else {
-      ElMsgToast({
-        type: "success",
-        message: `${roleForm.roleName} 角色新增成功~`,
-      });
-    }
-    getRoleList();
-    dialogRoleVisible.value = false;
-  });
+  console.log("保存", roleForm.roleName);
+  if (roleForm.roleName != "") {
+    roleAddApi(roleForm).then((res) => {
+      if (roleForm.id) {
+        ElMsgToast({
+          type: "success",
+          message: `${roleForm.roleName} 角色编辑成功~`,
+        });
+      } else {
+        ElMsgToast({
+          type: "success",
+          message: `${roleForm.roleName} 角色新增成功~`,
+        });
+      }
+      getRoleList();
+      dialogRoleVisible.value = false;
+    });
+  } else {
+    ElMsgToast({
+      type: "warning",
+      message: "请输入角色名称~",
+    });
+  }
 };
 const dleOrgan = () => {
   dialogRoleVisible.value = false;
