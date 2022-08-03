@@ -159,7 +159,7 @@ const treeRef: any = ref<HTMLElement | null>(null);
 
 // 打开资源范围弹窗
 const handleResourceDialog = () => {
-  getRolesTree({ roleIds: roleId }).then((res) => {
+  getRolesTree({ roleIds: roleId.value }).then((res) => {
     selectKeys.value = res;
   });
   dialogResourceVisible.value = true;
@@ -168,7 +168,7 @@ const handleResourceDialog = () => {
 // 编辑资源范围确定
 const editResource = () => {
   grantRoles({
-    roleIds: [roleId],
+    roleIds: [roleId.value],
     menuIds: selectKeys.value,
   }).then((res) => {
     console.log(res);
