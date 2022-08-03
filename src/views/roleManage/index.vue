@@ -72,7 +72,9 @@
           <el-input
             v-model="roleForm.roleName"
             autocomplete="off"
-            placeholder="最多50个字符"
+            maxlength="20"
+            show-word-limit
+            placeholder="最多20个字符"
           ></el-input>
         </el-form-item>
         <el-form-item label="角色定位描述" prop="description">
@@ -156,10 +158,14 @@ const roleListQuery = reactive({
 const roleRules = reactive({
   roleName: [
     { required: true, message: "角色名称不能为空", trigger: "change" },
+    { min: 1, max: 20, message: "请输入1到20位字符", trigger: "change" },
   ],
 });
 
 const addRoleFn = () => {
+  roleForm.description = "";
+  roleForm.roleName = "";
+  roleForm.id = "";
   dialogRoleVisible.value = true;
 };
 // 删除成员
