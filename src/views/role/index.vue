@@ -163,14 +163,16 @@ const editResource = () => {
   grantRoles({
     roleIds: [roleId.value],
     menuIds: selectKeys.value,
-  }).then((res) => {
-    console.log(res);
-    ElMsgToast({
-      message: "编辑成功！",
+  })
+    .then(() => {
+      ElMsgToast({
+        message: "编辑成功！",
+      });
+    })
+    .finally(() => {
+      dialogResourceVisible.value = false;
+      initData();
     });
-    dialogResourceVisible.value = false;
-    initData();
-  });
 };
 
 // 监听搜索
