@@ -21,19 +21,5 @@ const menuList: MenuInfo[] = [
     key: "roleManage",
     url: "/roleManage",
   },
-  {
-    name: "角色成员管理",
-    desc: "角色成员管理",
-    key: "roleList",
-    url: "/roleList",
-    icon: "",
-  },
-  {
-    name: "角色管理",
-    desc: "角色管理",
-    key: "role",
-    url: "/role",
-    icon: "",
-  },
 ];
 export default menuList;
