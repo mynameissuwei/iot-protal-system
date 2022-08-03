@@ -158,7 +158,7 @@ const addRoleFn = () => {
 };
 // 删除成员
 const deleteRoleFn = () => {
-  ElMsgBox.confirm("你确定要移除用户么?", "移除成员", {
+  ElMsgBox.confirm("你确定要删除吗?", "删除角色", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning",
@@ -167,12 +167,16 @@ const deleteRoleFn = () => {
     let refData = {
       ids: result.join(","),
     };
-    await removeRole(refData);
-    ElMsgToast({
-      type: "success",
-      message: "删除成功",
-    });
-    getRoleList;
+    removeRole(refData)
+      .then((res) => {
+        ElMsgToast({
+          type: "success",
+          message: "删除成功",
+        });
+      })
+      .finally(() => {
+        getRoleList();
+      });
   });
 };
 const roleSelectionChange = (val: never[]) => {

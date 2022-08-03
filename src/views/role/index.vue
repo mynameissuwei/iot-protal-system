@@ -53,12 +53,6 @@
           @size-change="handleSizeChange"
         ></el-pagination>
       </div>
-      <!-- 导入弹出框 -->
-      <v-upload
-        :importVisible="importVisible"
-        :handleHidden="handleHidden"
-        :getData="getData"
-      ></v-upload>
       <!-- 编辑弹出框 -->
       <el-dialog
         :width="320"
@@ -97,10 +91,10 @@ import { getRoleListMenu, getRolesTree, grantRoles, getMenuTree } from "@/api";
 import { ElMsgToast } from "@enn/ency-design";
 import { MenuTreeData } from "@/types";
 const route = useRoute();
-const roleId = ref(route.query.roleId) ?? "1123598816738675201";
+const roleId = ref(route.query.roleId);
 
 const initListQueryData = {
-  roleId: "1123598816738675201",
+  roleId,
   current: 1,
   size: 10,
 };
@@ -109,7 +103,6 @@ const listQuery = reactive(initListQueryData);
 const tableData = ref([]);
 const pageTotal = ref(0);
 const listLoading = ref(false);
-const multipleSelection = ref([]);
 const router = useRouter();
 const importVisible = ref(false);
 
@@ -159,7 +152,7 @@ const treeRef: any = ref<HTMLElement | null>(null);
 
 // 打开资源范围弹窗
 const handleResourceDialog = () => {
-  getRolesTree({ roleIds: roleId }).then((res) => {
+  getRolesTree({ roleIds: roleId.value }).then((res) => {
     selectKeys.value = res;
   });
   dialogResourceVisible.value = true;
@@ -168,7 +161,7 @@ const handleResourceDialog = () => {
 // 编辑资源范围确定
 const editResource = () => {
   grantRoles({
-    roleIds: [roleId],
+    roleIds: [roleId.value],
     menuIds: selectKeys.value,
   }).then((res) => {
     console.log(res);
@@ -176,6 +169,7 @@ const editResource = () => {
       message: "编辑成功！",
     });
     dialogResourceVisible.value = false;
+    initData();
   });
 };
 
@@ -198,7 +192,7 @@ const filterNode = (value: string, data: MenuTreeData) => {
 //   multipleSelection.value = val;
 // };
 // 获取表格数据
-const getData = () => {
+const initData = () => {
   listLoading.value = true;
   getRoleListMenu(listQuery).then((res) => {
     tableData.value = res.records;
@@ -217,32 +211,21 @@ const getData = () => {
 //     const result = multipleSelection.value.map((item) => item.id);
 //     const ids = result.join(",");
 //     await deleteList({ ids });
-//     await getData();
+//     await initData();
 //     ElMsgToast({
 //       type: "success",
 //       message: "删除成功",
 //     });
 //   });
 // };
-// 查询操作
-const handleSearch = () => {
-  listQuery.current = 1;
-  getData();
-};
 // 分页导航
 const handlePageChange = (val) => {
   listQuery.current = val;
-  getData();
+  initData();
 };
 const handleSizeChange = (val) => {
   listQuery.size = val;
-  getData();
-};
-// 重置操作
-const handleReset = () => {
-  Object.assign(listQuery, initListQueryData);
-  multipleSelection.value = [];
-  getData();
+  initData();
 };
 // 导入操作
 const handleImport = () => {
@@ -262,7 +245,7 @@ const handleEdit = (data, type) => {
   });
 };
 onMounted(() => {
-  getData();
+  initData();
   getMenuTree().then((res) => {
     menuTreeData.value = res;
   });
