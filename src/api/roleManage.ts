@@ -24,3 +24,11 @@ export function addConnectMemberRole(data: any): Promise<any> {
     data,
   });
 }
+
+export function getRoleListMenu(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/role/list/menu`,
+    params,
+  });
+}
