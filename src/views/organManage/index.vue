@@ -376,7 +376,7 @@ const organTreeFn = () => {
 };
 
 watch(filterText, (val) => {
-  treeRef.value!.filter(val);
+  treeRef.value.filter(val);
 });
 
 // const filterNode = (value: string, data: Tree) => {
@@ -427,7 +427,7 @@ const saveOrganNameFn = () => {
         id: orgMsg.id,
         orgName: orgainName.value,
       };
-      updateOrgan(data).then((res) => {
+      updateOrgan(data).then(() => {
         ElMsgToast({
           type: "success",
           message: "组织名称修改成功",
@@ -600,7 +600,7 @@ const connectMember = () => {
   addConnectMember({
     orgId: orgMsg.id,
     uidList: connectValue.value,
-  }).then((res) => {
+  }).then(() => {
     dialogConnectMemberVisible.value = false;
     ElMsgToast({
       type: "success",

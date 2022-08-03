@@ -140,6 +140,7 @@ const dialogRoleVisible = ref(false);
 const roleForm = reactive({
   roleName: "",
   description: "",
+  id: "",
 });
 const tableData = ref([]);
 const refRoleList = ref([]);
@@ -175,7 +176,7 @@ const deleteRoleFn = () => {
         ids: result.join(","),
       };
       removeRole(refData)
-        .then((res) => {
+        .then(() => {
           ElMsgToast({
             type: "success",
             message: "删除成功",
@@ -228,7 +229,11 @@ const searchRoleFn = () => {
   });
 };
 // 编辑
-const roleEdit = (data: any) => {
+const roleEdit = (data: {
+  description: string;
+  roleName: string;
+  id: string;
+}) => {
   roleDialogTit.value = "编辑角色";
   dialogRoleVisible.value = true;
   roleForm.description = data.description;
@@ -255,10 +260,10 @@ const roleOrgan = (data: { id: number }) => {
   });
 };
 // 新增/编辑保存
-const addRole = (roleForm: any) => {
+const addRole = (roleForm: { roleName: string; id: string }) => {
   console.log("保存", roleForm.roleName);
   if (roleForm.roleName != "") {
-    roleAddApi(roleForm).then((res) => {
+    roleAddApi(roleForm).then(() => {
       if (roleForm.id) {
         ElMsgToast({
           type: "success",

@@ -127,7 +127,8 @@ import { useRouter } from "vue-router";
 import { fetchData, deleteList, createUser } from "@/api";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import { phonePattern } from "@/utils/pattern";
-import vUpload from "../home";
+// import vUpload from "../home";
+import vUpload from "./components/index.vue";
 
 const listQuery = reactive({
   account: "",

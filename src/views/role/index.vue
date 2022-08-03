@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { getRoleListMenu, getRolesTree, grantRoles, getMenuTree } from "@/api";
 import { ElMsgToast } from "@enn/ency-design";
 import { MenuTreeData } from "@/types";
@@ -103,8 +103,6 @@ const listQuery = reactive(initListQueryData);
 const tableData = ref([]);
 const pageTotal = ref(0);
 const listLoading = ref(false);
-const router = useRouter();
-const importVisible = ref(false);
 
 // 编辑资源范围弹窗
 const menuProps = {
@@ -126,7 +124,7 @@ const tableColumns = [
     title: "资源类型",
     key: "category",
     width: "120",
-    render: (row) => {
+    render: (row: { category: string | number }) => {
       switch (+row.category) {
         case 1:
           return "菜单";
@@ -148,7 +146,7 @@ const dialogResourceVisible = ref(false);
 const selectKeys = ref([]);
 const filterText = ref("");
 const menuTreeData = ref<MenuTreeData[]>([]);
-const treeRef: any = ref<HTMLElement | null>(null);
+const treeRef = ref<HTMLElement | null>(null);
 
 // 打开资源范围弹窗
 const handleResourceDialog = () => {
@@ -221,31 +219,24 @@ const initData = () => {
 //   });
 // };
 // 分页导航
-const handlePageChange = (val) => {
+const handlePageChange = (val: number) => {
   listQuery.current = val;
   initData();
 };
-const handleSizeChange = (val) => {
+const handleSizeChange = (val: number) => {
   listQuery.size = val;
   initData();
 };
-// 导入操作
-const handleImport = () => {
-  importVisible.value = true;
-};
-const handleHidden = () => {
-  importVisible.value = false;
-};
-// 编辑
-const handleEdit = (data, type) => {
-  router.push({
-    path: "/detail",
-    query: {
-      userId: data.id,
-      type,
-    },
-  });
-};
+// // 编辑
+// const handleEdit = (data: { id: any }, type: any) => {
+//   router.push({
+//     path: "/detail",
+//     query: {
+//       userId: data.id,
+//       type,
+//     },
+//   });
+// };
 onMounted(() => {
   initData();
   getMenuTree().then((res) => {
