@@ -48,8 +48,9 @@ export function organTree(): Promise<any> {
 export function organMemberList(params: any): Promise<any> {
   return Service({
     method: "get",
-    url: `${API_ENN_SYSTEM}/org/user/list?orgId=${params.orgId}`,
+    url: `${API_ENN_SYSTEM}/org/user/list?orgId=${params.id}`,
     // orgId: params.orgId
+    params,
   });
 }
 

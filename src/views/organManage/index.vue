@@ -53,18 +53,14 @@
 
         <el-dialog v-model="dialogFormVisible" title="添加组织">
           <el-form :model="form" :rules="rules" ref="ruleFormRef">
-            <el-form-item
-              label="组织名称"
-              :label-width="formLabelWidth"
-              prop="orgName"
-            >
+            <el-form-item label="组织名称" label-width="100px" prop="orgName">
               <el-input
                 v-model="form.orgName"
                 autocomplete="off"
                 placeholder="最多50个字符"
               ></el-input>
             </el-form-item>
-            <el-form-item label="上级组织" :label-width="formLabelWidth">
+            <el-form-item label="上级组织" label-width="100px">
               <span>{{ form.parentName }}</span>
             </el-form-item>
           </el-form>
@@ -356,7 +352,7 @@ const ruleFormRef = ref();
 const rules = reactive({
   orgName: [
     { required: true, message: "请输入组织名", trigger: "change" },
-    { min: 1, max: 20, message: "请输入1到50位", trigger: "change" },
+    { min: 1, max: 50, message: "请输入1到50位", trigger: "change" },
   ],
 });
 
@@ -544,8 +540,8 @@ const handleSelectionChange = (val: never[]) => {
 // 获取组织成员表格数据
 const getMemberList = () => {
   listLoading.value = true;
-  const params = { orgId: listQuery.id };
-  organMemberList(params).then((res) => {
+  // const params = listQuery.value;
+  organMemberList(listQuery).then((res) => {
     if (res.records) {
       tableData.value = res.records;
       pageTotal.value = res.total || 0;
