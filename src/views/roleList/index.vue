@@ -170,7 +170,7 @@ const remoteMethod = (query) => {
 const connectMember = () => {
   connectButtonLoading.value = true;
   addConnectMemberRole({
-    roleId,
+    roleId: roleId.value,
     orgId: orgMsg.id,
     userList: connectValue.value,
   }).then(() => {
@@ -207,7 +207,7 @@ const handleDelete = () => {
   }).then(async () => {
     const userList = multipleSelection.value.map((item) => item.id);
 
-    await deleteListRole({ userList, roleId });
+    await deleteListRole({ userList, roleId: roleId.value });
     await getData();
     ElMsgToast({
       type: "success",
