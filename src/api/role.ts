@@ -34,19 +34,19 @@ export function fetchDataRoleList(params: any): Promise<any> {
   });
 }
 
-export const deleteListRole = (data: any): Promise<any> => {
+export const deleteListRole = (params: any): Promise<any> => {
   return Service({
     url: `${API_ENN_SYSTEM}/role/remove/user`,
     method: "post",
-    data,
+    params,
   });
 };
 
-export function addConnectMemberRole(data: any): Promise<any> {
+export function addConnectMemberRole(params: any): Promise<any> {
   return Service({
     method: "post",
     url: `${API_ENN_SYSTEM}/role/add/user`,
-    data,
+    params,
   });
 }
 

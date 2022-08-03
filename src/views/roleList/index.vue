@@ -42,7 +42,9 @@
     <div class="view-container">
       <div class="table-box">
         <el-button type="primary" @click="relevanceMember">关联成员</el-button>
-        <el-button @click="handleDelete">移除成员</el-button>
+        <el-button @click="handleDelete" :disabled="!multipleSelection.length"
+          >移除成员</el-button
+        >
       </div>
       <el-table
         :header-cell-style="{ background: '#F6F7FB' }"
@@ -169,10 +171,11 @@ const remoteMethod = (query) => {
 };
 const connectMember = () => {
   connectButtonLoading.value = true;
+  const userList = connectValue.value.join(",");
   addConnectMemberRole({
     roleId: roleId.value,
     orgId: orgMsg.id,
-    userList: connectValue.value,
+    userList,
   }).then(() => {
     dialogConnectMemberVisible.value = false;
     ElMsgToast({
@@ -206,8 +209,8 @@ const handleDelete = () => {
     buttonSize: "small",
   }).then(async () => {
     const userList = multipleSelection.value.map((item) => item.id);
-
-    await deleteListRole({ userList, roleId: roleId.value });
+    const result = userList.join(",");
+    await deleteListRole({ userList: result, roleId: roleId.value });
     await getData();
     ElMsgToast({
       type: "success",
