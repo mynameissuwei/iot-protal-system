@@ -63,15 +63,6 @@ export function getOrgChildren(params: any): Promise<any> {
   });
 }
 
-// 获取角色权限
-export function getRoletList(params: any): Promise<any> {
-  return Service({
-    method: "get",
-    url: `${API_ENN_SYSTEM}/role/list/all`,
-    params,
-  });
-}
-
 //获取所有组织树
 export function getOrgTree(): Promise<any> {
   return Service({
@@ -94,14 +85,5 @@ export function getRolesTree(params: any): Promise<any> {
     method: "get",
     url: `${API_ENN_SYSTEM}/menu/role-tree-keys`,
     params,
-  });
-}
-
-//角色增加权限
-export function grantRoles(data: any): Promise<any> {
-  return Service({
-    method: "post",
-    url: `${API_ENN_SYSTEM}/role/grant`,
-    data,
   });
 }

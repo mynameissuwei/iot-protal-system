@@ -93,7 +93,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getRoleListMenu } from "@/api";
+import { getRoleListMenu, getRolesTree, grantRoles, getMenuTree } from "@/api";
+import { ElMsgToast } from "@enn/ency-design";
 import { MenuTreeData } from "@/types";
 const route = useRoute();
 const roleId = ref(route.query.roleId) ?? "1123598816738675201";
@@ -153,31 +154,30 @@ const tableColumns = [
 const dialogResourceVisible = ref(false);
 const selectKeys = ref([]);
 const filterText = ref("");
-const roleIds = "1529740265311748097"; // 当前角色id
 const menuTreeData = ref<MenuTreeData[]>([]);
 const treeRef: any = ref<HTMLElement | null>(null);
 
-// // 打开资源范围弹窗
-// const handleResourceDialog = () => {
-//   getRolesTree({ roleIds }).then((res) => {
-//     selectKeys.value = res;
-//   });
-//   dialogResourceVisible.value = true;
-// };
+// 打开资源范围弹窗
+const handleResourceDialog = () => {
+  getRolesTree({ roleIds: roleId }).then((res) => {
+    selectKeys.value = res;
+  });
+  dialogResourceVisible.value = true;
+};
 
-// // 编辑资源范围确定
-// const editResource = () => {
-//   grantRoles({
-//     roleIds: [roleIds],
-//     menuIds: selectKeys.value,
-//   }).then((res) => {
-//     console.log(res);
-//     ElMsgToast({
-//       message: "编辑成功！",
-//     });
-//     dialogResourceVisible.value = false;
-//   });
-// };
+// 编辑资源范围确定
+const editResource = () => {
+  grantRoles({
+    roleIds: [roleId],
+    menuIds: selectKeys.value,
+  }).then((res) => {
+    console.log(res);
+    ElMsgToast({
+      message: "编辑成功！",
+    });
+    dialogResourceVisible.value = false;
+  });
+};
 
 // 监听搜索
 watch(filterText, (val) => {
@@ -263,6 +263,9 @@ const handleEdit = (data, type) => {
 };
 onMounted(() => {
   getData();
+  getMenuTree().then((res) => {
+    menuTreeData.value = res;
+  });
 });
 </script>
 
