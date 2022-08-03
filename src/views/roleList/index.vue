@@ -115,10 +115,14 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { fetchDataRoleList, deleteListRole, addConnectMemberRole } from "@/api";
+import {
+  fetchDataRoleList,
+  deleteListRole,
+  addConnectMemberRole,
+  geQueryUserList,
+} from "@/api";
 import { useRoute } from "vue-router";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
-import { geQueryUserList } from "@/api/organ";
 
 const route = useRoute();
 const roleId = ref(route.query.roleId) ?? "1123598816738675201";
