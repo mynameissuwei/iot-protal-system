@@ -116,11 +116,15 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { fetchDataRoleList, deleteListRole, addConnectMemberRole } from "@/api";
+import { useRoute } from "vue-router";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import { geQueryUserList } from "@/api/organ";
 
+const route = useRoute();
+const roleId = ref(route.query.roleId) ?? "1123598816738675201";
+
 const listQuery = reactive({
-  roleId: "1123598816738675201",
+  roleId,
   account: "",
   name: "",
   phone: "",
@@ -162,7 +166,7 @@ const remoteMethod = (query) => {
 const connectMember = () => {
   connectButtonLoading.value = true;
   addConnectMemberRole({
-    roleId: listQuery.roleId,
+    roleId,
     orgId: orgMsg.id,
     userList: connectValue.value,
   }).then(() => {
@@ -199,7 +203,7 @@ const handleDelete = () => {
   }).then(async () => {
     const userList = multipleSelection.value.map((item) => item.id);
 
-    await deleteListRole({ userList, roleId: listQuery.roleId });
+    await deleteListRole({ userList, roleId });
     await getData();
     ElMsgToast({
       type: "success",
