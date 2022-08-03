@@ -109,7 +109,7 @@ import {
   ElInput,
 } from "@enn/ency-design";
 import { Edit, Delete } from "@enn/ency-design-icons";
-import { refRoleApi, roleListApi, roleAddApi } from "@/api/role";
+import { removeRole, roleListApi, roleAddApi } from "@/api";
 import { useRouter } from "vue-router";
 import { PAGINATION_CONFIG } from "@/const";
 const originData = reactive({
@@ -167,7 +167,7 @@ const deleteRoleFn = () => {
     let refData = {
       ids: result.join(","),
     };
-    await refRoleApi(refData);
+    await removeRole(refData);
     ElMsgToast({
       type: "success",
       message: "删除成功",
