@@ -43,7 +43,9 @@
       <div class="table-box">
         <el-button type="primary" @click="handleAdd">添加</el-button>
         <el-button @click="handleImport">导入</el-button>
-        <el-button @click="handleDelete">删除</el-button>
+        <el-button @click="handleDelete" :disabled="!multipleSelection.length"
+          >删除</el-button
+        >
       </div>
       <el-table
         :header-cell-style="{ background: '#F6F7FB' }"
