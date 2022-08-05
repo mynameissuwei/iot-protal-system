@@ -59,6 +59,7 @@
                 autocomplete="off"
                 placeholder="最多50个字符"
               ></el-input>
+              <el-input style="display: none"></el-input>
             </el-form-item>
             <el-form-item label="上级组织" label-width="100px">
               <span>{{ form.parentName }}</span>
