@@ -83,6 +83,15 @@ export function geQueryUserList(params: any): Promise<any> {
 }
 
 // 关联组织成员
+export function geQueryUserOtherList(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/role/list/other/user`,
+    params,
+  });
+}
+
+// 关联组织成员
 export function addConnectMember(data: any): Promise<any> {
   return Service({
     method: "post",

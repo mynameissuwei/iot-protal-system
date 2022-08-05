@@ -122,6 +122,7 @@ import {
   deleteListRole,
   addConnectMemberRole,
   geQueryUserList,
+  geQueryUserOtherList,
 } from "@/api";
 import { useRoute } from "vue-router";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
@@ -158,10 +159,12 @@ const relevanceMember = () => {
 };
 const getConnectUserData = (query = "") => {
   let page = { current: 1, size: 20 };
-  geQueryUserList({ keyword: query, ...page }).then((res) => {
-    connectLoading.value = false;
-    connectOptions.value = res.records;
-  });
+  geQueryUserOtherList({ keyword: query, roleId: roleId.value, ...page }).then(
+    (res) => {
+      connectLoading.value = false;
+      connectOptions.value = res.records;
+    }
+  );
 };
 const remoteMethod = (query) => {
   if (query) {
