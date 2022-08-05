@@ -76,6 +76,7 @@
             show-word-limit
             placeholder="最多20个字符"
           ></el-input>
+          <el-input style="display: none"></el-input>
         </el-form-item>
         <el-form-item label="角色定位描述" prop="description">
           <el-input
@@ -86,6 +87,7 @@
             show-word-limit
             placeholder="请输入描述"
           ></el-input>
+          <el-input style="display: none"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
