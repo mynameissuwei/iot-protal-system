@@ -21,5 +21,11 @@ const menuList: MenuInfo[] = [
     key: "roleManage",
     url: "/roleManage",
   },
+  {
+    name: "外部身份源认证",
+    desc: "外部身份源认证",
+    key: "exteriorIdAuth",
+    url: "/exteriorIdAuth",
+  },
 ];
 export default menuList;

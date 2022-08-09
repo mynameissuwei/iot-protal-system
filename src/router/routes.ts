@@ -7,6 +7,7 @@ const RoleList = () => import("@/views/roleList/index.vue");
 const Role = () => import("@/views/role/index.vue");
 const OrganManage = () => import("@/views/organManage/index.vue");
 const RoleManage = () => import("@/views/roleManage/index.vue");
+const ExteriorIdAuth = () => import("@/views/exteriorIdAuth/index.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -40,7 +41,7 @@ const routes: Array<RouteRecordRaw> = [
         path: "/roleList",
         name: "roleList",
         meta: {
-          title: "角色管理",
+          title: "角色成员管理",
           key: "roleList",
         },
         component: RoleList,
@@ -71,6 +72,15 @@ const routes: Array<RouteRecordRaw> = [
           key: "roleManage",
         },
         component: RoleManage,
+      },
+      {
+        path: "/exteriorIdAuth",
+        name: "exteriorIdAuth",
+        meta: {
+          title: "外部身份源认证",
+          key: "exteriorIdAuth",
+        },
+        component: ExteriorIdAuth,
       },
     ],
   },
