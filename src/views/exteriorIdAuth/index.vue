@@ -29,7 +29,7 @@ const defaultSrc = ref(
 const toCreate = () => {
   console.log(111111);
   router.push({
-    path: "/roleList",
+    path: "/stepIdAuth",
   });
 };
 </script>

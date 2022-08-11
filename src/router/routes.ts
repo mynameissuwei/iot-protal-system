@@ -8,6 +8,7 @@ const Role = () => import("@/views/role/index.vue");
 const OrganManage = () => import("@/views/organManage/index.vue");
 const RoleManage = () => import("@/views/roleManage/index.vue");
 const ExteriorIdAuth = () => import("@/views/exteriorIdAuth/index.vue");
+const StepIdAuth = () => import("@/views/exteriorIdAuth/authstep.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -81,6 +82,15 @@ const routes: Array<RouteRecordRaw> = [
           key: "exteriorIdAuth",
         },
         component: ExteriorIdAuth,
+      },
+      {
+        path: "/stepIdAuth",
+        name: "stepIdAuth",
+        meta: {
+          title: "创建外部身份源",
+          key: "stepIdAuth",
+        },
+        component: StepIdAuth,
       },
     ],
   },
