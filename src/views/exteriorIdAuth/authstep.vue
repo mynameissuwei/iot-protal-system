@@ -125,25 +125,44 @@ const active = ref(1);
 const formData = reactive({
   authType: "",
   address: "",
-  type: "",
+  type: 1,
   uid: "",
   bindDN: "",
   bindDNPassWord: "",
   baseDN: "",
   moduleName: "",
-  defaultLogin: "",
+  defaultLogin: 0,
   testAccount: "",
   testPassWord: "",
 });
 
 const formRules = reactive({
   address: [
-    { required: true, message: "服务器地址不能为空", trigger: "change" },
+    { required: true, message: "服务器地址不能为空", trigger: "blur" },
     { min: 1, max: 200, message: "请输入1到200位字符", trigger: "change" },
   ],
   baseDN: [
-    { required: true, message: "baseDN不能为空", trigger: "change" },
+    { required: true, message: "baseDN不能为空", trigger: "blur" },
     { min: 1, max: 200, message: "请输入1到200位字符", trigger: "change" },
+  ],
+  testAccount: [
+    { required: true, message: "账户名不能为空", trigger: "blur" },
+    { min: 1, max: 200, message: "请输入1到50位字符", trigger: "change" },
+  ],
+  testPassWord: [
+    { required: true, message: "账户密码不能为空", trigger: "blur" },
+  ],
+  uid: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
+  bindDN: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
+  bindDNPassWord: [
+    { required: true, message: "账户密码不能为空", trigger: "blur" },
+  ],
+  moduleName: [
+    { required: true, message: "账户密码不能为空", trigger: "blur" },
+  ],
+  type: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
+  defaultLogin: [
+    { required: true, message: "账户密码不能为空", trigger: "blur" },
   ],
 });
 const next = () => {
@@ -195,8 +214,19 @@ const finish = (formData: { moduleName: any }) => {
   .auth-btn {
     text-align: center;
     position: absolute;
-    top: 550px;
-    left: 50%;
+    top: 570px;
+    left: 48%;
   }
+}
+::v-deep .el-step__head.is-success {
+  color: #406bd4;
+  border-color: #406bd4;
+}
+::v-deep .el-step__title.is-success {
+  font-weight: bold;
+  color: #406bd4;
+}
+::v-deep .el-step__description.is-success {
+  color: #406bd4;
 }
 </style>
