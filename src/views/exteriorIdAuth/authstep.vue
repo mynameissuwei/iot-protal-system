@@ -34,8 +34,8 @@
         </el-form-item>
         <el-form-item label="授权方式" prop="type">
           <el-radio-group v-model="formData.type">
-            <el-radio label="匿名" />
-            <el-radio label="使用Bind DN" />
+            <el-radio :label="1">匿名</el-radio>
+            <el-radio :label="2">使用Bind DN</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="UID" prop="uid">
@@ -70,8 +70,8 @@
         </el-form-item>
         <el-form-item label="默认登录方式" prop="defaultLogin">
           <el-radio-group v-model="formData.defaultLogin">
-            <el-radio label="是" />
-            <el-radio label="否" />
+            <el-radio :label="0">是</el-radio>
+            <el-radio :label="1">否</el-radio>
           </el-radio-group>
         </el-form-item>
       </div>
@@ -96,7 +96,10 @@
         <el-button style="margin-top: 12px" @click="next" v-show="active != 3"
           >下一步</el-button
         >
-        <el-button style="margin-top: 12px" @click="finish" v-show="active == 3"
+        <el-button
+          style="margin-top: 12px"
+          @click="finish(formData)"
+          v-show="active == 3"
           >完成</el-button
         >
       </p>
@@ -106,6 +109,16 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, markRaw } from "vue";
 import { useRouter } from "vue-router";
+import { addAuth } from "@/api/idAuth";
+import {
+  ElHeaderActionBar,
+  HeaderActionButtonGroupItem,
+  ElMsgBox,
+  ElMsgToast,
+  ElPagination,
+  ElInput,
+} from "@enn/ency-design";
+
 const router = useRouter();
 
 const active = ref(1);
@@ -139,8 +152,18 @@ const next = () => {
 const last = () => {
   if (active.value-- < 1) active.value = 1;
 };
-const finish = () => {
-  console.log("tijiao");
+
+// 新增/编辑保存
+const finish = (formData: { moduleName: any }) => {
+  const fomeDataNew = JSON.stringify(formData);
+  console.log("保存", fomeDataNew);
+
+  addAuth(fomeDataNew).then(() => {
+    ElMsgToast({
+      type: "success",
+      message: `${formData.moduleName} 身份源创建成功~`,
+    });
+  });
 };
 </script>
 <style lang="less" scoped>
