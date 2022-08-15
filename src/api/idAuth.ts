@@ -9,6 +9,13 @@ export function addAuth(data: any): Promise<any> {
   });
 }
 
+export function ldapCheck(): Promise<any> {
+  return Service({
+    method: "post",
+    url: `${API_ENN_RBAC_AUTH}/ldap/check`,
+  });
+}
+
 export function getAuth(): Promise<any> {
   return Service({
     method: "get",
