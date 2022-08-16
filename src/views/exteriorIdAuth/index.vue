@@ -5,13 +5,13 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { ldapCheck } from "@/api";
+import { getAuth } from "@/api";
 const router = useRouter();
 
 onMounted(() => {
-  ldapCheck().then((res) => {
+  getAuth().then((res) => {
     router.push({
-      path: res ? "/stepComplete" : "/createIdAuth",
+      path: JSON.stringify(res) === "{}" ? "/createIdAuth" : "/stepComplete",
     });
   });
 });
