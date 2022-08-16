@@ -25,7 +25,7 @@
           </el-select>
         </el-form-item>
       </div>
-      <div v-show="active == 1">
+      <div v-show="active == 1" class="step2">
         <el-form-item label="LDAP服务器地址" prop="address">
           <el-input
             v-model="formData.address"
@@ -89,7 +89,7 @@
           />
         </el-form-item>
       </div>
-      <p class="auth-btn">
+      <el-form-item class="auth-btn">
         <el-button style="margin-top: 12px" @click="last" v-show="active != 0"
           >上一步</el-button
         >
@@ -102,7 +102,7 @@
           v-show="active == 2"
           >完成</el-button
         >
-      </p>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -203,7 +203,7 @@ onMounted(() => {
   width: 100%;
   background: #fff;
   padding: 26px;
-  padding-top: 80px;
+  padding-top: 5%;
   position: relative;
   .auth-step {
     display: flex;
@@ -214,24 +214,27 @@ onMounted(() => {
   }
 
   .auth-form {
-    display: flex;
-    justify-content: center;
     margin-top: 52px;
     margin-right: 84px;
-    // width: 400px;
     div {
       width: 400px;
     }
+    // .step1,
+    // .step3 {
+    //   padding-top: 80px;
+    // }
     .step1,
+    .step2,
     .step3 {
-      padding-top: 80px;
+      margin: 0 auto;
     }
   }
   .auth-btn {
     text-align: center;
-    position: absolute;
-    top: 570px;
-    left: 45%;
+    margin: 0 auto;
+    ::deep .el-form-item__content {
+      margin-left: 140px;
+    }
   }
 }
 // steps
