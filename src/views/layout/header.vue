@@ -17,14 +17,14 @@
       />
       <el-dropdown>
         <span class="el-dropdown-link">
-          {{ userInfo.nickname || '用户名称' }}
+          {{ userInfo.nickname || "用户名称" }}
           <el-icon class="el-icon--right">
             <arrow-down />
           </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="logout">退出</el-dropdown-item>
+            <el-dropdown-item @click="clickLogout">退出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -35,14 +35,16 @@
 <script lang="ts" setup>
 import { defineComponent, inject } from "vue";
 import { ArrowDown } from "@enn/ency-design-icons";
-
+import { logout } from "@/api";
 const userInfo = inject("userInfo") || {};
 console.log(userInfo, "userInfo");
-const logout = () => {
-  const { vue } = window as any;
-  vue.config.globalProperties.authSdk.logout();
+const clickLogout = () => {
+  let bladeAuth = localStorage.getItem("blade-auth");
+  logout(bladeAuth).then(() => {
+    localStorage.clear();
+    location.reload();
+  });
 };
-
 </script>
 <style scoped lang="less">
 .header-container {
