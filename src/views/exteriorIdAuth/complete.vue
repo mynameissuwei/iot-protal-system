@@ -3,18 +3,22 @@
     <div>
       <div class="title">外部身份源已绑定</div>
       <div class="completeText">
-        <div class="paddingClass">
-          <span>身份源类型 :</span>
-          <span style="padding-left: 20px">LDAP</span>
-        </div>
-        <div class="paddingClass">
-          <span>登陆模块名称 :</span>
-          <span style="padding-left: 20px">保定账号登陆</span>
-        </div>
-        <div class="paddingClass">
-          <span>默认登陆 :</span>
-          <span style="padding-left: 20px">是</span>
-        </div>
+        <el-row class="paddingClass">
+          <el-col :span="10" class="leftClass">身份源类型 :</el-col>
+          <el-col :span="14" class="centerClass">LDAP</el-col>
+        </el-row>
+        <el-row class="paddingClass">
+          <el-col :span="10" class="leftClass">登陆模块名称 :</el-col>
+          <el-col :span="14" class="centerClass">{{
+            dataReiv.moduleName
+          }}</el-col>
+        </el-row>
+        <el-row class="paddingClass">
+          <el-col :span="10" class="leftClass">默认登陆 :</el-col>
+          <el-col :span="14" class="centerClass">{{
+            dataReiv.defaultLogin == "1" ? "否" : "是"
+          }}</el-col>
+        </el-row>
       </div>
       <el-button
         type="primary"
@@ -23,7 +27,6 @@
         >编辑</el-button
       >
       <div class="deleteClass actionClass">
-        <el-icon><negative-color /></el-icon>
         <span class="deleteText" @click="handleDelete">删除数据源</span>
       </div>
     </div>
@@ -31,13 +34,17 @@
 </template>
 
 <script setup>
-import { NegativeColor } from "@enn/ency-design-icons";
-import { ElIcon } from "@enn/ency-design";
+import { onMounted, reactive } from "vue";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
 import { deleteAuth } from "@/api/idAuth";
 import { useRouter } from "vue-router";
+import { getAuth } from "@/api/idAuth";
 
 const router = useRouter();
+const dataReiv = reactive({
+  moduleName: "本地LD",
+  defaultLogin: "1",
+});
 // 删除操作
 const handleEdit = () => {
   router.push({
@@ -64,6 +71,12 @@ const handleDelete = () => {
     });
   });
 };
+
+onMounted(() => {
+  getAuth().then((res) => {
+    Object.assign(dataReiv, res);
+  });
+});
 </script>
 
 <style scoped lang="less">
@@ -87,13 +100,20 @@ const handleDelete = () => {
   }
   .title {
     padding-bottom: 30px;
-    font-size: 30px;
+    font-size: 35px;
   }
   .paddingClass {
+    width: 300px;
     padding-bottom: 15px;
   }
   .deleteClass {
     padding-top: 40px;
+  }
+  .leftClass {
+    text-align: right;
+  }
+  .centerClass {
+    text-align: center;
   }
 }
 </style>

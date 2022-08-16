@@ -34,8 +34,8 @@
         </el-form-item>
         <el-form-item label="授权方式" prop="type">
           <el-radio-group v-model="formData.type">
-            <el-radio :label="1">匿名</el-radio>
-            <el-radio :label="2">使用Bind DN</el-radio>
+            <el-radio label="1">匿名</el-radio>
+            <el-radio label="2">使用Bind DN</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="UID" prop="uid">
@@ -44,7 +44,7 @@
             placeholder="请输入LDAP用户名的主键名"
           />
         </el-form-item>
-        <el-form-item label="Bind DN" prop="bindDN" v-if="formData.type === 2">
+        <el-form-item label="Bind DN" prop="bindDN" v-if="formData.type == 2">
           <el-input
             v-model="formData.bindDN"
             placeholder="请输入访问LDAP服务器的用户名"
@@ -70,8 +70,8 @@
         </el-form-item>
         <el-form-item label="默认登录方式" prop="defaultLogin">
           <el-radio-group v-model="formData.defaultLogin">
-            <el-radio :label="0">是</el-radio>
-            <el-radio :label="1">否</el-radio>
+            <el-radio label="0">是</el-radio>
+            <el-radio label="1">否</el-radio>
           </el-radio-group>
         </el-form-item>
       </div>
@@ -190,7 +190,6 @@ const finish = (formData: { moduleName: any }) => {
 onMounted(() => {
   if (route.query.status === "isEdit") {
     getAuth().then((res) => {
-      console.log(res, "resss");
       Object.assign(formData, res);
     });
   }
