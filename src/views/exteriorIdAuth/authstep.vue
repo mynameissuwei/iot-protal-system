@@ -12,10 +12,10 @@
       :model="formData"
       :rules="formRules"
       label-position="right"
-      label-width="180px"
+      label-width="165px"
       class="auth-form"
     >
-      <div v-show="active == 1">
+      <div v-show="active == 0">
         <el-form-item label="请选择认证身份源类型" prop="authType">
           <el-select
             v-model="formData.authType"
@@ -25,7 +25,7 @@
           </el-select>
         </el-form-item>
       </div>
-      <div v-show="active == 2">
+      <div v-show="active == 1">
         <el-form-item label="LDAP服务器地址" prop="address">
           <el-input
             v-model="formData.address"
@@ -44,7 +44,7 @@
             placeholder="请输入LDAP用户名的主键名"
           />
         </el-form-item>
-        <el-form-item label="Bind DN" prop="bindDN">
+        <el-form-item label="Bind DN" prop="bindDN" v-if="formData.type === 2">
           <el-input
             v-model="formData.bindDN"
             placeholder="请输入访问LDAP服务器的用户名"
@@ -75,7 +75,7 @@
           </el-radio-group>
         </el-form-item>
       </div>
-      <div v-show="active == 3">
+      <div v-show="active == 2">
         <el-form-item label="账户名" prop="testAccount">
           <el-input
             v-model="formData.testAccount"
@@ -90,16 +90,16 @@
         </el-form-item>
       </div>
       <p class="auth-btn">
-        <el-button style="margin-top: 12px" @click="last" v-show="active != 1"
+        <el-button style="margin-top: 12px" @click="last" v-show="active != 0"
           >上一步</el-button
         >
-        <el-button style="margin-top: 12px" @click="next" v-show="active != 3"
+        <el-button style="margin-top: 12px" @click="next" v-show="active != 2"
           >下一步</el-button
         >
         <el-button
           style="margin-top: 12px"
           @click="finish(formData)"
-          v-show="active == 3"
+          v-show="active == 2"
           >完成</el-button
         >
       </p>
@@ -107,11 +107,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, onMounted, markRaw } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { addAuth, editAuth, getAuth } from "@/api/idAuth";
 import {
-  ElHeaderActionBar,
   HeaderActionButtonGroupItem,
   ElMsgBox,
   ElMsgToast,
@@ -122,7 +121,7 @@ import {
 const router = useRouter();
 const route = useRoute();
 
-const active = ref(1);
+const active = ref(0);
 const formData = reactive({
   authType: "LDAP",
   address: "",
@@ -167,10 +166,10 @@ const formRules = reactive({
   ],
 });
 const next = () => {
-  if (active.value++ > 2) active.value = 1;
+  if (active.value++ > 2) active.value = 0;
 };
 const last = () => {
-  if (active.value-- < 1) active.value = 1;
+  if (active.value-- < 1) active.value = 0;
 };
 
 // 新增/编辑保存
