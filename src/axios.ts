@@ -68,7 +68,7 @@ instance.interceptors.response.use(
         );
       }
     }
-    if (+status === 400) {
+    if (+status === 400 || +status === 500) {
       // 后端无法处理 “请求参数” 的报错，前端兼容处理
       const { msg, data } = error?.response?.data || {};
       ElMsgToast.error(msg);
