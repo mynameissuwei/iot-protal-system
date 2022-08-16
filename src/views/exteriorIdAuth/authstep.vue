@@ -15,7 +15,7 @@
       label-width="165px"
       class="auth-form"
     >
-      <div v-show="active == 0">
+      <div v-show="active == 0" class="step1">
         <el-form-item label="请选择认证身份源类型" prop="authType">
           <el-select
             v-model="formData.authType"
@@ -75,7 +75,7 @@
           </el-radio-group>
         </el-form-item>
       </div>
-      <div v-show="active == 2">
+      <div v-show="active == 2" class="step3">
         <el-form-item label="账户名" prop="testAccount">
           <el-input
             v-model="formData.testAccount"
@@ -216,28 +216,55 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     margin-top: 52px;
-
+    margin-right: 84px;
     // width: 400px;
     div {
       width: 400px;
+    }
+    .step1,
+    .step3 {
+      padding-top: 80px;
     }
   }
   .auth-btn {
     text-align: center;
     position: absolute;
     top: 570px;
-    left: 48%;
+    left: 45%;
   }
 }
+// steps
 ::v-deep .el-step__head.is-success {
-  color: #406bd4;
-  border-color: #406bd4;
+  color: #343a40;
+  border-color: #343a40;
 }
 ::v-deep .el-step__title.is-success {
   font-weight: bold;
-  color: #406bd4;
+  color: #343a40;
 }
 ::v-deep .el-step__description.is-success {
-  color: #406bd4;
+  color: #343a40;
+}
+::v-deep .el-step__head.is-process {
+  color: #0f55fa;
+  border-color: #0f55fa;
+}
+::v-deep .el-step__title.is-process {
+  font-weight: bold;
+  color: #0f55fa;
+}
+::v-deep .el-step__description.is-process {
+  color: #0f55fa;
+}
+::v-deep .el-step__head.is-wait {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+::v-deep .el-step__title.is-wait {
+  font-weight: bold;
+  color: #6c757d;
+}
+::v-deep .el-step__description.is-wait {
+  color: #6c757d;
 }
 </style>
