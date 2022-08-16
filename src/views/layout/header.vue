@@ -42,7 +42,10 @@ const clickLogout = () => {
   let bladeAuth = localStorage.getItem("blade-auth");
   logout(bladeAuth).then(() => {
     localStorage.clear();
-    location.reload();
+    window.location.href =
+      process.env.VUE_APP_LOGIN_URL +
+      "/login?redirect=" +
+      window.location.origin;
   });
 };
 </script>
