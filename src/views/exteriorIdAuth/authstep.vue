@@ -108,8 +108,8 @@
 </template>
 <script lang="ts" setup>
 import { ref, reactive, onMounted, markRaw } from "vue";
-import { useRouter } from "vue-router";
-import { addAuth } from "@/api/idAuth";
+import { useRouter, useRoute } from "vue-router";
+import { addAuth, editAuth, getAuth } from "@/api/idAuth";
 import {
   ElHeaderActionBar,
   HeaderActionButtonGroupItem,
@@ -120,10 +120,11 @@ import {
 } from "@enn/ency-design";
 
 const router = useRouter();
+const route = useRoute();
 
 const active = ref(1);
 const formData = reactive({
-  authType: "",
+  authType: "LDAP",
   address: "",
   type: 1,
   uid: "",
@@ -175,16 +176,28 @@ const last = () => {
 // 新增/编辑保存
 const finish = (formData: { moduleName: any }) => {
   const fomeDataNew = JSON.stringify(formData);
-  console.log("保存", fomeDataNew);
-
-  addAuth(fomeDataNew).then(() => {
+  const isEdit = route.query.status === "isEdit";
+  (isEdit ? editAuth(fomeDataNew) : addAuth(fomeDataNew)).then((res) => {
     ElMsgToast({
       type: "success",
       message: `${formData.moduleName} 身份源创建成功~`,
     });
+    router.push({
+      path: "/stepComplete",
+    });
   });
 };
+
+onMounted(() => {
+  if (route.query.status === "isEdit") {
+    getAuth().then((res) => {
+      console.log(res, "resss");
+      Object.assign(formData, res);
+    });
+  }
+});
 </script>
+
 <style lang="less" scoped>
 .auth {
   height: 100%;

@@ -8,7 +8,9 @@ const Role = () => import("@/views/role/index.vue");
 const OrganManage = () => import("@/views/organManage/index.vue");
 const RoleManage = () => import("@/views/roleManage/index.vue");
 const ExteriorIdAuth = () => import("@/views/exteriorIdAuth/index.vue");
+const CreateIdAuth = () => import("@/views/exteriorIdAuth/create.vue");
 const StepIdAuth = () => import("@/views/exteriorIdAuth/authstep.vue");
+const Complete = () => import("@/views/exteriorIdAuth/complete.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -84,6 +86,15 @@ const routes: Array<RouteRecordRaw> = [
         component: ExteriorIdAuth,
       },
       {
+        path: "/createIdAuth",
+        name: "createIdAuth",
+        meta: {
+          title: "外部身份源认证",
+          key: "CreateIdAuth",
+        },
+        component: CreateIdAuth,
+      },
+      {
         path: "/stepIdAuth",
         name: "stepIdAuth",
         meta: {
@@ -91,6 +102,15 @@ const routes: Array<RouteRecordRaw> = [
           key: "stepIdAuth",
         },
         component: StepIdAuth,
+      },
+      {
+        path: "/stepComplete",
+        name: "stepComplete",
+        meta: {
+          title: "外部身份源创建成功",
+          key: "stepComplete",
+        },
+        component: Complete,
       },
     ],
   },

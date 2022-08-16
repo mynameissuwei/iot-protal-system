@@ -71,10 +71,9 @@ instance.interceptors.response.use(
     }
     if (+status === 400) {
       // 后端无法处理 “请求参数” 的报错，前端兼容处理
-      const { msg } = error?.response?.data || {};
+      const { msg, data } = error?.response?.data || {};
       ElMsgToast.error(msg);
-    } else if (+status !== 417 && +status !== 418) {
-      ElMsgToast.error(message);
+      return Promise.reject(data);
     }
   }
 );
