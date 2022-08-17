@@ -18,6 +18,7 @@
       <div v-show="active == 0" class="step1">
         <el-form-item label="请选择认证身份源类型" prop="authType">
           <el-select
+            :disabled="route.query.status === 'isEdit' ? true : false"
             v-model="formData.authType"
             placeholder="请选择认证身份源类型"
           >
