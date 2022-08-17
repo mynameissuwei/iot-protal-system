@@ -26,7 +26,7 @@
           </el-select>
         </el-form-item>
       </div>
-      <div v-show="active == 1">
+      <div v-show="active == 1" class="step2">
         <el-form-item label="LDAP服务器地址" prop="address">
           <el-input
             v-model="formData.address"
@@ -51,7 +51,11 @@
             placeholder="请输入访问LDAP服务器的用户名"
           />
         </el-form-item>
-        <el-form-item label="Bind DN密码" prop="bindDNPassWord">
+        <el-form-item
+          label="Bind DN密码"
+          prop="bindDNPassWord"
+          v-if="formData.type == 2"
+        >
           <el-input
             v-model="formData.bindDNPassWord"
             placeholder="请输入访问LDAP服务器的密码"
@@ -90,7 +94,7 @@
           />
         </el-form-item>
       </div>
-      <p class="auth-btn">
+      <el-form-item class="auth-btn">
         <el-button style="margin-top: 12px" @click="last" v-show="active != 0"
           >上一步</el-button
         >
@@ -103,7 +107,7 @@
           v-show="active == 2"
           >完成</el-button
         >
-      </p>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -111,13 +115,7 @@
 import { ref, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { addAuth, editAuth, getAuth } from "@/api/idAuth";
-import {
-  HeaderActionButtonGroupItem,
-  ElMsgBox,
-  ElMsgToast,
-  ElPagination,
-  ElInput,
-} from "@enn/ency-design";
+import { ElMsgToast, ElInput } from "@enn/ency-design";
 
 const router = useRouter();
 const route = useRoute();
@@ -126,13 +124,13 @@ const active = ref(0);
 const formData = reactive({
   authType: "LDAP",
   address: "",
-  type: 1,
+  type: "1",
   uid: "",
   bindDN: "",
   bindDNPassWord: "",
   baseDN: "",
   moduleName: "",
-  defaultLogin: 0,
+  defaultLogin: "0",
   testAccount: "",
   testPassWord: "",
 });
@@ -153,17 +151,17 @@ const formRules = reactive({
   testPassWord: [
     { required: true, message: "账户密码不能为空", trigger: "blur" },
   ],
-  uid: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
-  bindDN: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
+  uid: [{ required: true, message: "uid不能为空", trigger: "blur" }],
+  bindDN: [{ required: true, message: "BindDN不能为空", trigger: "blur" }],
   bindDNPassWord: [
-    { required: true, message: "账户密码不能为空", trigger: "blur" },
+    { required: true, message: "BindDN密码不能为空", trigger: "blur" },
   ],
   moduleName: [
-    { required: true, message: "账户密码不能为空", trigger: "blur" },
+    { required: true, message: "登录模块名称不能为空", trigger: "blur" },
   ],
-  type: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
+  type: [{ required: true, message: "授权方式不能为空", trigger: "blur" }],
   defaultLogin: [
-    { required: true, message: "账户密码不能为空", trigger: "blur" },
+    { required: true, message: "登陆方式不能为空", trigger: "blur" },
   ],
 });
 const next = () => {
@@ -203,7 +201,7 @@ onMounted(() => {
   width: 100%;
   background: #fff;
   padding: 26px;
-  padding-top: 80px;
+  padding-top: 5%;
   position: relative;
   .auth-step {
     display: flex;
@@ -214,24 +212,27 @@ onMounted(() => {
   }
 
   .auth-form {
-    display: flex;
-    justify-content: center;
     margin-top: 52px;
     margin-right: 84px;
-    // width: 400px;
     div {
       width: 400px;
     }
+    // .step1,
+    // .step3 {
+    //   padding-top: 80px;
+    // }
     .step1,
+    .step2,
     .step3 {
-      padding-top: 80px;
+      margin: 0 auto;
     }
   }
   .auth-btn {
     text-align: center;
-    position: absolute;
-    top: 570px;
-    left: 45%;
+    margin: 0 auto;
+    ::deep .el-form-item__content {
+      margin-left: 140px;
+    }
   }
 }
 // steps
