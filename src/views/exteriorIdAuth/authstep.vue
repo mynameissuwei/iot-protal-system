@@ -185,7 +185,6 @@ onMounted(() => {
   if (route.query.status === "isEdit") {
     getAuth().then((res) => {
       Object.assign(formData, res);
-      console.log(999, formData);
     });
   }
 });
