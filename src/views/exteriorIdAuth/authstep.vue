@@ -110,13 +110,7 @@
 import { ref, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { addAuth, editAuth, getAuth } from "@/api/idAuth";
-import {
-  HeaderActionButtonGroupItem,
-  ElMsgBox,
-  ElMsgToast,
-  ElPagination,
-  ElInput,
-} from "@enn/ency-design";
+import { ElMsgToast, ElInput } from "@enn/ency-design";
 
 const router = useRouter();
 const route = useRoute();
@@ -125,13 +119,13 @@ const active = ref(0);
 const formData = reactive({
   authType: "LDAP",
   address: "",
-  type: 1,
+  type: "1",
   uid: "",
   bindDN: "",
   bindDNPassWord: "",
   baseDN: "",
   moduleName: "",
-  defaultLogin: 0,
+  defaultLogin: "0",
   testAccount: "",
   testPassWord: "",
 });
@@ -152,17 +146,17 @@ const formRules = reactive({
   testPassWord: [
     { required: true, message: "账户密码不能为空", trigger: "blur" },
   ],
-  uid: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
-  bindDN: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
+  uid: [{ required: true, message: "uid不能为空", trigger: "blur" }],
+  bindDN: [{ required: true, message: "BindDN不能为空", trigger: "blur" }],
   bindDNPassWord: [
-    { required: true, message: "账户密码不能为空", trigger: "blur" },
+    { required: true, message: "BindDN密码不能为空", trigger: "blur" },
   ],
   moduleName: [
-    { required: true, message: "账户密码不能为空", trigger: "blur" },
+    { required: true, message: "登录模块名称不能为空", trigger: "blur" },
   ],
-  type: [{ required: true, message: "账户密码不能为空", trigger: "blur" }],
+  type: [{ required: true, message: "授权方式不能为空", trigger: "blur" }],
   defaultLogin: [
-    { required: true, message: "账户密码不能为空", trigger: "blur" },
+    { required: true, message: "登陆方式不能为空", trigger: "blur" },
   ],
 });
 const next = () => {
@@ -191,6 +185,7 @@ onMounted(() => {
   if (route.query.status === "isEdit") {
     getAuth().then((res) => {
       Object.assign(formData, res);
+      console.log(999, formData);
     });
   }
 });
