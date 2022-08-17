@@ -50,7 +50,11 @@
             placeholder="请输入访问LDAP服务器的用户名"
           />
         </el-form-item>
-        <el-form-item label="Bind DN密码" prop="bindDNPassWord">
+        <el-form-item
+          label="Bind DN密码"
+          prop="bindDNPassWord"
+          v-if="formData.type == 2"
+        >
           <el-input
             v-model="formData.bindDNPassWord"
             placeholder="请输入访问LDAP服务器的密码"
