@@ -4,3 +4,4 @@ export * from "./member";
 export * from "./organ";
 export * from "./role";
 export * from "./idAuth";
+export * from "./serviceManage";

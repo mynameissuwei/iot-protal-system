@@ -117,7 +117,7 @@ const routes: Array<RouteRecordRaw> = [
         path: "/serviceManage",
         name: "serviceManage",
         meta: {
-          title: "外部身份源创建成功",
+          title: "API文档",
           key: "serviceManage",
         },
         component: ServiceManage,
