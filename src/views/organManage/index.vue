@@ -112,10 +112,19 @@
               :title="actionBarTit.actionBarTitVlu"
               :button-group="originData.buttonGroup"
             >
-              <span class="actionBar-tit">{{
-                actionBarTit.actionBarTitVlu
-              }}</span>
+              <span class="actionBar-tit">
+                {{ actionBarTit.actionBarTitVlu }}</span
+              >
+              <el-button
+                class="actionBar-btn"
+                @click="deleteMember()"
+                :disabled="!refOrganMemberList.length"
+                >移除成员</el-button
+              >
             </el-header-action-bar>
+            <!-- <el-button :disabled="!refOrganMemberList.length"
+              >移除成员</el-button
+            > -->
           </div>
         </div>
         <!-- </template> -->
@@ -329,15 +338,15 @@ const originData = reactive({
         relevanceMember();
       },
     },
-    {
-      label: "移除成员",
-      icon: markRaw(Delete),
-      buttonType: "secondary",
-      operateType: "business",
-      cb: () => {
-        deleteMember();
-      },
-    },
+    // {
+    //   label: "移除成员",
+    //   icon: markRaw(Delete),
+    //   buttonType: "secondary",
+    //   operateType: "business",
+    //   cb: () => {
+    //     deleteMember();
+    //   },
+    // },
   ] as HeaderActionButtonGroupItem[],
 });
 const newData = reactive({
@@ -714,7 +723,7 @@ onMounted(() => {
     top: 100px;
     min-width: 200px;
     .header-bar-demo .el-header-action-bar {
-      padding: 0 33px;
+      padding: 0 140px;
       padding-left: 0;
       position: relative;
       .actionBar-tit {
@@ -723,6 +732,12 @@ onMounted(() => {
         font-size: 16px;
         font-weight: 400;
         color: #323233;
+      }
+      .actionBar-btn {
+        position: absolute;
+        top: 12px;
+        right: 33px;
+        height: 30px;
       }
     }
   }

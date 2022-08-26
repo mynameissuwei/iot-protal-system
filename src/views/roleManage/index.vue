@@ -10,6 +10,12 @@
             clearable
             class="handle-input mr10 roleSearch"
           ></el-input>
+          <el-button
+            class="header-btn"
+            @click="deleteRoleFn()"
+            :disabled="!refRoleList.length"
+            >删除角色</el-button
+          >
         </el-header-action-bar>
       </div>
     </div>
@@ -127,15 +133,15 @@ const originData = reactive({
         addRoleFn();
       },
     },
-    {
-      label: "删除",
-      icon: markRaw(Delete),
-      buttonType: "secondary",
-      operateType: "business",
-      cb: () => {
-        deleteRoleFn();
-      },
-    },
+    // {
+    //   label: "删除",
+    //   icon: markRaw(Delete),
+    //   buttonType: "secondary",
+    //   operateType: "business",
+    //   cb: () => {
+    //     deleteRoleFn();
+    //   },
+    // },
   ] as HeaderActionButtonGroupItem[],
 });
 
@@ -327,6 +333,7 @@ onMounted(() => {
   min-width: 200px;
   .header-bar-demo .el-header-action-bar {
     padding: 0;
+    padding-right: 100px;
     position: relative;
     .actionBar-tit {
       position: absolute;
@@ -342,6 +349,11 @@ onMounted(() => {
       position: absolute;
       top: 12px;
       right: 206px;
+    }
+    .header-btn {
+      position: absolute;
+      top: 12px;
+      right: 1px;
     }
   }
 }
