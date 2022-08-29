@@ -106,21 +106,30 @@
           }}</el-descriptions-item>
         </el-descriptions>
         <!-- <template> -->
-        <el-row>
-          <el-col :span="12">
-            {{ actionBarTit.actionBarTitVlu }}
-          </el-col>
-          <el-col :span="12" style="text-align: right">
-            <el-button type="primary" @click="relevanceMember"
-              >关联组织成员</el-button
+        <div class="header-bg-box">
+          <div class="header-bar-demo">
+            <el-header-action-bar
+              :title="actionBarTit.actionBarTitVlu"
+              :button-group="originData.buttonGroup"
             >
-            <el-button
-              :disabled="!refOrganMemberList.length"
-              @click="deleteMember"
+              <span class="actionBar-tit">
+                {{ actionBarTit.actionBarTitVlu }}</span
+              >
+              <el-button
+                class="actionBar-btn"
+                @click="deleteMember()"
+                :disabled="!refOrganMemberList.length"
+                >移除成员</el-button
+              >
+            </el-header-action-bar>
+            <!-- <el-button :disabled="!refOrganMemberList.length"
               >移除成员</el-button
-            ></el-col
-          >
-        </el-row>
+            > -->
+          </div>
+        </div>
+
+        <!-- </template> -->
+        >>>>>>> dev-0809-cqp
         <el-table
           ref="multipleTableRef"
           :data="tableData"
@@ -302,8 +311,8 @@ const dialogFormVisible = ref(false);
 const isUpdateName = ref(true);
 const orgMsg = reactive({
   deptName: "",
-  id: "1",
-  createTime: "2022-07-18",
+  id: "--",
+  createTime: "--",
 });
 const form = reactive({
   orgName: "",
@@ -311,7 +320,7 @@ const form = reactive({
   parentOrgId: "",
 });
 const orgNameVal = ref("");
-const orgainName = ref("新奥集团");
+const orgainName = ref("");
 const dataSource = ref<Tree[]>([]);
 const refOrganMemberList = ref([]);
 // 关联组织成员
@@ -324,6 +333,29 @@ const treeHeight = ref(0);
 // 组织成员列表
 const tableRowClassName = "``";
 const tableData = ref([]);
+const originData = reactive({
+  buttonGroup: [
+    {
+      label: "关联组织成员",
+      icon: markRaw(Edit),
+      buttonType: "primary",
+      operateType: "business",
+      cb: () => {
+        relevanceMember();
+      },
+    },
+    // {
+    //   label: "移除成员",
+    //   icon: markRaw(Delete),
+    //   buttonType: "secondary",
+    //   operateType: "business",
+    //   cb: () => {
+    //     deleteMember();
+    //   },
+    // },
+  ] as HeaderActionButtonGroupItem[],
+});
+
 const newData = reactive({
   newTree: [],
 });
@@ -352,6 +384,10 @@ const organTreeFn = () => {
   treeLoading.value = true;
   organTree().then((res) => {
     dataSource.value = res;
+    orgMsg.id = res[0].id;
+    orgMsg.createTime = res[0].createTime;
+    orgainName.value = res[0].title;
+    listQuery.id = res[0].id;
     let arr = [];
     arr.push(res[0].id);
     arrStar.value = arr;
@@ -698,7 +734,7 @@ onMounted(() => {
     top: 100px;
     min-width: 200px;
     .header-bar-demo .el-header-action-bar {
-      padding: 0 33px;
+      padding: 0 140px;
       padding-left: 0;
       position: relative;
       .actionBar-tit {
@@ -707,6 +743,12 @@ onMounted(() => {
         font-size: 16px;
         font-weight: 400;
         color: #323233;
+      }
+      .actionBar-btn {
+        position: absolute;
+        top: 12px;
+        right: 33px;
+        height: 30px;
       }
     }
   }
@@ -760,8 +802,8 @@ onMounted(() => {
     height: 100%;
   }
   /deep/.treeStyle .el-vl__wrapper .el-vl__window {
-    height: calc(100% -20px) !important;
-    height: 700px !important;
+    height: calc(100% -88px);
+    // height: 700px !important;
     min-height: 400px !important;
     overflow-y: scroll;
   }
