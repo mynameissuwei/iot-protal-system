@@ -305,8 +305,8 @@ const dialogFormVisible = ref(false);
 const isUpdateName = ref(true);
 const orgMsg = reactive({
   deptName: "",
-  id: "1",
-  createTime: "2022-07-18",
+  id: "--",
+  createTime: "--",
 });
 const form = reactive({
   orgName: "",
@@ -314,7 +314,7 @@ const form = reactive({
   parentOrgId: "",
 });
 const orgNameVal = ref("");
-const orgainName = ref("新奥集团");
+const orgainName = ref("");
 const dataSource = ref<Tree[]>([]);
 const refOrganMemberList = ref([]);
 // 关联组织成员
@@ -377,9 +377,21 @@ const organTreeFn = () => {
   treeLoading.value = true;
   organTree().then((res) => {
     dataSource.value = res;
+    orgMsg.id = res[0].id;
+    orgMsg.createTime = res[0].createTime;
+    orgainName.value = res[0].title;
+    listQuery.id = res[0].id;
     let arr = [];
     arr.push(res[0].id);
     arrStar.value = arr;
+    console.log(
+      111111,
+      res[0],
+      arr[0],
+      arrStar,
+      arrStar.value,
+      arrStar.value[0].id
+    );
     treeLoading.value = false;
     // console.log(10122, dataSource.value, arrStar.value);
   });
@@ -791,8 +803,8 @@ onMounted(() => {
     height: 100%;
   }
   /deep/.treeStyle .el-vl__wrapper .el-vl__window {
-    height: calc(100% -20px) !important;
-    height: 700px !important;
+    height: calc(100% -88px);
+    // height: 700px !important;
     min-height: 400px !important;
     overflow-y: scroll;
   }
