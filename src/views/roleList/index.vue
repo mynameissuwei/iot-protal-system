@@ -102,6 +102,7 @@
               type="primary"
               v-loading="connectButtonLoading"
               @click="connectMember"
+              :disabled="!connectValue.length"
             >
               确定
             </el-button>

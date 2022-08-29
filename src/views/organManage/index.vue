@@ -106,24 +106,26 @@
           }}</el-descriptions-item>
         </el-descriptions>
         <!-- <template> -->
-        <div class="header-bg-box">
-          <div class="header-bar-demo">
-            <el-header-action-bar
-              :title="actionBarTit.actionBarTitVlu"
-              :button-group="originData.buttonGroup"
+        <el-row>
+          <el-col :span="12">
+            {{ actionBarTit.actionBarTitVlu }}
+          </el-col>
+          <el-col :span="12" style="text-align: right">
+            <el-button type="primary" @click="relevanceMember"
+              >关联组织成员</el-button
             >
-              <span class="actionBar-tit">{{
-                actionBarTit.actionBarTitVlu
-              }}</span>
-            </el-header-action-bar>
-          </div>
-        </div>
-        <!-- </template> -->
+            <el-button
+              :disabled="!refOrganMemberList.length"
+              @click="deleteMember"
+              >移除成员</el-button
+            ></el-col
+          >
+        </el-row>
         <el-table
           ref="multipleTableRef"
           :data="tableData"
           highlight-current-row
-          style="width: 100%; margin-top: 55px"
+          style="width: 100%; margin-top: 35px"
           :row-class-name="tableRowClassName"
           @selection-change="handleSelectionChange"
         >
@@ -202,7 +204,11 @@
           </el-combo-box>
           <template #footer>
             <span class="dialog-footer">
-              <el-button type="primary" @click="connectMember">
+              <el-button
+                type="primary"
+                @click="connectMember"
+                :disabled="!connectValue.length"
+              >
                 确定
               </el-button>
               <el-button @click="dialogConnectMemberVisible = false"
@@ -318,28 +324,6 @@ const treeHeight = ref(0);
 // 组织成员列表
 const tableRowClassName = "``";
 const tableData = ref([]);
-const originData = reactive({
-  buttonGroup: [
-    {
-      label: "关联组织成员",
-      icon: markRaw(Edit),
-      buttonType: "primary",
-      operateType: "business",
-      cb: () => {
-        relevanceMember();
-      },
-    },
-    {
-      label: "移除成员",
-      icon: markRaw(Delete),
-      buttonType: "secondary",
-      operateType: "business",
-      cb: () => {
-        deleteMember();
-      },
-    },
-  ] as HeaderActionButtonGroupItem[],
-});
 const newData = reactive({
   newTree: [],
 });
