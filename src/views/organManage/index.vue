@@ -384,14 +384,6 @@ const organTreeFn = () => {
     let arr = [];
     arr.push(res[0].id);
     arrStar.value = arr;
-    console.log(
-      111111,
-      res[0],
-      arr[0],
-      arrStar,
-      arrStar.value,
-      arrStar.value[0].id
-    );
     treeLoading.value = false;
     // console.log(10122, dataSource.value, arrStar.value);
   });
