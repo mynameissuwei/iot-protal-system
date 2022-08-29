@@ -175,10 +175,11 @@ const last = () => {
 const finish = (formData: { moduleName: any }) => {
   const fomeDataNew = JSON.stringify(formData);
   const isEdit = route.query.status === "isEdit";
+  const text = isEdit ? "编辑" : "创建";
   (isEdit ? editAuth(fomeDataNew) : addAuth(fomeDataNew)).then((res) => {
     ElMsgToast({
       type: "success",
-      message: `${formData.moduleName} 身份源创建成功~`,
+      message: `${formData.moduleName} 身份源${text}成功~`,
     });
     router.push({
       path: "/stepComplete",

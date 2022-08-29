@@ -11,6 +11,7 @@ const ExteriorIdAuth = () => import("@/views/exteriorIdAuth/index.vue");
 const CreateIdAuth = () => import("@/views/exteriorIdAuth/create.vue");
 const StepIdAuth = () => import("@/views/exteriorIdAuth/authstep.vue");
 const Complete = () => import("@/views/exteriorIdAuth/complete.vue");
+const ServiceManage = () => import("@/views/serviceManage/index.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -111,6 +112,15 @@ const routes: Array<RouteRecordRaw> = [
           key: "stepComplete",
         },
         component: Complete,
+      },
+      {
+        path: "/serviceManage",
+        name: "serviceManage",
+        meta: {
+          title: "API文档",
+          key: "serviceManage",
+        },
+        component: ServiceManage,
       },
     ],
   },
