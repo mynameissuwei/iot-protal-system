@@ -129,7 +129,6 @@
         </div>
 
         <!-- </template> -->
-        >>>>>>> dev-0809-cqp
         <el-table
           ref="multipleTableRef"
           :data="tableData"
@@ -811,8 +810,9 @@ onMounted(() => {
     width: 0;
   }
   /deep/.treeStyle .el-vl__wrapper .el-virtual-scrollbar {
-    position: absolute;
-    right: -10px !important;
+    // position: absolute;
+    // right: -10px !important;
+    // width: 0px;
   }
 }
 
