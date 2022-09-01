@@ -97,7 +97,12 @@
             @click="saveOrganNameFn"
           ></el-button>
         </h4>
-        <el-descriptions title="" class="table-orgain-des">
+        <el-descriptions
+          title=""
+          class="table-orgain-des"
+          :contentStyle="CS"
+          :label-style="LS"
+        >
           <el-descriptions-item label="组织ID :">{{
             orgMsg.id || "--"
           }}</el-descriptions-item>
@@ -122,9 +127,6 @@
                 >移除成员</el-button
               >
             </el-header-action-bar>
-            <!-- <el-button :disabled="!refOrganMemberList.length"
-              >移除成员</el-button
-            > -->
           </div>
         </div>
         <!-- </template> -->
@@ -338,15 +340,6 @@ const originData = reactive({
         relevanceMember();
       },
     },
-    // {
-    //   label: "移除成员",
-    //   icon: markRaw(Delete),
-    //   buttonType: "secondary",
-    //   operateType: "business",
-    //   cb: () => {
-    //     deleteMember();
-    //   },
-    // },
   ] as HeaderActionButtonGroupItem[],
 });
 const newData = reactive({
@@ -459,7 +452,6 @@ const saveOrganNameFn = () => {
     });
 };
 // 添加组织弹窗确认
-
 const addOrgan = async (formEl) => {
   buttonLoadingRef.value = true;
   if (!formEl) return;
@@ -687,6 +679,14 @@ onMounted(() => {
   height: 100%;
   background: #fff;
   padding: 23px 16px 10px 16px;
+  .CS {
+    min-width: 100px;
+    width: 150px;
+  }
+  .LS {
+    min-width: 100px;
+    width: 150px;
+  }
   .tagStyle {
     margin: 0 2px;
   }
@@ -769,6 +769,11 @@ onMounted(() => {
     margin: 19px 0 17px;
     height: 100%;
     .el-descriptions__cell {
+      width: 300px !important;
+    }
+    ::v-deep.el-descriptions__body
+      .el-descriptions__table
+      .el-descriptions__cell {
       width: 300px !important;
     }
   }
