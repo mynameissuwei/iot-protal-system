@@ -7,7 +7,6 @@
     :show-close="false"
   >
     <template #left>
-      <!-- <div class="two-column-left"> -->
       <div class="organ-tree">
         <el-title class="organ-tit" :level="4">组织管理</el-title>
         <el-input
@@ -37,10 +36,6 @@
               <span>{{ node.label }}</span>
               <span class="actveapan">
                 <a @click.stop="append(data)">
-                  <!-- <el-icon :size="12" class="tit-editBtn"
-                    ><add-number
-                  /></el-icon> -->
-                  <!-- <el-icon><addNumber /></el-icon> -->
                   <el-button text :icon="AddNumber"></el-button>
                 </a>
                 <a @click.stop="removeOrganFn(node, data)">
@@ -75,7 +70,6 @@
           </template>
         </el-dialog>
       </div>
-      <!-- </div> -->
     </template>
     <template #right>
       <!-- <div class="two-column-right"> -->
@@ -110,7 +104,6 @@
             orgMsg.createTime || "--"
           }}</el-descriptions-item>
         </el-descriptions>
-        <!-- <template> -->
         <div class="header-bg-box">
           <div class="header-bar-demo">
             <el-header-action-bar
@@ -129,7 +122,6 @@
             </el-header-action-bar>
           </div>
         </div>
-        <!-- </template> -->
         <el-table
           ref="multipleTableRef"
           :data="tableData"
@@ -386,10 +378,6 @@ watch(filterText, (val) => {
   treeRef.value.filter(val);
 });
 
-// const filterNode = (value: string, data: Tree) => {
-//   if (!value) return true;
-//   return data.label.includes(value);
-// };
 // 分页
 const handleSizeChange = (val: number) => {
   listQuery.size = val;

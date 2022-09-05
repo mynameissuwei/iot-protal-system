@@ -118,7 +118,7 @@ import {
   ElPagination,
   ElInput,
 } from "@enn/ency-design";
-import { Edit, Delete } from "@enn/ency-design-icons";
+import { Edit } from "@enn/ency-design-icons";
 import { removeRole, roleListApi, roleAddApi } from "@/api";
 import { useRouter } from "vue-router";
 import { PAGINATION_CONFIG } from "@/const";
@@ -133,15 +133,6 @@ const originData = reactive({
         addRoleFn();
       },
     },
-    // {
-    //   label: "删除",
-    //   icon: markRaw(Delete),
-    //   buttonType: "secondary",
-    //   operateType: "business",
-    //   cb: () => {
-    //     deleteRoleFn();
-    //   },
-    // },
   ] as HeaderActionButtonGroupItem[],
 });
 
@@ -212,12 +203,10 @@ const roleSelectionChange = (val: never[]) => {
 };
 // 角色列表
 const getRoleList = () => {
-  //   listLoading.value = true;
   roleListApi(roleListQuery).then((res) => {
     if (res.records) {
       tableData.value = res.records;
       roleTotalNum.value = res.total;
-      //   listLoading.value = false;
     } else {
       tableData.value = [];
       ElMsgToast({
