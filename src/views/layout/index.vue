@@ -3,7 +3,8 @@
     <el-header :class="hideHeaderAside === HIDE_HEADER_ASIDE ? 'none-div' : ''">
       <Header />
     </el-header>
-    <el-container :style="'height: calc(100% - 60px)'">
+    <!-- <el-container :style="'height: calc(100% - 60px)'"> -->
+    <el-container>
       <el-aside
         width="200px"
         :class="hideHeaderAside === HIDE_HEADER_ASIDE ? 'none-div' : ''"

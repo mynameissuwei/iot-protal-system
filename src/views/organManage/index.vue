@@ -122,11 +122,17 @@
             </el-header-action-bar>
           </div>
         </div>
+<<<<<<< HEAD
+=======
+
+        <!-- </template> -->
+        >>>>>>> dev-0809-cqp
+>>>>>>> dev
         <el-table
           ref="multipleTableRef"
           :data="tableData"
           highlight-current-row
-          style="width: 100%; margin-top: 55px"
+          style="width: 100%; margin-top: 35px"
           :row-class-name="tableRowClassName"
           @selection-change="handleSelectionChange"
         >
@@ -205,7 +211,11 @@
           </el-combo-box>
           <template #footer>
             <span class="dialog-footer">
-              <el-button type="primary" @click="connectMember">
+              <el-button
+                type="primary"
+                @click="connectMember"
+                :disabled="!connectValue.length"
+              >
                 确定
               </el-button>
               <el-button @click="dialogConnectMemberVisible = false"
@@ -334,6 +344,7 @@ const originData = reactive({
     },
   ] as HeaderActionButtonGroupItem[],
 });
+
 const newData = reactive({
   newTree: [],
 });

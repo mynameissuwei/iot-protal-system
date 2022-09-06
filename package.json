@@ -8,7 +8,7 @@
     "serve:test": "cross-env vue-cli-service serve --mode test",
     "serve:prod": "cross-env vue-cli-service serve --mode prod",
     "build": "vue-cli-service build",
-    "build:test": "vue-cli-service build --mode test",
+    "build:test": "vue-cli-service build --mode enntest",
     "build:prod": "vue-cli-service build --mode prod",
     "lint": "vue-cli-service lint"
   },
