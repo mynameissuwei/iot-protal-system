@@ -116,7 +116,6 @@ const httpRequest = (params: any) => {
 // 下载文件
 const downloadUrl = () => {
   console.log(99999, exportTemplateURL);
-  debugger;
   window.location.href = exportTemplateURL;
 };
 
