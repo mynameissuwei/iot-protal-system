@@ -122,12 +122,6 @@
             </el-header-action-bar>
           </div>
         </div>
-<<<<<<< HEAD
-=======
-
-        <!-- </template> -->
-        >>>>>>> dev-0809-cqp
->>>>>>> dev
         <el-table
           ref="multipleTableRef"
           :data="tableData"
