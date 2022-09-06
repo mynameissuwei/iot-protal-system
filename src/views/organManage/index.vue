@@ -802,8 +802,9 @@ onMounted(() => {
     width: 0;
   }
   /deep/.treeStyle .el-vl__wrapper .el-virtual-scrollbar {
-    position: absolute;
-    right: -10px !important;
+    // position: absolute;
+    // right: -10px !important;
+    // width: 0px;
   }
 }
 
