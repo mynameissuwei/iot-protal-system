@@ -12,6 +12,8 @@ const CreateIdAuth = () => import("@/views/exteriorIdAuth/create.vue");
 const StepIdAuth = () => import("@/views/exteriorIdAuth/authstep.vue");
 const Complete = () => import("@/views/exteriorIdAuth/complete.vue");
 const ServiceManage = () => import("@/views/serviceManage/index.vue");
+const AuthTenant = () => import("@/views/authTenant/index.vue");
+const EcologyAbility = () => import("@/views/ecologyAbility/index.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -121,6 +123,24 @@ const routes: Array<RouteRecordRaw> = [
           key: "serviceManage",
         },
         component: ServiceManage,
+      },
+      {
+        path: "/authTenant",
+        name: "authTenant",
+        meta: {
+          title: "已授权租户",
+          key: "authTenant",
+        },
+        component: AuthTenant,
+      },
+      {
+        path: "/ecologyAbility",
+        name: "ecologyAbility",
+        meta: {
+          title: "生态能力管理",
+          key: "ecologyAbility",
+        },
+        component: EcologyAbility,
       },
     ],
   },

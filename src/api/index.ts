@@ -5,3 +5,4 @@ export * from "./organ";
 export * from "./role";
 export * from "./idAuth";
 export * from "./serviceManage";
+export * from "./tenant";

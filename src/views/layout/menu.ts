@@ -27,5 +27,17 @@ const menuList: MenuInfo[] = [
     key: "exteriorIdAuth",
     url: "/exteriorIdAuth",
   },
+  {
+    name: "已授权租户",
+    desc: "已授权租户",
+    key: "authTenant",
+    url: "/authTenant",
+  },
+  // {
+  //   name: "生态能力管理",
+  //   desc: "生态能力管理",
+  //   key: "ecologyAbility",
+  //   url: "/ecologyAbility",
+  // },
 ];
 export default menuList;
