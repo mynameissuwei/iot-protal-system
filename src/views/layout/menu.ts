@@ -33,11 +33,11 @@ const menuList: MenuInfo[] = [
     key: "authTenant",
     url: "/authTenant",
   },
-  // {
-  //   name: "生态能力管理",
-  //   desc: "生态能力管理",
-  //   key: "ecologyAbility",
-  //   url: "/ecologyAbility",
-  // },
+  {
+    name: "生态能力管理",
+    desc: "生态能力管理",
+    key: "ecologyAbility",
+    url: "/ecologyAbility",
+  },
 ];
 export default menuList;
