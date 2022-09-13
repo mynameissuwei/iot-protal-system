@@ -37,7 +37,7 @@
             class="actionClass edit-link-view"
             :underline="false"
             @click="startBtn(scope.row)"
-            >启用生态能力</el-link
+            >配置生态能力</el-link
           >
           <el-link
             class="actionClass"

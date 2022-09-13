@@ -283,7 +283,7 @@ interface OptionData {
 const router = useRouter();
 // 分页数据
 const listQuery = reactive({
-  id: "1",
+  // id: "1",
   current: 1,
   size: 10,
 });
@@ -370,7 +370,7 @@ const organTreeFn = () => {
     orgMsg.id = res[0].id;
     orgMsg.createTime = res[0].createTime;
     orgainName.value = res[0].title;
-    listQuery.id = res[0].id;
+    // listQuery.id = res[0].id;
     let arr = [];
     arr.push(res[0].id);
     arrStar.value = arr;
