@@ -1,6 +1,7 @@
 import { RouteRecordRaw } from "vue-router";
 
 const Layout = () => import("@/views/layout/index.vue");
+const Login = () => import("@/views/login/index.vue");
 const Detail = () => import("@/views/user/detail.vue");
 const Member = () => import("@/views/member/index.vue");
 const RoleList = () => import("@/views/roleList/index.vue");
@@ -25,6 +26,15 @@ const routes: Array<RouteRecordRaw> = [
     name: "Layout",
     component: Layout,
     children: [
+      {
+        path: "/login",
+        name: "login",
+        meta: {
+          title: "登录",
+          key: "login",
+        },
+        component: Login,
+      },
       {
         path: "/detail",
         name: "detail",

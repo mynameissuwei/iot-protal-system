@@ -14,30 +14,22 @@ export const isLoginApi = (data: any): any => {
   });
 };
 
-// 退出登录
-export const logout = (): any => {
-  return Service({
-    url: `${API_ENN_RBAC_AUTH}/logout`,
-    method: "get",
-  });
-};
+// //  LDAP
+// export const ldapCheck = (): any => {
+//   return Service({
+//     url: `${API_ENN_RBAC_AUTH}/ldap/check`,
+//     method: "post",
+//   });
+// };
 
-//  LDAP
-export const ldapCheck = (): any => {
-  return Service({
-    url: `${API_ENN_RBAC_AUTH}/ldap/check`,
-    method: "post",
-  });
-};
-
-export const loginBase = (): any => {
+export const getLoginCaptcha = (): any => {
   return Service({
     url: `${API_ENN_RBAC_AUTH}/captcha`,
     method: "get",
   });
 };
 
-export const loginApi = (params: any): any => {
+export const getLoginToken = (params: any): any => {
   const { account, password, ...res } = params;
   const data = {
     account: "04" + sm2.doEncrypt(account, sm2PublicKey, cipherMode),
@@ -52,7 +44,7 @@ export const loginApi = (params: any): any => {
 };
 
 // 登录时获取短信验证码
-export const loginCodeApi = (data: any): any => {
+export const getLoginSmsCaptcha = (data: any): any => {
   return Service({
     url: `${API_ENN_RBAC_AUTH}/captcha/login/sms?mobile=${data}`,
     method: "get",
@@ -64,6 +56,14 @@ export const codeLoginApi = (data: any): any => {
   return Service({
     url: `${API_ENN_RBAC_AUTH}/token/sms?mobile=${data.mobile}&smsCaptcha=${data.smsCaptcha}`,
     method: "post",
+  });
+};
+
+// 退出登录
+export const logout = (): any => {
+  return Service({
+    url: `${API_ENN_RBAC_AUTH}/logout`,
+    method: "get",
   });
 };
 
