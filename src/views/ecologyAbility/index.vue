@@ -85,7 +85,7 @@ const addRoleFn = () => {
   roleForm.id = "";
 };
 
-// 能力列表
+// 能力列表 临时、接口未出
 const getAbilityList = () => {
   roleListApi(roleListQuery).then((res) => {
     if (res.records) {
@@ -100,7 +100,7 @@ const getAbilityList = () => {
     }
   });
 };
-// 搜索
+// 搜索 临时、接口未出
 const registAbility = () => {
   console.log("注册能力");
 };
