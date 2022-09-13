@@ -132,7 +132,7 @@ const settingBtn = () => {
   console.log("设定");
 };
 
-// 租户列表
+// 租户列表 临时、接口未出
 const getTenantList = () => {
   roleListApi(roleListQuery).then((res) => {
     if (res.records) {
@@ -147,7 +147,7 @@ const getTenantList = () => {
     }
   });
 };
-// 搜索
+// 搜索 临时、接口未出
 const searchTenant = () => {
   roleListApi(roleListQuery).then((res) => {
     if (res.records) {
