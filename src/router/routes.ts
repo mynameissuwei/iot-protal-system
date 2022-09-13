@@ -22,19 +22,19 @@ const routes: Array<RouteRecordRaw> = [
     redirect: "/organManage",
   },
   {
+    path: "/login",
+    name: "login",
+    meta: {
+      title: "登录",
+      key: "login",
+    },
+    component: Login,
+  },
+  {
     path: "/",
     name: "Layout",
     component: Layout,
     children: [
-      {
-        path: "/login",
-        name: "login",
-        meta: {
-          title: "登录",
-          key: "login",
-        },
-        component: Login,
-      },
       {
         path: "/detail",
         name: "detail",
