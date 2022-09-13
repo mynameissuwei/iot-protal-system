@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "enpm run serve",
-    "serve": "cross-env  vue-cli-service serve",
-    "serve:test": "cross-env vue-cli-service serve --mode test",
+    "serve": "cross-env  vue-cli-service serve --mode devlocal",
+    "serve:test": "cross-env vue-cli-service serve --mode enntest",
     "serve:prod": "cross-env vue-cli-service serve --mode prod",
     "build": "vue-cli-service build",
     "build:test": "vue-cli-service build --mode enntest",
