@@ -6,9 +6,7 @@
 
       <!-- 登陆表单 -->
       <el-card class="container-login" ref="loginCard">
-        <el-button class="goHome" type="text" @click="goHome"
-          >返回首页</el-button
-        >
+        <el-button class="go-home" text @click="goHome">返回首页</el-button>
         <div class="headerToggle">
           <h2>欢迎使用恩牛网物联平台</h2>
         </div>
@@ -17,20 +15,19 @@
             :label="authText"
             name="zero"
             class="class-filter"
-            v-if="isAuth ? defaultLogin == '0' : false"
+            v-if="isAuth ? +defaultLogin === 0 : false"
           >
             <el-form
               ref="loginFormRefA"
               :rules="LoginFormRulesP"
               :model="loginForm1"
               label-width="0"
-              class="login_form"
             >
               <el-form-item prop="account" key="account">
                 <el-input
                   placeholder="请输入账号"
                   v-model.psw.trim="loginForm1.account"
-                  suffix-icon="el-icon-user"
+                  :suffix-icon="User"
                 ></el-input>
               </el-form-item>
               <el-form-item prop="password" key="password">
@@ -38,17 +35,18 @@
                   placeholder="请输入密码"
                   type="password"
                   v-model.psw.trim="loginForm1.password"
-                  suffix-icon="el-icon-lock"
+                  :suffix-icon="Lock"
                 ></el-input>
               </el-form-item>
               <el-form-item class="btns">
                 <el-button
-                  class="btn-color"
+                  class="btn-color btn-height"
                   type="primary"
                   round
                   @click="loginTo(true)"
-                  >登录</el-button
                 >
+                  登录
+                </el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -58,13 +56,12 @@
               :rules="LoginFormRulesP"
               :model="loginForm1"
               label-width="0"
-              class="login_form"
             >
               <el-form-item prop="account" key="account">
                 <el-input
                   placeholder="请输入账号"
                   v-model.psw.trim="loginForm1.account"
-                  suffix-icon="el-icon-user"
+                  :suffix-icon="User"
                 ></el-input>
               </el-form-item>
               <el-form-item prop="password" key="password">
@@ -72,17 +69,12 @@
                   placeholder="请输入密码"
                   type="password"
                   v-model.psw.trim="loginForm1.password"
-                  suffix-icon="el-icon-lock"
+                  :suffix-icon="Lock"
                 ></el-input>
               </el-form-item>
-              <!-- <el-form-item style="text-align: left">
-                  <el-checkbox v-model="isRemember">
-                    记住密码
-                  </el-checkbox>
-                </el-form-item> -->
               <el-form-item class="btns">
                 <el-button
-                  class="btn-color"
+                  class="btn-color btn-height"
                   type="primary"
                   round
                   @click="loginTo(false)"
@@ -97,43 +89,38 @@
               :model="codeLoginForm"
               :rules="codeLoginFormRules"
               label-width="0"
-              class="login_form"
             >
               <el-form-item prop="mobile" key="mobile">
                 <el-input
+                  maxlength="11"
                   placeholder="请输入手机号"
                   v-model="codeLoginForm.mobile"
-                  suffix-icon="el-icon-user"
+                  :suffix-icon="User"
                 ></el-input>
               </el-form-item>
               <el-form-item prop="smsCaptcha" key="smsCaptcha">
-                <el-input
-                  placeholder="请输入短信验证码"
-                  v-model="codeLoginForm.smsCaptcha"
-                >
-                  <!-- <el-button
-                    slot="append"
-                    type="primary"
-                    plain
-                    @click="getRegisterCode(codeLoginForm.mobile, 'login')"
-                    :disabled="isDisabled"
-                    >{{ buttonName }}</el-button
-                  > -->
-                  <el-button
-                    type="primary"
-                    plain
-                    @click="getRegisterCode(codeLoginForm.mobile, 'login')"
-                    :disabled="isDisabled"
-                    >{{ buttonName }}</el-button
+                <el-col :span="17">
+                  <el-input
+                    placeholder="请输入短信验证码"
+                    v-model="codeLoginForm.smsCaptcha"
                   >
-                </el-input>
+                  </el-input>
+                </el-col>
+                <el-col :span="6">
+                  <el-button
+                    class="btn-height"
+                    :disabled="isDisabled"
+                    @click="getSmsCaptcha(codeLoginForm.mobile, 'login')"
+                    >{{ buttonName }}
+                  </el-button>
+                </el-col>
               </el-form-item>
               <el-form-item class="btns">
                 <el-button
-                  class="btn-color"
+                  class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo"
+                  @click="loginTo(false)"
                   >登录</el-button
                 >
               </el-form-item>
@@ -143,20 +130,19 @@
             :label="authText"
             name="zero"
             class="class-filter"
-            v-if="isAuth ? defaultLogin == '1' : false"
+            v-if="isAuth ? +defaultLogin === 1 : false"
           >
             <el-form
               ref="loginFormRefA"
               :rules="LoginFormRulesP"
               :model="loginForm1"
               label-width="0"
-              class="login_form"
             >
               <el-form-item prop="account" key="account">
                 <el-input
                   placeholder="请输入账号"
                   v-model.psw.trim="loginForm1.account"
-                  suffix-icon="el-icon-user"
+                  :suffix-icon="User"
                 ></el-input>
               </el-form-item>
               <el-form-item prop="password" key="password">
@@ -164,12 +150,12 @@
                   placeholder="请输入密码"
                   type="password"
                   v-model.psw.trim="loginForm1.password"
-                  suffix-icon="el-icon-lock"
+                  :suffix-icon="Lock"
                 ></el-input>
               </el-form-item>
               <el-form-item class="btns">
                 <el-button
-                  class="btn-color"
+                  class="btn-color btn-height"
                   type="primary"
                   round
                   @click="loginTo(true)"
@@ -179,11 +165,6 @@
             </el-form>
           </el-tab-pane>
         </el-tabs>
-        <div class="pull-right">
-          <el-button class="pull-btn-right" type="text">
-            <span v-if="+windwBoxBtn === 2" @click="toLogin()">立即登录</span>
-          </el-button>
-        </div>
       </el-card>
       <router-view></router-view>
     </div>
@@ -191,24 +172,28 @@
 </template>
 
 <script setup lang="ts">
-import { getLoginToken, getLoginSmsCaptcha, ldapCheck } from "@/api";
 import { ref, onBeforeMount, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { ElButtonToggle, ElMsgToast, FormInstance } from "@enn/ency-design";
+import { Lock, User } from "@enn/ency-design-icons";
+import { getLoginToken, getLoginSmsCaptcha, ldapCheck } from "@/api";
+import { phonePattern } from "@/utils/pattern";
+
 const router = useRouter();
 const route = useRoute();
+
 const redirectURL = ref(route.query.redirect ?? "/");
 
+const codeLoginFormRef = ref<FormInstance>();
 // 登录表单
 const loginForm1 = reactive({
   account: "",
   password: "",
 });
-
 const codeLoginForm = reactive({
   mobile: "",
   smsCaptcha: "",
 });
-
 // 表单验证规则
 const codeLoginFormRules = {
   // mobile: [{  required: true, message: "请输入短信验证码",trigger: "blur" }],
@@ -219,10 +204,9 @@ const codeLoginFormRules = {
       trigger: "blur",
     },
     {
-      min: 10,
-      max: 11,
-      message: "请正确输入手机号",
-      trigger: "blur",
+      pattern: phonePattern,
+      message: "请输入正确的手机号",
+      trigger: "change",
     },
   ],
   smsCaptcha: [
@@ -253,99 +237,83 @@ const LoginFormRulesP = {
 
 const isAuth = ref(false);
 const authText = ref("LDAP");
-const defaultLogin = ref("1");
+const defaultLogin = ref(1);
 const activeName = ref("first");
 // 短信验证码
-const CountDown = ref(60); //倒计时
+const countDown = ref(60); //倒计时
 const buttonName = ref("获取验证码");
 const isDisabled = ref(false); //是否禁用按钮
 const isRemember = ref(false);
-const windwBox = ref("1");
 const windwBoxBtn = ref(1);
 const loginFormRefA = ref();
+// console.log("countDown", countDown.value);
+
+onBeforeMount(() => {
+  initData();
+});
 
 const initData = () => {
   getCookie(); //判断cookie中的值
   ldapCheck().then((res) => {
     console.log(res, "LDAP已请求");
-    const { code, data } = res;
-    isAuth.value = code == 200 ? true : false;
-    authText.value = data.moduleName;
-    defaultLogin.value = data.defaultLogin;
-    if (isAuth.value) {
-      if (defaultLogin.value == "0") {
-        activeName.value = "zero";
-      }
+    const { moduleName, defaultLogin } = res;
+    isAuth.value = true;
+    authText.value = moduleName;
+    defaultLogin.value = defaultLogin;
+    if (+defaultLogin.value === 0) {
+      activeName.value = "zero";
     }
   });
   //从sessionStorage中读取倒计时
   if (sessionStorage.getItem("CountDownInfo")) {
-    CountDown.value = JSON.parse(
+    countDown.value = JSON.parse(
       sessionStorage.getItem("CountDownInfo") ?? ""
-    ).CountDown;
+    ).countDown;
     isDisabled.value = JSON.parse(
       sessionStorage.getItem("CountDownInfo") ?? ""
     ).isDisabled;
   }
   //进入该页面时，若倒计时还在进行，则继续倒计时
-  if (isDisabled.value) {
-    let timerId = setInterval(() => {
-      CountDown.value--;
-      buttonName.value = CountDown.value + "秒后重试";
-      if (CountDown.value <= 0) {
-        clearInterval(timerId);
-        buttonName.value = "重新发送";
-        CountDown.value = 60;
-        isDisabled.value = false;
-      }
-    }, 1000);
+  if (isDisabled.value === true) {
+    timeCountDown();
   }
   //在页面刷新时将vuex里的信息保存到localStorage里
   window.addEventListener("beforeunload", () => {
     sessionStorage.setItem(
       "CountDownInfo",
       JSON.stringify({
-        CountDown: CountDown,
-        isDisabled: isDisabled,
+        countDown: countDown.value,
+        isDisabled: isDisabled.value,
       })
     );
   });
 };
 
-onBeforeMount(() => {
-  initData();
-});
-// 登录&注册获取短信验证码
-const getRegisterCode = async (mobile: any, type: any) => {
-  if (mobile) {
-    //按钮禁止，并进行倒计时，防止网速慢的用户重复点击
-    isDisabled.value = true;
-    let timerId = setInterval(() => {
-      CountDown.value--;
-      buttonName.value = CountDown.value + "秒后重试";
-      if (CountDown.value <= 0) {
-        clearInterval(timerId);
-        buttonName.value = "重新发送";
-        CountDown.value = 60;
-        isDisabled.value = false;
-      }
-    }, 1000);
-    if (type) {
-      // 登录验证码接口
-      const res = await getLoginSmsCaptcha(mobile);
-      console.log(res);
+const timeCountDown = () => {
+  let timerId = setInterval(() => {
+    countDown.value--;
+    buttonName.value = countDown.value + "秒后重试";
+    if (countDown.value <= 0) {
+      clearInterval(timerId);
+      buttonName.value = "重新发送";
+      countDown.value = 60;
+      isDisabled.value = false;
     }
-  } else {
-    // $message.warning("请填写接收短信验证码的手机号");
-  }
+  }, 1000);
+};
 
-  // mobileCode = res.image;
+// 登录&注册获取短信验证码
+const getSmsCaptcha = async (mobile: any, type: any) => {
+  if (type === "login") {
+    // 登录验证码接口
+    getLoginSmsCaptcha(mobile).then(() => {
+      //按钮禁止，并进行倒计时，防止网速慢的用户重复点击
+      isDisabled.value = true;
+      timeCountDown();
+    });
+  }
 };
-const toLogin = () => {
-  windwBox.value = "1";
-  windwBoxBtn.value = 1;
-  console.log(windwBox, windwBoxBtn);
-};
+
 const goHome = () => {
   router.push({
     path: "/",
@@ -478,9 +446,9 @@ const loginTo = async (isAuth: boolean) => {
 </script>
 
 <style scoped lang="scss">
-:deep(.el-input-group__append) {
-  background-color: white !important;
-}
+// :deep(.el-input-group__append) {
+//   background-color: white !important;
+// }
 .login {
   //min-height: 800px;
   position: relative;
@@ -491,13 +459,6 @@ const loginTo = async (isAuth: boolean) => {
   background-size: cover;
   background-attachment: fixed;
 }
-
-.login_header {
-  background-color: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  //border-bottom: 1px solid #f8f8f8;
-}
-
 .box {
   width: 100%;
   height: 100%;
@@ -519,8 +480,8 @@ const loginTo = async (isAuth: boolean) => {
   z-index: -1;
 }
 .container-login {
-  min-width: 480px;
-  padding: 0 35px 35px;
+  min-width: 550px;
+  padding: 10px 35px 25px;
   background: #fff;
   backdrop-filter: blur(5px);
   border: none;
@@ -530,12 +491,12 @@ const loginTo = async (isAuth: boolean) => {
   vertical-align: middle;
   display: table-cell;
 
-  .goHome {
+  .go-home {
     font-size: 16px;
     /* color: #FFFFFF; */
     position: absolute;
-    right: 10px;
-    top: 0;
+    right: 5px;
+    top: 20px;
   }
   .headerToggle {
     display: flex;
@@ -554,10 +515,10 @@ const loginTo = async (isAuth: boolean) => {
     justify-content: space-between;
     margin: 0 auto;
     .el-input__inner {
+      height: 40px;
       background-color: rgba(255, 255, 255, 0.5);
-      border: none;
+      // border: none;
     }
-
     input::placeholder {
       color: #818181;
     }
@@ -584,6 +545,9 @@ const loginTo = async (isAuth: boolean) => {
   }
   .btn-color {
     background-color: #005195;
+  }
+  .btn-height {
+    height: 40px;
   }
 }
 </style>

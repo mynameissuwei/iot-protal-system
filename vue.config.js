@@ -6,6 +6,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const { versionInfo } = require("./webpack-plugin/version-webpck-plugin");
 
 module.exports = {
+  productionSourceMap: !isProduction,
   chainWebpack: (config) => {
     config.resolve.alias
       .set("@", resolve("src"))
@@ -36,9 +37,14 @@ module.exports = {
       args[0]["process.env"].VERSION = JSON.stringify(versionInfo);
       return args;
     });
+    config.when(
+      !isProduction, // 开发环境
+      (config) => config.devtool("source-map")
+    );
   },
 
   configureWebpack(config) {
+    // devtool: process.env.NODE_ENV === 'dev' ? 'source-map' : undefined,
     // config.plugins.push(new VersionWebpackPlugin());
     if (isProduction) {
       // gzip
@@ -51,6 +57,7 @@ module.exports = {
           minRatio: 0.8, // 压缩比
         })
       );
+    } else {
     }
   },
 
