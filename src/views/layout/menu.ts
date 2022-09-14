@@ -39,5 +39,11 @@ const menuList: MenuInfo[] = [
     key: "ecologyAbility",
     url: "/ecologyAbility",
   },
+  {
+    name: "平台用户管理",
+    desc: "平台用户管理",
+    key: "userManage",
+    url: "/userManage",
+  },
 ];
 export default menuList;
