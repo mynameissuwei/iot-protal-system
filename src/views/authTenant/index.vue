@@ -21,11 +21,11 @@
       @selection-change="roleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="roleName" label="租户名称" width="180" />
-      <el-table-column prop="tenantName" label="租户ID" width="180" />
-      <el-table-column prop="tenantName" label="授权时间" width="240" />
-      <el-table-column prop="roleName" label="物联管理员" width="180" />
-      <el-table-column fixed="right" label="操作">
+      <el-table-column prop="tenantName" label="租户名称" width="180" />
+      <el-table-column prop="tenantId" label="租户ID" width="180" />
+      <el-table-column prop="authorizationTime" label="授权时间" width="180" />
+      <el-table-column prop="admin" label="物联管理员" />
+      <el-table-column fixed="right" label="操作" width="330">
         <template #default="scope">
           <el-link
             class="actionClass"
@@ -68,6 +68,32 @@
         @current-change="handlePageChange"
       ></el-pagination>
     </div>
+    <el-dialog
+      :width="320"
+      v-model="dialogResourceVisible"
+      title="配置功能权限"
+    >
+      <div class="tree-body">
+        <el-input v-model="filterText" placeholder="关键字搜索" />
+        <el-tree
+          ref="treeRef"
+          :data="menuTreeData"
+          show-checkbox
+          node-key="id"
+          :props="menuProps"
+          :filter-node-method="filterNode"
+          :default-checked-keys="selectKeys"
+          @check-change="getCurrentSelectArray"
+          style="margin-top: 10px"
+        />
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="editResource"> 确定 </el-button>
+          <el-button @click="dialogResourceVisible = false">取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -81,9 +107,11 @@ import {
   ElInput,
 } from "@enn/ency-design";
 import { Edit } from "@enn/ency-design-icons";
-import { roleListApi } from "@/api";
+import { roleListApi, getMenuListTree, getAuthList } from "@/api";
 import { useRouter } from "vue-router";
 import { PAGINATION_CONFIG } from "@/const";
+import { MenuTreeData } from "@/types";
+
 const originData = reactive({
   buttonGroup: [
     {
@@ -104,6 +132,14 @@ const roleForm = reactive({
   description: "",
   id: "",
 });
+const dialogResourceVisible = ref(false);
+const selectKeys = ref([]);
+const menuTreeData = ref<MenuTreeData[]>([]);
+const menuProps = {
+  label: "title",
+  children: "children",
+};
+
 const tableData = ref([]);
 // 分页数据
 const roleTotalNum = ref(0);
@@ -120,8 +156,12 @@ const addRoleFn = () => {
   roleForm.id = "";
 };
 // 配置
-const configBtn = () => {
+const configBtn = (row) => {
   console.log("配置");
+  getMenuListTree(row.tenantId).then((res) => {
+    menuTreeData.value = res;
+  });
+  dialogResourceVisible.value = true;
 };
 // 启用
 const startBtn = () => {
@@ -134,7 +174,7 @@ const settingBtn = () => {
 
 // 租户列表 临时、接口未出
 const getTenantList = () => {
-  roleListApi(roleListQuery).then((res) => {
+  getAuthList(roleListQuery).then((res) => {
     if (res.records) {
       tableData.value = res.records;
       roleTotalNum.value = res.total;
