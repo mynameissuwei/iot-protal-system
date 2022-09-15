@@ -1,5 +1,5 @@
 <template>
-  <div class="user-container">
+  <div class="member-container">
     <el-row class="handle-box" :gutter="20" align="middle">
       <el-col :span="5">
         <div>
@@ -59,10 +59,19 @@
         <el-table-column prop="account" label="账户名" />
         <el-table-column prop="name" label="昵称" />
         <el-table-column prop="phone" label="手机号" />
-        <el-table-column prop="tenantName" label="所属租户" />
         <el-table-column prop="createTime" label="创建时间" />
         <el-table-column label="操作" width="180" align="center">
-          <span class="actionClass" @click="grant">设为管理员</span>
+          <template #default="scope">
+            <span
+              @click="handleEdit(scope.row, 'view')"
+              class="actionClass"
+              style="margin-right: 10px"
+              >查看</span
+            >
+            <span @click="handleEdit(scope.row, 'edit')" class="actionClass"
+              >编辑</span
+            >
+          </template>
         </el-table-column>
       </el-table>
       <div class="pagination">
@@ -76,18 +85,52 @@
           @size-change="handleSizeChange"
         ></el-pagination>
       </div>
+      <!-- 导入弹出框 -->
+      <v-upload
+        :importVisible="importVisible"
+        :handleHidden="handleHidden"
+        :getData="getData"
+      ></v-upload>
+      <!-- 编辑弹出框 -->
+      <el-dialog title="添加成员" v-model="editVisible" width="500px">
+        <el-form
+          label-width="90px"
+          ref="ruleFormRef"
+          :rules="rules"
+          :model="ruleForm"
+        >
+          <el-form-item label="账号名" prop="account">
+            <el-input v-model="ruleForm.account"></el-input>
+          </el-form-item>
+          <el-form-item label="昵称" prop="name">
+            <el-input v-model="ruleForm.name"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" prop="phone">
+            <el-input v-model="ruleForm.phone"></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="userDiag">注：成员创建成功后，初始密码为账号名</div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button type="primary" @click="saveAdd(ruleFormRef)"
+              >确 定</el-button
+            >
+            <el-button @click="editVisible = false">取 消</el-button>
+          </span>
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { fetchData, grantData, deleteList, createUser } from "@/api/userManage";
-
-const listLoading = ref(false);
-const tableData = ref([]);
-const pageTotal = ref(0);
-const multipleSelection = ref([]);
+import { useRouter } from "vue-router";
+import { fetchData, grantData, createUser, deleteList } from "@/api/userManage";
+import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
+import { phonePattern } from "@/utils/pattern";
+// import vUpload from "../home";
+import vUpload from "./components/index.vue";
 
 const listQuery = reactive({
   account: "",
@@ -96,9 +139,66 @@ const listQuery = reactive({
   current: 1,
   size: 10,
 });
-// 设为管理员
-const grant = () => {
-  console.log("grant");
+const tableData = ref([]);
+const pageTotal = ref(0);
+const listLoading = ref(false);
+const multipleSelection = ref([]);
+const router = useRouter();
+
+// 表格编辑时弹窗和保存
+const ruleFormRef = ref();
+const editVisible = ref(false);
+const importVisible = ref(false);
+const buttonLoadingRef = ref(false);
+const rules = reactive({
+  account: [
+    { required: true, message: "请输入账号名", trigger: "change" },
+    { min: 1, max: 20, message: "请输入1到20位", trigger: "change" },
+  ],
+  name: [{ min: 0, max: 20, message: "请输入0到20位", trigger: "change" }],
+  phone: [
+    {
+      pattern: phonePattern,
+      message: "手机号格式不对",
+      trigger: "change",
+    },
+  ],
+});
+let ruleForm = reactive({
+  account: "",
+  name: "",
+  phone: "",
+});
+const handleAdd = () => {
+  const data = {
+    account: null,
+    name: null,
+    phone: null,
+  };
+  Object.assign(ruleForm, data);
+  editVisible.value = true;
+};
+const saveAdd = async (formEl) => {
+  buttonLoadingRef.value = true;
+  if (!formEl) return;
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      await createUser(ruleForm);
+      await getData();
+      buttonLoadingRef.value = false;
+      editVisible.value = false;
+      // ElMsgToast({
+      //   type: "success",
+      //   message: "添加成功",
+      // });
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
+};
+//多选删除
+const handleSelectionChange = (val) => {
+  multipleSelection.value = val;
 };
 // 获取表格数据
 const getData = () => {
@@ -109,13 +209,38 @@ const getData = () => {
     listLoading.value = false;
   });
 };
-
+// 删除操作
+const handleDelete = () => {
+  ElMsgBox.confirm("你确定要删除该用户么?", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    buttonSize: "small",
+  }).then(async () => {
+    const result = multipleSelection.value.map((item) => item.id);
+    const ids = result.join(",");
+    await deleteList({ ids });
+    await getData();
+    ElMsgToast({
+      type: "success",
+      message: "删除成功",
+    });
+  });
+};
 // 查询操作
 const handleSearch = () => {
   listQuery.current = 1;
   getData();
 };
-
+// 分页导航
+const handlePageChange = (val) => {
+  listQuery.current = val;
+  getData();
+};
+const handleSizeChange = (val) => {
+  listQuery.size = val;
+  getData();
+};
 // 重置操作
 const handleReset = () => {
   const data = {
@@ -129,7 +254,24 @@ const handleReset = () => {
   multipleSelection.value = [];
   getData();
 };
-
+// 导入操作
+const handleImport = () => {
+  importVisible.value = true;
+};
+const handleHidden = () => {
+  importVisible.value = false;
+};
+// 编辑
+const handleEdit = (data, type) => {
+  router.push({
+    path: "/detail",
+    query: {
+      userId: data.id,
+      tenantId: data.tenantId,
+      type,
+    },
+  });
+};
 onMounted(() => {
   getData();
 });
