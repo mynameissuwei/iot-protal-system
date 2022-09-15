@@ -2,7 +2,6 @@
 //     "editor.formatOnSave": true
 // }
 {
-    "editor.mouseWheelZoom": true,
     "files.insertFinalNewline": true,
     // "eslint.validate": [
     // "javascript",{

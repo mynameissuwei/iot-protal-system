@@ -1,10 +1,6 @@
 <template>
   <div class="login">
-    <!-- <nav :class="nav_show"></nav> -->
     <div class="box">
-      <!-- <div>返回首页</div> -->
-
-      <!-- 登陆表单 -->
       <el-card class="container-login" ref="loginCard">
         <el-button class="go-home" text @click="goHome">返回首页</el-button>
         <div class="headerToggle">
@@ -43,7 +39,7 @@
                   class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo(true)"
+                  @click="loginTo(GrantType.LDAP)"
                 >
                   登录
                 </el-button>
@@ -77,7 +73,7 @@
                   class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo(false)"
+                  @click="loginTo(GrantType.PASSWORD)"
                   >登录</el-button
                 >
               </el-form-item>
@@ -120,7 +116,7 @@
                   class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo(false)"
+                  @click="loginTo(GrantType.SMS_CAPTCHA)"
                   >登录</el-button
                 >
               </el-form-item>
@@ -158,7 +154,7 @@
                   class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo(true)"
+                  @click="loginTo(GrantType.LDAP)"
                   >登录</el-button
                 >
               </el-form-item>
@@ -166,7 +162,6 @@
           </el-tab-pane>
         </el-tabs>
       </el-card>
-      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -178,13 +173,14 @@ import { ElButtonToggle, ElMsgToast, FormInstance } from "@enn/ency-design";
 import { Lock, User } from "@enn/ency-design-icons";
 import { getLoginToken, getLoginSmsCaptcha, ldapCheck } from "@/api";
 import { phonePattern } from "@/utils/pattern";
+import { GrantType } from "@/types";
 
 const router = useRouter();
 const route = useRoute();
 
 const redirectURL = ref(route.query.redirect ?? "/");
-
 const codeLoginFormRef = ref<FormInstance>();
+
 // 登录表单
 const loginForm1 = reactive({
   account: "",
@@ -395,11 +391,11 @@ const redirectFn = () => {
     }
   }
 };
-const loginTo = async (isAuth: boolean) => {
+const loginTo = async (grantType: GrantType) => {
   loginFormRefA.value.validate(async (valid: any) => {
     if (!valid) return;
-    const result = isAuth ? { ...loginForm1, grantType: "ldap" } : loginForm1;
-    const res = await getLoginToken(result);
+    const params = { ...loginForm1, grantType };
+    const res = await getLoginToken(params);
     if (res.accessToken) {
       // $message.success(`账号 ${loginForm1.account} 登录成功！`);
       localStorage.setItem("bladeAuthNew1", res.accessToken);
