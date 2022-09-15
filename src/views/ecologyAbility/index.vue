@@ -16,14 +16,14 @@
       :data="tableData"
       highlight-current-row
       style="width: 100%"
-      @selection-change="roleSelectionChange"
+      @selection-change="abilitySelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="roleName" label="能力名称" width="200" />
-      <el-table-column prop="tenantName" label="应用名称(参与者)" />
-      <el-table-column prop="tenantName" label="功能包名称" />
-      <el-table-column prop="roleName" label="功能包id" width="180" />
-      <el-table-column prop="roleName" label="备注" />
+      <el-table-column prop="abilityName" label="能力名称" width="200" />
+      <el-table-column prop="applicationName" label="应用名称(参与者)" />
+      <el-table-column prop="productName" label="功能包名称" />
+      <el-table-column prop="productId" label="功能包id" width="180" />
+      <el-table-column prop="remarks" label="备注" />
       <template #empty>
         <el-msg-page>
           <template #icon>
@@ -58,7 +58,12 @@ import {
   ElInput,
 } from "@enn/ency-design";
 import { Edit } from "@enn/ency-design-icons";
-import { roleListApi, removeAbility } from "@/api";
+import {
+  roleListApi,
+  removeAbility,
+  getEcologyList,
+  refEcologyList,
+} from "@/api";
 import { useRouter } from "vue-router";
 import { PAGINATION_CONFIG } from "@/const";
 
@@ -87,7 +92,7 @@ const addRoleFn = () => {
 
 // 能力列表 临时、接口未出
 const getAbilityList = () => {
-  roleListApi(roleListQuery).then((res) => {
+  getEcologyList(roleListQuery).then((res) => {
     if (res.records) {
       tableData.value = res.records;
       roleTotalNum.value = res.total;
@@ -106,7 +111,7 @@ const registAbility = () => {
 };
 const deleteAbility = () => {
   if (refAbilityList.value.length) {
-    ElMsgBox.confirm("你确定要删除吗?", "删除角色", {
+    ElMsgBox.confirm("你确定要删除吗?", "删除能力", {
       confirmButtonText: "确认",
       cancelButtonText: "取消",
       type: "warning",
@@ -115,7 +120,8 @@ const deleteAbility = () => {
       let refData = {
         ids: result.join(","),
       };
-      removeAbility(refData)
+      console.log(222222, refData);
+      refEcologyList(refData)
         .then(() => {
           ElMsgToast({
             type: "success",
@@ -133,6 +139,10 @@ const deleteAbility = () => {
     });
   }
   console.log("删除能力");
+};
+// 选中能力
+const abilitySelectionChange = (val: never[]) => {
+  refAbilityList.value = val;
 };
 // 分页
 const handleSizeChange = (val: number) => {

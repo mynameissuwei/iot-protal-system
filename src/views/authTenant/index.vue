@@ -94,6 +94,22 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog :width="400" title="配置生态能力" v-model="dialogStartVisible">
+      <el-form>
+        <el-form-item label="可配置" class="mb-3">
+          <el-checkbox-group v-model="checkStart" align="horizontal">
+            <el-checkbox :label="3">工单能力</el-checkbox>
+            <el-checkbox :label="6">罗盘能力</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="startSave"> 确定 </el-button>
+          <el-button @click="dialogStartVisible = false">取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -107,7 +123,12 @@ import {
   ElInput,
 } from "@enn/ency-design";
 import { Edit } from "@enn/ency-design-icons";
-import { roleListApi, getMenuListTree, getAuthList } from "@/api";
+import {
+  roleListApi,
+  getMenuListTree,
+  getCheckMenuList,
+  getAuthList,
+} from "@/api";
 import { useRouter } from "vue-router";
 import { PAGINATION_CONFIG } from "@/const";
 import { MenuTreeData } from "@/types";
@@ -133,13 +154,13 @@ const roleForm = reactive({
   id: "",
 });
 const dialogResourceVisible = ref(false);
+const dialogStartVisible = ref(false);
 const selectKeys = ref([]);
 const menuTreeData = ref<MenuTreeData[]>([]);
 const menuProps = {
   label: "title",
   children: "children",
 };
-
 const tableData = ref([]);
 // 分页数据
 const roleTotalNum = ref(0);
@@ -158,21 +179,25 @@ const addRoleFn = () => {
 // 配置
 const configBtn = (row) => {
   console.log("配置");
-  getMenuListTree(row.tenantId).then((res) => {
-    menuTreeData.value = res;
+  getCheckMenuList({ roleIds: row.roleId }).then((res) => {
+    selectKeys.value = res;
   });
   dialogResourceVisible.value = true;
 };
 // 启用
-const startBtn = () => {
+const startBtn = (row) => {
   console.log("启用");
+  dialogStartVisible.value = true;
+};
+const startSave = () => {
+  dialogStartVisible.value = false;
 };
 // 设定
 const settingBtn = () => {
   console.log("设定");
 };
 
-// 租户列表 临时、接口未出
+// 租户列表
 const getTenantList = () => {
   getAuthList(roleListQuery).then((res) => {
     if (res.records) {
@@ -217,6 +242,9 @@ const initData = () => {
 };
 onMounted(() => {
   initData();
+  getMenuListTree().then((res) => {
+    menuTreeData.value = res;
+  });
 });
 </script>
 
