@@ -24,7 +24,7 @@
       <el-col :span="5">
         <div class="title">手机号</div>
         <el-input
-          v-model="listQuery.phone"
+          v-model="listQuery.mobile"
           placeholder="请输入"
           clearable
           class="handle-input mr10"
@@ -58,19 +58,13 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="account" label="账户名" />
         <el-table-column prop="name" label="昵称" />
-        <el-table-column prop="phone" label="手机号" />
+        <el-table-column prop="mobile" label="手机号" />
         <el-table-column prop="createTime" label="创建时间" />
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
-            <span
-              @click="handleEdit(scope.row, 'view')"
-              class="actionClass"
-              style="margin-right: 10px"
-              >查看</span
-            >
-            <span @click="handleEdit(scope.row, 'edit')" class="actionClass"
-              >编辑</span
-            >
+            <span @click="handleEdit(scope.row)" class="actionClass">{{
+              scope.row.isSystem == 0 ? "设为管理员" : "移除管理员"
+            }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -105,8 +99,8 @@
           <el-form-item label="昵称" prop="name">
             <el-input v-model="ruleForm.name"></el-input>
           </el-form-item>
-          <el-form-item label="手机号" prop="phone">
-            <el-input v-model="ruleForm.phone"></el-input>
+          <el-form-item label="手机号" prop="mobile">
+            <el-input v-model="ruleForm.mobile"></el-input>
           </el-form-item>
         </el-form>
         <div class="userDiag">注：成员创建成功后，初始密码为账号名</div>
@@ -135,7 +129,7 @@ import vUpload from "./components/index.vue";
 const listQuery = reactive({
   account: "",
   name: "",
-  phone: "",
+  mobile: "",
   current: 1,
   size: 10,
 });
@@ -156,7 +150,7 @@ const rules = reactive({
     { min: 1, max: 20, message: "请输入1到20位", trigger: "change" },
   ],
   name: [{ min: 0, max: 20, message: "请输入0到20位", trigger: "change" }],
-  phone: [
+  mobile: [
     {
       pattern: phonePattern,
       message: "手机号格式不对",
@@ -167,13 +161,13 @@ const rules = reactive({
 let ruleForm = reactive({
   account: "",
   name: "",
-  phone: "",
+  mobile: "",
 });
 const handleAdd = () => {
   const data = {
     account: null,
     name: null,
-    phone: null,
+    mobile: null,
   };
   Object.assign(ruleForm, data);
   editVisible.value = true;
@@ -246,7 +240,7 @@ const handleReset = () => {
   const data = {
     account: "",
     name: "",
-    phone: null,
+    mobile: null,
     current: 1,
     size: 10,
   };
@@ -262,14 +256,12 @@ const handleHidden = () => {
   importVisible.value = false;
 };
 // 编辑
-const handleEdit = (data, type) => {
-  router.push({
-    path: "/detail",
-    query: {
-      userId: data.id,
-      tenantId: data.tenantId,
-      type,
-    },
+const handleEdit = async ({ id, isSystem }) => {
+  const res = await grantData({ id, isSystem: isSystem === 0 ? true : false });
+  await getData();
+  ElMsgToast({
+    type: "success",
+    message: "操作成功",
   });
 };
 onMounted(() => {

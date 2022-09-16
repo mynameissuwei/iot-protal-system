@@ -19,12 +19,11 @@
             :http-request="httpRequest"
             :auto-upload="false"
             :before-upload="beforeExcelUpload"
-            :on-success="handleUploadSuccess"
             :on-change="handleChange"
             :on-remove="handleRemove"
             :file-list="fileList"
           >
-            <el-button :icon="Export">选择文件</el-button>
+            <el-button>选择文件</el-button>
           </el-upload>
         </el-col>
         <el-col :span="8">
@@ -59,7 +58,7 @@
 <script setup lang="ts">
 import { ref, defineProps } from "vue";
 import { ElMsgBox, ElMsgToast } from "@enn/ency-design";
-import { importUser } from "@/api";
+import { importUser } from "@/api/userManage";
 import { API_ENN_USER } from "@/const";
 
 const exportTemplateURL = `${API_ENN_USER}/user/export-template?blade-auth=${localStorage.getItem(
@@ -95,6 +94,7 @@ const httpRequest = (params: any) => {
           const exportErrorCSVURL: any = `${API_ENN_USER}/user/export-error/${errorId}?blade-auth=${localStorage.getItem(
             "blade-auth"
           )}`;
+          console.log(exportErrorCSVURL, "exportErrorCSVURL");
           window.location.href = exportErrorCSVURL;
         });
       } else {

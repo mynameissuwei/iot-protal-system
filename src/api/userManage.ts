@@ -27,8 +27,16 @@ export const createUser = (data: any): any => {
 
 export const deleteList = (params: any): any => {
   return Service({
-    url: `${API_ENN_USER}/user/remove`,
+    url: `${API_ENN_USER}/remove`,
     method: "post",
     params,
   });
 };
+
+export function importUser(data: any): Promise<any> {
+  return Service({
+    method: "post",
+    url: `${API_ENN_USER}/user/import-user`,
+    data,
+  });
+}
