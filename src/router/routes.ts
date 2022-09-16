@@ -15,6 +15,7 @@ const Complete = () => import("@/views/exteriorIdAuth/complete.vue");
 const ServiceManage = () => import("@/views/serviceManage/index.vue");
 const AuthTenant = () => import("@/views/authTenant/index.vue");
 const EcologyAbility = () => import("@/views/ecologyAbility/index.vue");
+const UserManage = () => import("@/views/userManage/index.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -151,6 +152,15 @@ const routes: Array<RouteRecordRaw> = [
           key: "ecologyAbility",
         },
         component: EcologyAbility,
+      },
+      {
+        path: "/userManage",
+        name: "userManage",
+        meta: {
+          title: "平台用户管理",
+          key: "userManage",
+        },
+        component: UserManage,
       },
     ],
   },
