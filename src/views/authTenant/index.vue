@@ -18,7 +18,6 @@
       :data="tableData"
       highlight-current-row
       style="width: 100%"
-      @selection-change="roleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="tenantName" label="租户名称" width="180" />
@@ -68,11 +67,7 @@
         @current-change="handlePageChange"
       ></el-pagination>
     </div>
-    <el-dialog
-      :width="320"
-      v-model="dialogResourceVisible"
-      title="配置功能权限"
-    >
+    <el-dialog :width="320" v-model="dialogConfigVisible" title="配置功能权限">
       <div class="tree-body">
         <el-input v-model="filterText" placeholder="关键字搜索" />
         <el-tree
@@ -89,8 +84,8 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="editResource"> 确定 </el-button>
-          <el-button @click="dialogResourceVisible = false">取消</el-button>
+          <el-button type="primary" @click="editConfig"> 确定 </el-button>
+          <el-button @click="dialogConfigVisible = false">取消</el-button>
         </span>
       </template>
     </el-dialog>
@@ -98,8 +93,13 @@
       <el-form>
         <el-form-item label="可配置" class="mb-3">
           <el-checkbox-group v-model="checkStart" align="horizontal">
-            <el-checkbox :label="3">工单能力</el-checkbox>
-            <el-checkbox :label="6">罗盘能力</el-checkbox>
+            <el-checkbox
+              v-for="data in gitListCheck"
+              :label="data.productId"
+              :key="data.abilityName"
+            >
+              {{ data.abilityName }}
+            </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
@@ -128,10 +128,14 @@ import {
   getMenuListTree,
   getCheckMenuList,
   getAuthList,
+  tenantAuthAdd,
+  getEcologyListCheck,
+  editEcologyListCheck,
 } from "@/api";
 import { useRouter } from "vue-router";
 import { PAGINATION_CONFIG } from "@/const";
 import { MenuTreeData } from "@/types";
+const treeRef = ref<HTMLElement | null>(null);
 
 const originData = reactive({
   buttonGroup: [
@@ -153,10 +157,14 @@ const roleForm = reactive({
   description: "",
   id: "",
 });
-const dialogResourceVisible = ref(false);
+const tenantIdAuth = ref("");
+const dialogConfigVisible = ref(false);
 const dialogStartVisible = ref(false);
 const selectKeys = ref([]);
 const menuTreeData = ref<MenuTreeData[]>([]);
+const gitListCheck = ref([]);
+const checkStart = ref([]);
+const filterText = ref([]);
 const menuProps = {
   label: "title",
   children: "children",
@@ -176,21 +184,73 @@ const addRoleFn = () => {
   roleForm.roleName = "";
   roleForm.id = "";
 };
-// 配置
+// 配置功能权限
 const configBtn = (row) => {
-  console.log("配置");
+  console.log("配置", row);
+  tenantIdAuth.value = row.tenantId;
   getCheckMenuList({ roleIds: row.roleId }).then((res) => {
     selectKeys.value = res;
   });
-  dialogResourceVisible.value = true;
+  dialogConfigVisible.value = true;
 };
-// 启用
+// 配置功能权限确定
+const editConfig = () => {
+  console.log(999, selectKeys.value);
+  tenantAuthAdd({
+    tenantId: tenantIdAuth.value,
+    menuIds: selectKeys.value,
+  })
+    .then(() => {
+      ElMsgToast({
+        message: "配置成功！",
+      });
+    })
+    .finally(() => {
+      dialogConfigVisible.value = false;
+      initData();
+    });
+};
+// 获取功能权限check节点
+const getCurrentSelectArray = () => {
+  selectKeys.value = treeRef.value?.getCheckedKeys();
+};
+const filterNode = (value: string, data: MenuTreeData) => {
+  if (!value) return true;
+  return data.title.includes(value);
+};
+// 生态能力
 const startBtn = (row) => {
-  console.log("启用");
+  console.log("启用", row);
+  tenantIdAuth.value = row.tenantId;
+  getEcologyListCheck(row.tenantId).then((res) => {
+    if (res) {
+      gitListCheck.value = res;
+    } else {
+      gitListCheck.value = [];
+      ElMsgToast({
+        type: "warning",
+        message: "暂无可用生态能力~",
+      });
+    }
+  });
   dialogStartVisible.value = true;
 };
 const startSave = () => {
-  dialogStartVisible.value = false;
+  let checkStartList = JSON.stringify(checkStart.value);
+  editEcologyListCheck({
+    tenantId: tenantIdAuth.value,
+    productIds: checkStartList,
+  })
+    .then(() => {
+      ElMsgToast({
+        message: "生态能力配置成功！",
+      });
+    })
+    .finally(() => {
+      // dialogStartVisible.value = false;
+      tenantIdAuth.value = "";
+      initData();
+    });
 };
 // 设定
 const settingBtn = () => {
@@ -207,7 +267,7 @@ const getTenantList = () => {
       tableData.value = [];
       ElMsgToast({
         type: "warning",
-        message: "暂无角色~",
+        message: "暂无租户~",
       });
     }
   });
@@ -287,5 +347,10 @@ onMounted(() => {
 .edit-link-view {
   display: inline-block;
   margin: 0 16px;
+}
+.pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: right;
 }
 </style>

@@ -90,7 +90,7 @@ const addRoleFn = () => {
   roleForm.id = "";
 };
 
-// 能力列表 临时、接口未出
+// 能力列表
 const getAbilityList = () => {
   getEcologyList(roleListQuery).then((res) => {
     if (res.records) {
@@ -120,7 +120,6 @@ const deleteAbility = () => {
       let refData = {
         ids: result.join(","),
       };
-      console.log(222222, refData);
       refEcologyList(refData)
         .then(() => {
           ElMsgToast({
@@ -138,7 +137,6 @@ const deleteAbility = () => {
       message: "请勾选将要删除的角色~",
     });
   }
-  console.log("删除能力");
 };
 // 选中能力
 const abilitySelectionChange = (val: never[]) => {
@@ -181,5 +179,10 @@ onMounted(() => {
 .edit-link-view {
   display: inline-block;
   margin: 0 16px;
+}
+.pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: right;
 }
 </style>

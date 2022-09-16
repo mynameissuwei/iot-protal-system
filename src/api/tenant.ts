@@ -17,6 +17,14 @@ export function getCheckMenuList(params: any): Promise<any> {
     params,
   });
 }
+//租户增加权限
+export function tenantAuthAdd(data: any): Promise<any> {
+  return Service({
+    method: "post",
+    url: `${API_ENN_SYSTEM}/tenant/set/grant`,
+    data,
+  });
+}
 
 // 获取已授权租户列表
 export function getAuthList(params: any): Promise<any> {
@@ -28,6 +36,22 @@ export function getAuthList(params: any): Promise<any> {
 }
 
 // 获取生态能力列表
+export function getEcologyListCheck(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/tenant/list/EcologyAbility`,
+    params,
+  });
+}
+
+// 编辑生态能力
+export function editEcologyListCheck(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/tenant/list/EcologyAbility`,
+    params,
+  });
+}
 
 // 生态能力管理列表
 export function getEcologyList(params: any): Promise<any> {
@@ -41,10 +65,8 @@ export function getEcologyList(params: any): Promise<any> {
 // 删除生态能力
 export function refEcologyList(data: any): Promise<any> {
   //   let dataList = params.result
-  console.log(222, data);
   return Service({
-    method: "post",
-    url: `${API_ENN_SYSTEM}/ecology/remove/`,
-    data,
+    method: "delete",
+    url: `${API_ENN_SYSTEM}/ecology/remove/?ids=${data.ids}`,
   });
 }
