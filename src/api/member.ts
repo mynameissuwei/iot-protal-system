@@ -24,12 +24,3 @@ export const createUser = (data: any): any => {
     data,
   });
 };
-
-// 退出登录
-export const logout = (data: any): any => {
-  console.log(data);
-  return Service({
-    url: `${API_ENN_USER}/logout`,
-    method: "get",
-  });
-};

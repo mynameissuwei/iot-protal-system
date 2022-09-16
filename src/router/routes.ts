@@ -1,6 +1,7 @@
 import { RouteRecordRaw } from "vue-router";
 
 const Layout = () => import("@/views/layout/index.vue");
+const Login = () => import("@/views/login/index.vue");
 const Detail = () => import("@/views/user/detail.vue");
 const Member = () => import("@/views/member/index.vue");
 const RoleList = () => import("@/views/roleList/index.vue");
@@ -14,11 +15,21 @@ const Complete = () => import("@/views/exteriorIdAuth/complete.vue");
 const ServiceManage = () => import("@/views/serviceManage/index.vue");
 const AuthTenant = () => import("@/views/authTenant/index.vue");
 const EcologyAbility = () => import("@/views/ecologyAbility/index.vue");
+const UserManage = () => import("@/views/userManage/index.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     redirect: "/organManage",
+  },
+  {
+    path: "/login",
+    name: "login",
+    meta: {
+      title: "登录",
+      key: "login",
+    },
+    component: Login,
   },
   {
     path: "/",
@@ -141,6 +152,15 @@ const routes: Array<RouteRecordRaw> = [
           key: "ecologyAbility",
         },
         component: EcologyAbility,
+      },
+      {
+        path: "/userManage",
+        name: "userManage",
+        meta: {
+          title: "平台用户管理",
+          key: "userManage",
+        },
+        component: UserManage,
       },
     ],
   },
