@@ -1,5 +1,6 @@
 import Service from "@/axios";
 import { API_ENN_RBAC_AUTH } from "@/const";
+import { GrantType } from "@/types";
 import { cipherMode, sm2PublicKey } from "@/utils/sm2Key";
 import { sm2 } from "sm-crypto";
 
@@ -30,12 +31,16 @@ export const getLoginCaptcha = (): any => {
 };
 
 export const getLoginToken = (params: any): any => {
-  const { account, password, ...res } = params;
-  const data = {
-    account: "04" + sm2.doEncrypt(account, sm2PublicKey, cipherMode),
-    password: "04" + sm2.doEncrypt(password, sm2PublicKey, cipherMode),
-    ...res,
-  };
+  const { account, password, grantType, ...res } = params;
+  const isDoEncrypt =
+    grantType === GrantType.LDAP || grantType === GrantType.PASSWORD;
+  const data = isDoEncrypt
+    ? {
+        account: "04" + sm2.doEncrypt(account, sm2PublicKey, cipherMode),
+        password: "04" + sm2.doEncrypt(password, sm2PublicKey, cipherMode),
+        ...res,
+      }
+    : { ...params };
   return Service({
     url: `${API_ENN_RBAC_AUTH}/token`,
     method: "post",
