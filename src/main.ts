@@ -9,6 +9,9 @@ import "@/assets/images/svg-icon";
 import { getParam } from "@/utils/auth";
 import { createPinia } from "pinia";
 import piniaPluginPersist from "pinia-plugin-persist";
+// 引入ElChoosePeo 组件需要使用，暂时用不到 2022/9/19
+// import "@enn/ency-design/theme-chalk/index.css";
+// import "@enn/ency-design-biz/theme-chalk/index.css";
 
 const pinia = createPinia();
 const app = createApp(App);
