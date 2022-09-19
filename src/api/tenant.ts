@@ -45,11 +45,11 @@ export function getEcologyListCheck(params: any): Promise<any> {
 }
 
 // 编辑生态能力
-export function editEcologyListCheck(params: any): Promise<any> {
+export function editEcologyListCheck(data: any): Promise<any> {
   return Service({
-    method: "get",
-    url: `${API_ENN_SYSTEM}/tenant/list/EcologyAbility`,
-    params,
+    method: "post",
+    url: `${API_ENN_SYSTEM}/tenant/set/EcologyAbility`,
+    data,
   });
 }
 
@@ -68,5 +68,30 @@ export function refEcologyList(data: any): Promise<any> {
   return Service({
     method: "delete",
     url: `${API_ENN_SYSTEM}/ecology/remove/?ids=${data.ids}`,
+  });
+}
+
+// 设定物联管理员-搜索列表
+export function getAdminList(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/tenant/list/user`,
+    params,
+  });
+}
+// 已添加管理员了列表
+export function getYetAdminList(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/tenant/list/administrator`,
+    params,
+  });
+}
+// 编辑管理员-提交
+export function editAdminList(data: any): Promise<any> {
+  return Service({
+    method: "post",
+    url: `${API_ENN_SYSTEM}/tenant/set/admin`,
+    data,
   });
 }

@@ -5,6 +5,7 @@ overrides:
 
 specifiers:
   '@enn/ency-design': ^1.0.10
+  '@enn/ency-design-biz': ^1.2.8
   '@enn/ency-design-icons': ^1.5.0
   '@enn/formily-ency-design': ^1.0.0-beta.2
   '@enncloud/enn-auth-sdk': ^0.1.33
@@ -49,6 +50,7 @@ specifiers:
 
 dependencies:
   '@enn/ency-design': 1.0.10_vue@3.2.36
+  '@enn/ency-design-biz': 1.2.8_axios@0.24.0+vue@3.2.36
   '@enn/ency-design-icons': 1.5.0_vue@3.2.36
   '@enn/formily-ency-design': 1.0.0-beta.2_typescript@4.1.6+vue@3.2.36
   '@enncloud/enn-auth-sdk': 0.1.34
@@ -1308,6 +1310,32 @@ packages:
       vue: 3.2.36
     dev: false
 
+  /@enn/ency-design-biz/1.2.8_axios@0.24.0+vue@3.2.36:
+    resolution: {integrity: sha512-J8poZ3XyXgxXMTVqO/bNSRv23Bv7Ho4vzLgfno7ECreqAd0R2gShgq8PsRvBsZe463qryJOGBfbrwLA5O9gpMg==, tarball: '@enn/ency-design-biz/download/@enn/ency-design-biz-1.2.8.tgz'}
+    peerDependencies:
+      axios: ^0.27.2
+      vue: ^3.2.0
+    dependencies:
+      '@ctrl/tinycolor': 3.4.1
+      '@enn/ency-design': 1.3.12_vue@3.2.36
+      '@enn/ency-design-icons': 1.5.0_vue@3.2.36
+      '@popperjs/core': 2.11.5
+      '@vueuse/core': 7.7.1_vue@3.2.36
+      async-validator: 4.2.5
+      axios: 0.24.0
+      dayjs: 1.11.3
+      lodash: 4.17.21
+      lodash-es: 4.17.21
+      lodash-unified: 1.0.2_lodash-es@4.17.21+lodash@4.17.21
+      memoize-one: 6.0.0
+      normalize-wheel-es: 1.1.2
+      validate-color: 2.2.1
+      vue: 3.2.36
+    transitivePeerDependencies:
+      - '@types/lodash-es'
+      - '@vue/composition-api'
+    dev: false
+
   /@enn/ency-design-icons/1.5.0_vue@3.2.36:
     resolution: {integrity: sha512-UPm653ExqOWQKvZJDoCmha3e9CNYBWS5M5VtgPFVhECNOyJPox8geByq9o9jTc8PnujYUHB6uF8d0cmsh/T1xg==, tarball: '@enn/ency-design-icons/download/@enn/ency-design-icons-1.5.0.tgz'}
     peerDependencies:
@@ -1327,6 +1355,29 @@ packages:
       '@vueuse/core': 8.5.0_vue@3.2.36
       async-validator: 4.1.1
       dayjs: 1.11.2
+      escape-html: 1.0.3
+      lodash: 4.17.21
+      lodash-es: 4.17.21
+      lodash-unified: 1.0.2_lodash-es@4.17.21+lodash@4.17.21
+      memoize-one: 6.0.0
+      normalize-wheel-es: 1.1.2
+      vue: 3.2.36
+    transitivePeerDependencies:
+      - '@types/lodash-es'
+      - '@vue/composition-api'
+    dev: false
+
+  /@enn/ency-design/1.3.12_vue@3.2.36:
+    resolution: {integrity: sha512-S+mipCcEbyC+EE/h6WbTyGx/qFXMvbxavLdxO7lIdcYMuARXo6NLsqkuQvHcda73UGbg3Z1lxrVzvcKIOruhPQ==, tarball: '@enn/ency-design/download/@enn/ency-design-1.3.12.tgz'}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@ctrl/tinycolor': 3.4.1
+      '@enn/ency-design-icons': 1.5.0_vue@3.2.36
+      '@popperjs/core': 2.11.5
+      '@vueuse/core': 8.9.3_vue@3.2.36
+      async-validator: 4.2.5
+      dayjs: 1.11.3
       escape-html: 1.0.3
       lodash: 4.17.21
       lodash-es: 4.17.21
@@ -2428,6 +2479,22 @@ packages:
     resolution: {integrity: sha512-Iu8Tbg3f+emIIMmI2ycSI8QcEuAUgPTgHwesDU1eKMLE4YC/c/sFbGc70QgMq31ijRftV0R7vCm9co6rldCeOA==}
     dev: true
 
+  /@vueuse/core/7.7.1_vue@3.2.36:
+    resolution: {integrity: sha512-PRRgbATMpoeUmkCEBtUeJgOwtew8s+4UsEd+Pm7MhkjL2ihCNrSqxNVtM6NFE4uP2sWnkGcZpCjPuNSxowJ1Ow==}
+    peerDependencies:
+      '@vue/composition-api': ^1.1.0
+      vue: ^2.6.0 || ^3.2.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+      vue:
+        optional: true
+    dependencies:
+      '@vueuse/shared': 7.7.1_vue@3.2.36
+      vue: 3.2.36
+      vue-demi: 0.12.5_vue@3.2.36
+    dev: false
+
   /@vueuse/core/8.5.0_vue@3.2.36:
     resolution: {integrity: sha512-VEJ6sGNsPlUp0o9BGda2YISvDZbhWJSOJu5zlp2TufRGVrLcYUKr31jyFEOj6RXzG3k/H4aCYeZyjpItfU8glw==}
     peerDependencies:
@@ -2469,6 +2536,21 @@ packages:
 
   /@vueuse/metadata/8.9.3:
     resolution: {integrity: sha512-57gZZKtWAmcJaUBmciCohvmumVLz4+FnoVnWj7U5BWs5PC2/7gU9Z0/i1i9leDNeboAauFzAq7z1GjS8eYnT+w==}
+    dev: false
+
+  /@vueuse/shared/7.7.1_vue@3.2.36:
+    resolution: {integrity: sha512-rN2qd22AUl7VdBxihagWyhUNHCyVk9IpvBTTfHoLH9G7rGE552X1f+zeCfehuno0zXif13jPw+icW/wn2a0rnQ==}
+    peerDependencies:
+      '@vue/composition-api': ^1.1.0
+      vue: ^2.6.0 || ^3.2.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+      vue:
+        optional: true
+    dependencies:
+      vue: 3.2.36
+      vue-demi: 0.12.5_vue@3.2.36
     dev: false
 
   /@vueuse/shared/8.5.0_vue@3.2.36:
@@ -10011,6 +10093,10 @@ packages:
   /v8-compile-cache/2.3.0:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
     dev: true
+
+  /validate-color/2.2.1:
+    resolution: {integrity: sha512-1eDb1zqP6W6bbfKKl6dRXObelNoQpW7aF3BUTh2AivWuhcD0pa3ejwURWqrVsyKJMLBMlHLFcM3sj5J+dSFhbg==}
+    dev: false
 
   /validate-npm-package-license/3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
