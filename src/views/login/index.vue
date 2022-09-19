@@ -205,6 +205,7 @@
                   <el-button
                     class="btn-color btn-height btn-mb"
                     type="primary"
+                    :disabled="selectTenantForm.tenantId === ''"
                     round
                     @click="
                       loginTo(GrantType.SWITCH_TENANT, selectTenantFormRef, {
@@ -514,6 +515,7 @@ const loginTo = async (
     console.log(params);
     const res = await getLoginToken(params);
     const { accessToken, tenantList } = res;
+    debugger;
     if (accessToken) {
       options.tenantList = tenantList ?? [];
       // $message.success(`账号 ${loginForm1.account} 登录成功！`);
