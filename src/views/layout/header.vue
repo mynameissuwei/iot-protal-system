@@ -10,6 +10,7 @@
       <span>项目名称</span>
     </div>
     <div class="header-rg">
+      {{ tenantId }}
       <el-image
         :src="require('@/assets/images/avatar.png')"
         alt="User"
@@ -33,9 +34,15 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, inject } from "vue";
+import { defineComponent, inject, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { ArrowDown } from "@enn/ency-design-icons";
 import { logout } from "@/api";
+
+const route = useRoute();
+
+const tenantId = ref(route.query.tenantId ?? "租户id");
+
 const userInfo = inject("userInfo") || {};
 console.log(userInfo, "userInfo");
 const clickLogout = () => {

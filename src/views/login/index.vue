@@ -6,7 +6,7 @@
         <div class="headerToggle">
           <h2>欢迎使用恩牛网物联平台</h2>
         </div>
-        <el-tabs v-model="activeName" v-if="+windwBoxBtn === 1">
+        <el-tabs v-model="activeName" v-if="+windowBoxBtn === 1">
           <el-tab-pane
             :label="authText"
             name="zero"
@@ -14,15 +14,15 @@
             v-if="isAuth ? +defaultLogin === 0 : false"
           >
             <el-form
-              ref="loginFormRefA"
-              :rules="LoginFormRulesP"
-              :model="loginForm1"
+              ref="loginFormLDAPRef"
+              :rules="loginFormRules"
+              :model="loginFormLDAP"
               label-width="0"
             >
               <el-form-item prop="account" key="account">
                 <el-input
                   placeholder="请输入账号"
-                  v-model.psw.trim="loginForm1.account"
+                  v-model.psw.trim="loginFormLDAP.account"
                   :suffix-icon="User"
                 ></el-input>
               </el-form-item>
@@ -30,16 +30,18 @@
                 <el-input
                   placeholder="请输入密码"
                   type="password"
-                  v-model.psw.trim="loginForm1.password"
+                  v-model.psw.trim="loginFormLDAP.password"
                   :suffix-icon="Lock"
                 ></el-input>
               </el-form-item>
-              <el-form-item class="btns">
+              <el-form-item>
                 <el-button
                   class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo(GrantType.LDAP)"
+                  @click="
+                    loginTo(GrantType.LDAP, loginFormLDAPRef, loginFormLDAP)
+                  "
                 >
                   登录
                 </el-button>
@@ -48,15 +50,15 @@
           </el-tab-pane>
           <el-tab-pane label="密码登录" name="first" class="class-filter">
             <el-form
-              ref="loginFormRefA"
-              :rules="LoginFormRulesP"
-              :model="loginForm1"
+              ref="loginFormRef"
+              :rules="loginFormRules"
+              :model="loginForm"
               label-width="0"
             >
               <el-form-item prop="account" key="account">
                 <el-input
                   placeholder="请输入账号"
-                  v-model.psw.trim="loginForm1.account"
+                  v-model.psw.trim="loginForm.account"
                   :suffix-icon="User"
                 ></el-input>
               </el-form-item>
@@ -64,16 +66,16 @@
                 <el-input
                   placeholder="请输入密码"
                   type="password"
-                  v-model.psw.trim="loginForm1.password"
+                  v-model.psw.trim="loginForm.password"
                   :suffix-icon="Lock"
                 ></el-input>
               </el-form-item>
-              <el-form-item class="btns">
+              <el-form-item>
                 <el-button
                   class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo(GrantType.PASSWORD)"
+                  @click="loginTo(GrantType.PASSWORD, loginFormRef, loginForm)"
                   >登录</el-button
                 >
               </el-form-item>
@@ -81,42 +83,52 @@
           </el-tab-pane>
           <el-tab-pane label="手机号登录" name="second">
             <el-form
-              ref="codeLoginFormRef"
-              :model="codeLoginForm"
-              :rules="codeLoginFormRules"
+              ref="loginFormSMSCaptchaRef"
+              :model="loginFormSMSCaptcha"
+              :rules="loginFormSMSCaptchaRules"
               label-width="0"
             >
               <el-form-item prop="mobile" key="mobile">
                 <el-input
                   maxlength="11"
                   placeholder="请输入手机号"
-                  v-model="codeLoginForm.mobile"
+                  v-model="loginFormSMSCaptcha.mobile"
                   :suffix-icon="User"
                 ></el-input>
               </el-form-item>
               <el-form-item prop="smsCaptcha" key="smsCaptcha">
-                <el-col :span="17">
-                  <el-input
-                    placeholder="请输入短信验证码"
-                    v-model="codeLoginForm.smsCaptcha"
-                  >
-                  </el-input>
-                </el-col>
-                <el-col :span="6">
-                  <el-button
-                    class="btn-height"
-                    :disabled="isDisabled"
-                    @click="getSmsCaptcha(codeLoginForm.mobile, 'login')"
-                    >{{ buttonName }}
-                  </el-button>
-                </el-col>
+                <el-row>
+                  <el-col :span="17">
+                    <el-input
+                      placeholder="请输入短信验证码"
+                      v-model="loginFormSMSCaptcha.smsCaptcha"
+                    >
+                    </el-input>
+                  </el-col>
+                  <el-col :span="6" style="margin-left: 16px">
+                    <el-button
+                      class="btn-height"
+                      :disabled="isDisabled"
+                      @click="
+                        getSmsCaptcha(loginFormSMSCaptcha.mobile, 'login')
+                      "
+                      >{{ buttonName }}
+                    </el-button>
+                  </el-col>
+                </el-row>
               </el-form-item>
-              <el-form-item class="btns">
+              <el-form-item>
                 <el-button
                   class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo(GrantType.SMS_CAPTCHA)"
+                  @click="
+                    loginTo(
+                      GrantType.SMS_CAPTCHA,
+                      loginFormSMSCaptchaRef,
+                      loginFormSMSCaptcha
+                    )
+                  "
                   >登录</el-button
                 >
               </el-form-item>
@@ -129,15 +141,15 @@
             v-if="isAuth ? +defaultLogin === 1 : false"
           >
             <el-form
-              ref="loginFormRefA"
-              :rules="LoginFormRulesP"
-              :model="loginForm1"
+              ref="loginFormLDAPRef"
+              :rules="loginFormRules"
+              :model="loginFormLDAP"
               label-width="0"
             >
               <el-form-item prop="account" key="account">
                 <el-input
                   placeholder="请输入账号"
-                  v-model.psw.trim="loginForm1.account"
+                  v-model.psw.trim="loginFormLDAP.account"
                   :suffix-icon="User"
                 ></el-input>
               </el-form-item>
@@ -145,22 +157,79 @@
                 <el-input
                   placeholder="请输入密码"
                   type="password"
-                  v-model.psw.trim="loginForm1.password"
+                  v-model.psw.trim="loginFormLDAP.password"
                   :suffix-icon="Lock"
                 ></el-input>
               </el-form-item>
-              <el-form-item class="btns">
+              <el-form-item>
                 <el-button
                   class="btn-color btn-height"
                   type="primary"
                   round
-                  @click="loginTo(GrantType.LDAP)"
+                  @click="
+                    loginTo(GrantType.LDAP, loginFormLDAPRef, loginFormLDAP)
+                  "
                   >登录</el-button
                 >
               </el-form-item>
             </el-form>
           </el-tab-pane>
         </el-tabs>
+
+        <div v-if="+windowBoxBtn === 2">
+          <el-form
+            ref="selectTenantFormRef"
+            :rule="selectTenantFormRules"
+            :model="selectTenantForm"
+            label-width="0"
+          >
+            <el-form-item prop="tenantId" key="tenantId">
+              <el-select
+                v-model="selectTenantForm.tenantId"
+                placeholder="请选择租户"
+                style="width: 100%"
+                @change="changeTenantId"
+              >
+                <el-option
+                  v-for="item in options.tenantList"
+                  :key="item.tenantId"
+                  :label="item.tenantName"
+                  :value="item.tenantId"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-row>
+                <el-col :span="24">
+                  <el-button
+                    class="btn-color btn-height btn-mb"
+                    type="primary"
+                    :disabled="selectTenantForm.tenantId === ''"
+                    round
+                    @click="
+                      loginTo(GrantType.SWITCH_TENANT, selectTenantFormRef, {
+                        ...selectTenantForm,
+                        token,
+                      })
+                    "
+                    >登录</el-button
+                  >
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24">
+                  <el-button
+                    class="btn-height"
+                    round
+                    @click="switchWindowBox(1)"
+                    >更换账号</el-button
+                  >
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-form>
+        </div>
       </el-card>
     </div>
   </div>
@@ -169,7 +238,12 @@
 <script setup lang="ts">
 import { ref, onBeforeMount, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ElButtonToggle, ElMsgToast, FormInstance } from "@enn/ency-design";
+import {
+  ElButtonToggle,
+  ElMsgToast,
+  FormInstance,
+  tokenEmits,
+} from "@enn/ency-design";
 import { Lock, User } from "@enn/ency-design-icons";
 import { getLoginToken, getLoginSmsCaptcha, ldapCheck } from "@/api";
 import { phonePattern } from "@/utils/pattern";
@@ -179,25 +253,59 @@ const router = useRouter();
 const route = useRoute();
 
 const redirectURL = ref(route.query.redirect ?? "/");
-const codeLoginFormRef = ref<FormInstance>();
+
+const loginFormRef = ref<FormInstance>();
+const loginFormLDAPRef = ref<FormInstance>();
+const loginFormSMSCaptchaRef = ref<FormInstance>();
+const selectTenantFormRef = ref<FormInstance>();
 
 // 登录表单
-const loginForm1 = reactive({
+const loginForm = reactive({
   account: "",
   password: "",
 });
-const codeLoginForm = reactive({
+
+const loginFormLDAP = reactive({
+  account: "",
+  password: "",
+});
+
+const loginFormSMSCaptcha = reactive({
   mobile: "",
   smsCaptcha: "",
 });
+
+const selectTenantForm = reactive({
+  tenantId: "",
+});
+
+const options = reactive({ tenantList: [] });
+
 // 表单验证规则
-const codeLoginFormRules = {
+const loginFormRules = {
+  account: [
+    {
+      required: true,
+      message: "请输入账号",
+      trigger: "change",
+    },
+  ],
+  // 验证密码是否合法
+  password: [
+    {
+      required: true,
+      message: "请输入密码",
+      trigger: "change",
+    },
+  ],
+};
+const loginFormSMSCaptchaRules = {
   // mobile: [{  required: true, message: "请输入短信验证码",trigger: "blur" }],
   mobile: [
     {
       required: true,
       message: "请输入手机号",
-      trigger: "blur",
+      trigger: "change",
     },
     {
       pattern: phonePattern,
@@ -209,27 +317,29 @@ const codeLoginFormRules = {
     {
       required: true,
       message: "请输入短信验证码",
-      trigger: "blur",
+      trigger: "change",
     },
   ],
 };
-const LoginFormRulesP = {
-  account: [
+
+// const validatePass = (rule: any, value: any, callback: any) => {
+//   debugger;
+//   if (value === "") {
+//     callback(new Error("请输入密码"));
+//   } else {
+//     callback();
+//   }
+// };
+const selectTenantFormRules = reactive({
+  // tenantId: [{ validator: validatePass, trigger: "change" }],
+  tenantId: [
     {
       required: true,
-      message: "请输入账号",
-      trigger: "blur",
+      message: "请选择租户",
+      trigger: "change",
     },
   ],
-  // 验证密码是否合法
-  password: [
-    {
-      required: true,
-      message: "请输入密码",
-      trigger: "blur",
-    },
-  ],
-};
+});
 
 const isAuth = ref(false);
 const authText = ref("LDAP");
@@ -240,8 +350,8 @@ const countDown = ref(60); //倒计时
 const buttonName = ref("获取验证码");
 const isDisabled = ref(false); //是否禁用按钮
 const isRemember = ref(false);
-const windwBoxBtn = ref(1);
-const loginFormRefA = ref();
+const windowBoxBtn = ref(1);
+const token = ref("");
 // console.log("countDown", countDown.value);
 
 onBeforeMount(() => {
@@ -255,7 +365,7 @@ const initData = () => {
     const { moduleName, defaultLogin } = res;
     isAuth.value = true;
     authText.value = moduleName;
-    defaultLogin.value = defaultLogin;
+    defaultLogin.value = Number(defaultLogin);
     if (+defaultLogin.value === 0) {
       activeName.value = "zero";
     }
@@ -322,9 +432,9 @@ const getCookie = () => {
     for (var i = 0; i < arr.length; i++) {
       var userKey = arr[i].split("=");
       if (userKey[0].trim() == "userName") {
-        loginForm1.account = userKey[1];
+        loginForm.account = userKey[1];
       } else if (userKey[0].trim() == "userPws") {
-        loginForm1.password = userKey[1];
+        loginForm.password = userKey[1];
       } else if (userKey[0].trim() == "isRemember") {
         isRemember.value = Boolean(userKey[1]);
       }
@@ -391,14 +501,26 @@ const redirectFn = () => {
     }
   }
 };
-const loginTo = async (grantType: GrantType) => {
-  loginFormRefA.value.validate(async (valid: any) => {
+
+const loginTo = async (
+  grantType: GrantType,
+  formEl: FormInstance | undefined,
+  formModel: any
+) => {
+  console.log(formModel);
+  if (!formEl) return;
+  formEl.validate(async (valid: any) => {
     if (!valid) return;
-    const params = { ...loginForm1, grantType };
+    const params = { ...formModel, grantType };
+    console.log(params);
     const res = await getLoginToken(params);
-    if (res.accessToken) {
+    const { accessToken, tenantList } = res;
+    debugger;
+    if (accessToken) {
+      options.tenantList = tenantList ?? [];
       // $message.success(`账号 ${loginForm1.account} 登录成功！`);
-      localStorage.setItem("bladeAuthNew1", res.accessToken);
+      token.value = accessToken;
+      localStorage.setItem("bladeAuthNew1", accessToken);
       localStorage.setItem("tenantId1", res.tenantId);
       localStorage.setItem("userNameNew", res.account);
       localStorage.setItem("iotToken", res["iot-token"]);
@@ -435,9 +557,27 @@ const loginTo = async (grantType: GrantType) => {
           res.assetPlatformAuthInfo && res.assetPlatformAuthInfo.userId
         );
       }
-      redirectFn();
+      if (tenantList?.length > 1 && grantType !== GrantType.SWITCH_TENANT) {
+        switchWindowBox(2);
+      } else {
+        redirectFn();
+      }
     }
   });
+};
+
+const switchWindowBox = (num: number) => {
+  windowBoxBtn.value = num;
+};
+
+const changeTenantId = async (tenantId: string) => {
+  selectTenantForm.tenantId = tenantId;
+  // const params = { tenantId };
+  // const result = await API.getLoginToken(params);
+  // if (result) {
+  //   apiUserInfos.tenantId = tenantId;
+  //   redirectFn();
+  // }
 };
 </script>
 
@@ -507,8 +647,8 @@ const loginTo = async (grantType: GrantType) => {
   }
 
   :deep(.el-form-item__content) {
-    display: flex;
-    justify-content: space-between;
+    display: block;
+    // justify-content: space-between;
     margin: 0 auto;
     .el-input__inner {
       height: 40px;
@@ -544,6 +684,9 @@ const loginTo = async (grantType: GrantType) => {
   }
   .btn-height {
     height: 40px;
+  }
+  .btn-mb {
+    margin-bottom: 18px;
   }
 }
 </style>
