@@ -17,6 +17,7 @@ const AuthTenant = () => import("@/views/authTenant/index.vue");
 const EcologyAbility = () => import("@/views/ecologyAbility/index.vue");
 const UserManage = () => import("@/views/userManage/index.vue");
 const Register = () => import("@/views/ecologyAbility/register.vue");
+const Test = () => import("@/views/testIframe/index.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -31,6 +32,15 @@ const routes: Array<RouteRecordRaw> = [
       key: "login",
     },
     component: Login,
+  },
+  {
+    path: "/test",
+    name: "test",
+    meta: {
+      title: "登录",
+      key: "test",
+    },
+    component: Test,
   },
   {
     path: "/",

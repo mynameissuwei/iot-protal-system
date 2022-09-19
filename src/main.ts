@@ -49,9 +49,13 @@ function initVue() {
     .use(components)
     .mount("#app");
   const iotBladeAuth = getParam("bladeAuth") || "";
+  const tenantId = getParam("tenantId") || "";
+  const authCode = getParam("authCode") || "";
   if (iotBladeAuth && window.location.href.indexOf("/blank") === -1) {
     localStorage.clear();
     localStorage.setItem("blade-auth", iotBladeAuth);
+    localStorage.setItem("tenantId", tenantId);
+    localStorage.setItem("authCode", authCode);
   }
 
   // // 添加监控
