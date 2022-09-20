@@ -232,7 +232,10 @@ const getUserInfo = () => {
 
 const handleInputCheck = (type: string, value: string) => {
   const pattern = type === "name" ? namePattern : phonePattern;
-  if (pattern.test(value)) {
+  if (
+    pattern.test(value) ||
+    (type === "phone" && (value === "" || typeof value === "undefined"))
+  ) {
     if (type === "name") {
       errorname.value = "";
     } else {
