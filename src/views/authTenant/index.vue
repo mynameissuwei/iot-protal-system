@@ -67,7 +67,12 @@
         @current-change="handlePageChange"
       ></el-pagination>
     </div>
-    <el-dialog :width="320" v-model="dialogConfigVisible" title="配置功能权限">
+    <el-dialog
+      :before-close="handleCloseConfig"
+      :width="320"
+      v-model="dialogConfigVisible"
+      title="配置功能权限"
+    >
       <div class="tree-body">
         <el-input v-model="filterText" placeholder="关键字搜索" />
         <el-tree
@@ -97,6 +102,7 @@
               v-for="data in gitListCheck"
               :label="data.productId"
               :key="data.abilityName"
+              :value="data.abilityName"
             >
               {{ data.abilityName }}
             </el-checkbox>
@@ -114,16 +120,21 @@
     <el-dialog :width="400" title="设定物联管理员" v-model="dialogAdminVisible">
       <p class="dialogClass">
         <span class="blockMark"></span>
-        <span class="blockTit">已添加（{{}}）</span>
+        <span class="blockTit">已添加（{{ checkedList.length }}）</span>
         <el-button text class="clearBtn" @click="clearRealName">清空</el-button>
       </p>
       <div class="mt-4 yetChackBox">
-        <el-combo-box v-model="realName" display multiple :max-token-count="5">
+        <el-combo-box
+          v-model="checkedList"
+          display
+          multiple
+          :max-token-count="5"
+        >
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in AdminList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           >
           </el-option>
         </el-combo-box>
@@ -131,12 +142,12 @@
       <p class="dialogClass">
         <span class="blockMark"></span><span class="blockTit">添加人员</span>
       </p>
-      <div class="mt-4">
-        <el-combo-box v-model="realName" multiple>
+      <div class="mt-4 selectTag">
+        <el-combo-box v-model="checkedList" multiple>
           <el-option
             v-for="item in AdminList"
             :key="item.id"
-            :label="item.realName"
+            :label="item.name"
             :value="item.id"
           >
           </el-option>
@@ -149,30 +160,6 @@
         </span>
       </template>
     </el-dialog>
-
-    <!-- <div class="demo-choose-peo">
-      <el-button :icon="AddNumber" @click="handleChoosePeo"
-          >选择人员</el-button
-        > -->
-    <!-- <el-choose-peo
-        ref="choosePeo"
-        :dialog-visible="dialogVisible"
-        :checked-list="checkedList"
-        @confirm="handleConfirm"
-        @cancel="handleCancel"
-        title="设定物联管理员"
-      ></el-choose-peo>
-      <div v-if="checkedList.length && dialogVisible == ture">
-        <el-title :level="5">已选择管理员：</el-title>
-        <el-token
-          v-for="(item, index) in checkedList"
-          :key="index"
-          style="margin: 0 8px 8px 0"
-          @close="handleCloseToken(index)"
-          >{{ item.realName }}</el-token
-        >
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -221,6 +208,7 @@ const originData = reactive({
 
 const router = useRouter();
 const tenantIdAuth = ref("");
+const tenantIdSet = ref("");
 const adminAccountAuth = ref("");
 const dialogConfigVisible = ref(false);
 const dialogStartVisible = ref(false);
@@ -266,11 +254,17 @@ const options = ref([
 const configBtn = (row) => {
   console.log("配置", row);
   tenantIdAuth.value = row.tenantId;
+  selectKeys.value = [];
   getCheckMenuList({ roleIds: row.roleId }).then((res) => {
     selectKeys.value = res;
+    dialogConfigVisible.value = true;
+    console.log(44444, res, selectKeys.value);
+    // debugger;
   });
-  dialogConfigVisible.value = true;
 };
+// const handleCloseConfig = () => {
+//   selectKeys.value = [];
+// };
 // 配置功能权限确定
 const editConfig = () => {
   tenantAuthAdd({
@@ -290,6 +284,8 @@ const editConfig = () => {
 // 获取功能权限check节点
 const getCurrentSelectArray = () => {
   selectKeys.value = treeRef.value?.getCheckedKeys();
+  console.log(787878, selectKeys.value);
+  // debugger;
 };
 const filterNode = (value: string, data: MenuTreeData) => {
   if (!value) return true;
@@ -315,7 +311,7 @@ const startBtn = (row) => {
 };
 const startSave = () => {
   console.log(77777, checkStart, checkStart.value);
-  let checkStartList = JSON.stringify(checkStart.value);
+  let checkStartList = JSON.parse(JSON.stringify(checkStart.value));
   console.log(99999, checkStartList);
   debugger;
   editEcologyListCheck({
@@ -340,8 +336,9 @@ const startSave = () => {
 const settingBtn = (row) => {
   console.log("设定");
   dialogAdminVisible.value = true;
-  getAdminList({ tenantId: row.tenantId }).then((res) => {
-    console.log(333, res);
+  tenantIdSet.value = row.tenantId;
+  getAdminList().then((res) => {
+    console.log("所有管理员", res);
     // var idsStr = res
     //   .map(function (obj, index) {
     //     return obj.id;
@@ -349,33 +346,31 @@ const settingBtn = (row) => {
     //   .join(",");
     // var AdminListRes = JSON.parse(idsStr);
     // console.log(6666, idsStr, AdminListRes, JSON.parse(idsStr));
-
     AdminList.value = res;
   });
   getYetAdminList({ tenantId: row.tenantId }).then((res) => {
-    console.log(res);
+    console.log("返显管理员", res.records);
     checkedList.value = res.records;
   });
 };
 const clearRealName = () => {
   realName.value = "";
+  checkedList.value = [];
 };
 const adminSave = () => {
   console.log(11111, realName.value);
-  let realNames = JSON.stringify(realName.value);
+  let realNamesA = JSON.stringify(realName.value);
+  let realNames = JSON.parse(realNamesA);
   console.log(realNames);
+  debugger;
+  editAdminList({
+    tenantId: tenantIdSet.value,
+    ids: realNames,
+  }).then((res) => {
+    console.log(222, res);
+  });
   // dialogAdminVisible.value = false;
 };
-// const handleCloseToken = (index) => {
-//   checkedList.value.splice(index, 1);
-// };
-// const handleConfirm = (list) => {
-//   checkedList.value = list;
-//   dialogVisible.value = false;
-// };
-// const handleCancel = () => {
-//   dialogVisible.value = false;
-// };
 
 // 租户列表
 const getTenantList = () => {
@@ -392,7 +387,7 @@ const getTenantList = () => {
     }
   });
 };
-// 搜索 临时、接口未出
+// 搜索
 const searchTenant = () => {
   getAuthList(roleListQuery).then((res) => {
     if (res.records) {
@@ -426,6 +421,7 @@ onMounted(() => {
   initData();
   getMenuListTree().then((res) => {
     menuTreeData.value = res;
+    console.log(343434, menuTreeData.value);
   });
 });
 </script>
@@ -508,5 +504,8 @@ onMounted(() => {
   margin: 20px 0;
   display: flex;
   justify-content: right;
+}
+::v-deep .selectTag .el-select {
+  width: 100%;
 }
 </style>
