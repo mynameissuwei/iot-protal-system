@@ -37,6 +37,9 @@ instance.interceptors.response.use(
     const { code, data, msg } = response.data || {};
     if (+code === 200) {
       return data;
+    } else if (+code > 200 && +code < 210) {
+      //和后端约定成功的提示
+      ElMsgToast(`${msg}`);
     } else {
       ElMsgToast.error(`${msg}`);
     }
