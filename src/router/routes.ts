@@ -16,6 +16,8 @@ const ServiceManage = () => import("@/views/serviceManage/index.vue");
 const AuthTenant = () => import("@/views/authTenant/index.vue");
 const EcologyAbility = () => import("@/views/ecologyAbility/index.vue");
 const UserManage = () => import("@/views/userManage/index.vue");
+const Register = () => import("@/views/ecologyAbility/register.vue");
+const Test = () => import("@/views/testIframe/index.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -30,6 +32,15 @@ const routes: Array<RouteRecordRaw> = [
       key: "login",
     },
     component: Login,
+  },
+  {
+    path: "/test",
+    name: "test",
+    meta: {
+      title: "登录",
+      key: "test",
+    },
+    component: Test,
   },
   {
     path: "/",
@@ -152,6 +163,15 @@ const routes: Array<RouteRecordRaw> = [
           key: "ecologyAbility",
         },
         component: EcologyAbility,
+      },
+      {
+        path: "/ecologyAbility/register",
+        name: "regiser",
+        meta: {
+          title: "生态能力管理",
+          key: "生态能力管理注册页面",
+        },
+        component: Register,
       },
       {
         path: "/userManage",

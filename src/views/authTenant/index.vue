@@ -313,7 +313,6 @@ const startSave = () => {
   console.log(77777, checkStart, checkStart.value);
   let checkStartList = JSON.parse(JSON.stringify(checkStart.value));
   console.log(99999, checkStartList);
-  debugger;
   editEcologyListCheck({
     tenantId: tenantIdAuth.value,
     productIds: checkStartList,

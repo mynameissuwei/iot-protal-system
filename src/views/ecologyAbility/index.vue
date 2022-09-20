@@ -107,7 +107,9 @@ const getAbilityList = () => {
 };
 // 搜索 临时、接口未出
 const registAbility = () => {
-  console.log("注册能力");
+  router.push({
+    path: "/ecologyAbility/register",
+  });
 };
 const deleteAbility = () => {
   if (refAbilityList.value.length) {

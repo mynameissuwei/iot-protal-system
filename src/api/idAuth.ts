@@ -38,3 +38,10 @@ export function deleteAuth(data: any): Promise<any> {
     data,
   });
 }
+
+export function getTopoPic(): Promise<any> {
+  return Service({
+    method: "get",
+    url: `http://10.39.25.111:8090/api/enn-iot-delivery-tool/project/getTopoPic?tenantId=000000&projectId=61`,
+  });
+}

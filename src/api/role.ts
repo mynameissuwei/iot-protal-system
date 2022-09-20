@@ -18,6 +18,22 @@ export function roleListApi(params: any): Promise<any> {
   });
 }
 
+export function roleListRegister(params: any): Promise<any> {
+  return Service({
+    method: "get",
+    url: `${API_ENN_SYSTEM}/ecology/functionpack`,
+    params: params,
+  });
+}
+
+export function roleListConfirm(data: any): Promise<any> {
+  return Service({
+    method: "post",
+    url: `${API_ENN_SYSTEM}/ecology/save`,
+    data,
+  });
+}
+
 export function roleAddApi(data: any): Promise<any> {
   return Service({
     method: "post",

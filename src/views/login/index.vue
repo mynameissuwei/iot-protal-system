@@ -444,61 +444,19 @@ const getCookie = () => {
 // 控制台登录地址重定向
 const redirectFn = () => {
   console.log(window.location.search);
-  let gdUrl = "https://feedback-workorder-web.dev.ennew.com/order-pool";
-  let zcUrl = "https://data-asset-front.dev.ennew.com";
-  let gdTenantId = "1369559970221985794";
-  let zcTenantId = "1374980461627899905";
-  let loginCode, authCode, userId, assetloginCode, assetAuthCode, assetUserId;
-  // 生产环境控制台地址
-  if (window.location.host.indexOf("newiot") != -1) {
-    gdUrl = "https://feedback-workorder-web.ennew.com/order-pool";
-    zcUrl = "https://data-asset-front.ennew.com";
-    gdTenantId = "1518825105279848450";
-    zcTenantId = "1381950445998632962";
-  }
-  // 测试环境
-  if (window.location.href.indexOf("10.39.68.49") !== -1) {
-    gdUrl = "https://feedback-workorder-web.fat.ennew.com/order-pool";
-    zcUrl = "https://data-asset-front.fat.ennew.com";
-  }
   if (window.location.search.indexOf("redirect") == -1) {
     router.push({
       path: "/",
     });
   } else {
-    let bladeAuthVal = localStorage.getItem("bladeAuthNew1");
-    let tenantIdVal = localStorage.getItem("tenantId1");
-    if (localStorage.getItem("loginCode")) {
-      loginCode = localStorage.getItem("loginCode");
-      authCode = localStorage.getItem("authCode");
-      userId = localStorage.getItem("userId");
-    }
-    if (localStorage.getItem("assetloginCode")) {
-      assetloginCode = localStorage.getItem("assetloginCode");
-      assetAuthCode = localStorage.getItem("assetAuthCode");
-      assetUserId = localStorage.getItem("assetUserId");
-    }
-    let workorderUrl = loginCode
-      ? encodeURIComponent(
-          `${gdUrl}?authTenantId=${gdTenantId}&authCode=${authCode}&loginCode=${loginCode}&rememberMe=0&isMobileLogin=2&userId=${userId}`
-        )
-      : "";
-    let assetUrl = assetloginCode
-      ? encodeURIComponent(
-          `${zcUrl}?authTenantId=${zcTenantId}&authCode=${assetAuthCode}&loginCode=${assetloginCode}&rememberMe=0&isMobileLogin=2&userId=${assetUserId}`
-        )
-      : "";
-    if (workorderUrl || localStorage.getItem("iotToken") || assetUrl) {
-      let iotToken = localStorage.getItem("iotToken") || "";
-      let itcode = localStorage.getItem("itcode") || "";
-      let href = `${redirectURL.value}?bladeAuth=${bladeAuthVal}&tenantId=${tenantIdVal}&workorderUrl=${workorderUrl}&assetUrl=${assetUrl}&iotToken=${iotToken}&itcode=${itcode}`;
-      window.open(href, "_self");
-    } else {
-      window.open(
-        `${redirectURL.value}?bladeAuth=${bladeAuthVal}&tenantId=${tenantIdVal}`,
-        "_self"
-      );
-    }
+    window.open(
+      `${redirectURL.value}?bladeAuth=${localStorage.getItem(
+        "bladeAuth"
+      )}&tenantId=${localStorage.getItem(
+        "tenantId"
+      )}&authCode=${localStorage.getItem("authCode")}`,
+      "_self"
+    );
   }
 };
 
@@ -514,49 +472,17 @@ const loginTo = async (
     const params = { ...formModel, grantType };
     console.log(params);
     const res = await getLoginToken(params);
+    if (grantType === GrantType.SWITCH_TENANT) {
+      localStorage.setItem("authCode", res?.authInfo?.loginCode);
+    }
     const { accessToken, tenantList } = res;
-    debugger;
     if (accessToken) {
       options.tenantList = tenantList ?? [];
-      // $message.success(`账号 ${loginForm1.account} 登录成功！`);
       token.value = accessToken;
-      localStorage.setItem("bladeAuthNew1", accessToken);
-      localStorage.setItem("tenantId1", res.tenantId);
-      localStorage.setItem("userNameNew", res.account);
+      localStorage.setItem("bladeAuth", accessToken);
+      localStorage.setItem("tenantId", res.tenantId);
       localStorage.setItem("iotToken", res["iot-token"]);
       localStorage.setItem("itcode", res.itcode);
-      if (Object.keys(res.platformAuthInfo).length > 0) {
-        localStorage.setItem(
-          "loginCode",
-          res.platformAuthInfo && res.platformAuthInfo.loginCode
-        );
-        localStorage.setItem(
-          "authCode",
-          res.platformAuthInfo &&
-            res.platformAuthInfo.ennUnifiedGrantCodeCookie &&
-            res.platformAuthInfo.ennUnifiedGrantCodeCookie.value
-        );
-        localStorage.setItem(
-          "userId",
-          res.platformAuthInfo && res.platformAuthInfo.userId
-        );
-      }
-      if (Object.keys(res.assetPlatformAuthInfo).length > 0) {
-        localStorage.setItem(
-          "assetloginCode",
-          res.assetPlatformAuthInfo && res.assetPlatformAuthInfo.loginCode
-        );
-        localStorage.setItem(
-          "assetAuthCode",
-          res.assetPlatformAuthInfo &&
-            res.assetPlatformAuthInfo.ennUnifiedGrantCodeCookie &&
-            res.platformAuthInfo.ennUnifiedGrantCodeCookie.value
-        );
-        localStorage.setItem(
-          "assetUserId",
-          res.assetPlatformAuthInfo && res.assetPlatformAuthInfo.userId
-        );
-      }
       if (tenantList?.length > 1 && grantType !== GrantType.SWITCH_TENANT) {
         switchWindowBox(2);
       } else {
